@@ -1,0 +1,3 @@
+rootProject.name='Ellen Library'
+include ':app'
+include ':ellen-android-sdk'
