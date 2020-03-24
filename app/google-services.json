@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "608344528329",
+    "firebase_url": "https://ellen-firebase-example.firebaseio.com",
+    "project_id": "ellen-firebase-example",
+    "storage_bucket": "ellen-firebase-example.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608344528329:android:3fecfc8abddc8350a40418",
+        "android_client_info": {
+          "package_name": "com.koder.ellenexplorer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608344528329-jgm0kjc6e9ng8mh4p92ch770j1jmkn5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9-RBCAiIkYAd-ZQZuxJV5tMgngyiM7rQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608344528329-jgm0kjc6e9ng8mh4p92ch770j1jmkn5k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "608344528329-t9on04e44n7fkeod3o0nahbsr5if6o8o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.koder.ellen-explorer"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608344528329:android:a66ee740da00cd05a40418",
+        "android_client_info": {
+          "package_name": "com.koder.ellenlibrary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608344528329-jgm0kjc6e9ng8mh4p92ch770j1jmkn5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9-RBCAiIkYAd-ZQZuxJV5tMgngyiM7rQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608344528329-jgm0kjc6e9ng8mh4p92ch770j1jmkn5k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "608344528329-t9on04e44n7fkeod3o0nahbsr5if6o8o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.koder.ellen-explorer"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
