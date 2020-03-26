@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.koder.ellen.data.model.ClientConfiguration
-import com.koder.ellen.data.model.User
+import com.koder.ellen.data.model.CurrentUser
 
 class Prefs (context: Context) {
     companion object {
@@ -53,12 +53,12 @@ class Prefs (context: Context) {
             val jsonString = gson.toJson(clientConfiguration)
             prefs.edit().putString(CLIENT_CONFIGURATION, jsonString).apply()
         }
-    var currentUser: User?
+    var currentUser: CurrentUser?
         get() {
             val json = prefs.getString(CURRENT_USER, null)
-            return gson.fromJson(json, User::class.java)
+            return gson.fromJson(json, CurrentUser::class.java)
         }
-        set(currentUser: User?)
+        set(currentUser: CurrentUser?)
         {
             val jsonString = gson.toJson(currentUser)
             prefs.edit().putString(CURRENT_USER, jsonString).apply()

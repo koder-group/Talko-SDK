@@ -3,16 +3,19 @@ package com.koder.ellen.data
 import android.util.Log
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.api.RetrofitClient
+import com.koder.ellen.core.Utils
 import com.koder.ellen.data.model.ClientConfiguration
-import com.koder.ellen.data.model.User
+import com.koder.ellen.data.model.Conversation
+import com.koder.ellen.data.model.CurrentUser
+import com.koder.ellen.data.model.Message
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 
-class EllenRepository {
+class Repository {
     companion object {
-        const val TAG = "EllenRepository"
+        const val TAG = "Repository"
         val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
 
         fun getClientConfiguration(): Result<ClientConfiguration> {
@@ -25,11 +28,11 @@ class EllenRepository {
             return Result.Error(IOException("Error getting client configuration"))
         }
 
-        fun getCurrentUser(): Result<User> {
+        fun getCurrentUser(): Result<CurrentUser> {
                 val response = RetrofitClient.ellen.getCurrentUser().execute()
                 Log.d(TAG, "${response}")
                 if (response.isSuccessful) {
-                    val body: User = response.body()!!
+                    val body: CurrentUser = response.body()!!
                     return Result.Success(body)
                 }
             return Result.Error(IOException("Error getting current user"))

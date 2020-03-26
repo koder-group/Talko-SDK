@@ -1,7 +1,6 @@
 package com.koder.ellen.api
 
-import com.koder.ellen.data.model.ClientConfiguration
-import com.koder.ellen.data.model.User
+import com.koder.ellen.data.model.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -15,21 +14,21 @@ interface EllenApi {
 //    fun getEllenUser(@Path("publicId") publicId: String): Call<EllenUser>
 //
     @GET("users/current")
-    fun getCurrentUser(): Call<User>
+    fun getCurrentUser(): Call<CurrentUser>
 
     @GET("platform/clientConfiguration/android-sdk")
     fun getClientConfiguration(): Call<ClientConfiguration>
 
     @PUT("notifications/registration")
     fun notificationRegistration(@Body body: RequestBody): Call<ResponseBody>
-//
-//    @POST("conversation/search")
-//    fun getConversations(@Body body: RequestBody): Call<MutableList<Conversation>>
-//
-//    @POST("conversation/{conversationId}/messages/search")
-//    fun getConversationMessages(@Path("conversationId") conversationId: String,
-//                                @Body body: RequestBody): Call<MutableList<ConversationMessage>>
-//
+
+    @POST("conversation/search")
+    fun getConversations(@Body body: RequestBody): Call<MutableList<Conversation>>
+
+    @POST("conversation/{conversationId}/messages/search")
+    fun getMessagesForConversation(@Path("conversationId") conversationId: String,
+                                @Body body: RequestBody): Call<MutableList<Message>>
+
 //    @POST("conversation/{conversationId}/messages")
 //    fun createMessage(@Path("conversationId") conversationId: String,
 //                      @Body body: RequestBody): Call<ConversationMessage>

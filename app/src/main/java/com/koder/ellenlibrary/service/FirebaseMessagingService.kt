@@ -10,6 +10,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.koder.ellen.Client
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.koder.ellen.Messenger
 import com.koder.ellenlibrary.R
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
@@ -107,7 +108,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
         // Save token to prefs
         token?.let {
-            Client.setPushNotificationToken(token)
+//            Messenger.setPushNotificationToken(token)    // TODO Uncomment to register FCM notification token
         }
     }
 
