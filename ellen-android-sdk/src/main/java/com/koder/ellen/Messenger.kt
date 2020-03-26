@@ -142,8 +142,8 @@ class Messenger {
                         }
                         EventName.participantRemoved.value -> {
                             // Participant removed
-                            val removedUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), User::class.java)
-                            eventCallback.onRemovedFromConversation(removedUser)
+                            val removedUserId = pnMessageResult.message.asJsonObject.get("userId").asString
+                            eventCallback.onRemovedFromConversation(removedUserId)
                             // TODO Unsubscribe from channel, if this user is the removed participant -- needed?
 //                            if(prefs?.currentUser?.userId?.toUpperCase().equals(removedUser.userId.toUpperCase())) pubNub?.unsubscribe()?.channels(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute()
                         }
@@ -151,6 +151,14 @@ class Messenger {
                             // Participant state changed
                             val participant = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Participant::class.java)
                             eventCallback.onParticipantStateChanged(participant)
+                        }
+                        EventName.moderatorAdded.value -> {
+                            val userId = pnMessageResult.message.asJsonObject.get("userId").asString
+                            eventCallback.onModeratorAdded(userId)
+                        }
+                        EventName.moderatorRemoved.value -> {
+                            val moderatorId = pnMessageResult.message.asJsonObject.get("moderatorId").asString
+                            eventCallback.onModeratorRemoved(moderatorId)
                         }
                         EventName.messageUserReaction.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Message::class.java)
@@ -226,7 +234,9 @@ class Messenger {
         participantStateChange("conversation:participant:statusChange"),
         controlEvent("controlEvent"),
         typingStart("user:typing:start"),
-        typingStop("user:typing:stop")
+        typingStop("user:typing:stop"),
+        moderatorAdded("conversation:moderator:added"),
+        moderatorRemoved("conversation:moderator:removed")
     }
 }
 
@@ -236,8 +246,8 @@ interface EventInterface {
     fun onConversationClosed(conversation: Conversation)
     fun onConversationModified(conversationId: String)
     fun onParticipantStateChanged(participant: Participant)
-    fun onAddedToConversation(data: String)
-    fun onRemovedFromConversation(removedUser: User)
+    fun onAddedToConversation(userId: String)
+    fun onRemovedFromConversation(userId: String)
     fun onMessageReceived(message: Message)
     fun onMessageRejected(message: Message)
     fun onMessageDeleted(message: Message)
@@ -245,6 +255,8 @@ interface EventInterface {
 //    fun onControlMessage(data: String)
     fun onUserTypingStart(initiatingUserId: String)
     fun onUserTypingStop(initiatingUserId: String)
+    fun onModeratorAdded(userId: String)
+    fun onModeratorRemoved(moderatorId: String)
 }
 
 // Client callback for PubNub
