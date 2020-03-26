@@ -1,4 +1,4 @@
-package com.koder.ellen.data.model
+package com.koder.ellen.model
 
 data class Conversation(
     val conversationId: String,

@@ -1,6 +1,6 @@
 package com.koder.ellen.core
 
-import com.koder.ellen.data.model.Conversation
+import com.koder.ellen.model.Conversation
 
 class Utils {
     companion object {

@@ -3,11 +3,8 @@ package com.koder.ellen.data
 import android.util.Log
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.api.RetrofitClient
-import com.koder.ellen.core.Utils
-import com.koder.ellen.data.model.ClientConfiguration
-import com.koder.ellen.data.model.Conversation
-import com.koder.ellen.data.model.CurrentUser
-import com.koder.ellen.data.model.Message
+import com.koder.ellen.model.ClientConfiguration
+import com.koder.ellen.model.CurrentUser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject

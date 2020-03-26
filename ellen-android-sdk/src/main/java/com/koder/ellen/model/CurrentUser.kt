@@ -1,4 +1,4 @@
-package com.koder.ellen.data.model
+package com.koder.ellen.model
 
 data class CurrentUser(
     var dateCreated: Long = 0,

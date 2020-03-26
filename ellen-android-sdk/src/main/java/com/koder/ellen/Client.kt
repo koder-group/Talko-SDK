@@ -3,8 +3,8 @@ package com.koder.ellen
 import android.util.Log
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Utils
-import com.koder.ellen.data.model.Conversation
-import com.koder.ellen.data.model.Message
+import com.koder.ellen.model.Conversation
+import com.koder.ellen.model.Message
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject

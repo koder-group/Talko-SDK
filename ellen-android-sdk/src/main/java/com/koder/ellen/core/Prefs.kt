@@ -3,8 +3,8 @@ package com.koder.ellen.core
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.koder.ellen.data.model.ClientConfiguration
-import com.koder.ellen.data.model.CurrentUser
+import com.koder.ellen.model.ClientConfiguration
+import com.koder.ellen.model.CurrentUser
 
 class Prefs (context: Context) {
     companion object {
@@ -33,8 +33,11 @@ class Prefs (context: Context) {
         prefs.edit().putString(CURRENT_USER, "")
     }
 
-
     var appId: String?
+        get() = prefs.getString(APP_ID, null)
+        set(appId: String?) = prefs.edit().putString(APP_ID, appId).apply()
+    // Alias of appId
+    var tenantId: String?
         get() = prefs.getString(APP_ID, null)
         set(appId: String?) = prefs.edit().putString(APP_ID, appId).apply()
     var userToken: String?

@@ -1,7 +1,4 @@
-package com.koder.ellen.data.model
-
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+package com.koder.ellen.model
 
 data class User(
     val tenantId: String,

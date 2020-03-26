@@ -1,4 +1,4 @@
-package com.koder.ellen.data.model
+package com.koder.ellen.model
 
 data class Mention(
     var user: User,

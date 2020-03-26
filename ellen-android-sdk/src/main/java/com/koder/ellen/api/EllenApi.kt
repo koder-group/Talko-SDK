@@ -1,7 +1,6 @@
 package com.koder.ellen.api
 
-import com.koder.ellen.data.model.*
-import okhttp3.MultipartBody
+import com.koder.ellen.model.*
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
