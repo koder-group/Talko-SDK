@@ -4,7 +4,7 @@ import android.util.Log
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.model.ClientConfiguration
-import com.koder.ellen.model.CurrentUser
+import com.koder.ellen.model.EllenUser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
@@ -25,11 +25,11 @@ class Repository {
             return Result.Error(IOException("Error getting client configuration"))
         }
 
-        fun getCurrentUser(): Result<CurrentUser> {
+        fun getCurrentUser(): Result<EllenUser> {
                 val response = RetrofitClient.ellen.getCurrentUser().execute()
                 Log.d(TAG, "${response}")
                 if (response.isSuccessful) {
-                    val body: CurrentUser = response.body()!!
+                    val body: EllenUser = response.body()!!
                     return Result.Success(body)
                 }
             return Result.Error(IOException("Error getting current user"))

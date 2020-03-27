@@ -1,6 +1,6 @@
 package com.koder.ellen.model
 
-data class CurrentUser(
+data class EllenUser(
     var dateCreated: Long = 0,
     var externalIdentifier: String = "",
     var profile: UserProfile = UserProfile(),

@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.koder.ellen.Client
+import com.koder.ellen.CompletionCallback
 import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
+import com.koder.ellen.data.Result
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.Message
 import com.koder.ellen.model.Participant
@@ -89,18 +91,33 @@ class MainActivity : AppCompatActivity() {
 //        val conversations = client.getConversationsForLoggedInUser()  // android.os.NetworkOnMainThreadException
 
         GlobalScope.launch {
-            // Background
+            // getConversationsForLoggedInUser
             val conversations = async(IO) { client.getConversationsForLoggedInUser() }.await()
             for (conversation in conversations) {
                 Log.d(TAG, "${conversation}")
             }
 
+            // getMessagesForConversation
             val messages = async(IO) {
                 client.getMessagesForConversation("650d5171-2451-4b24-9fad-5d63eec47201")
             }.await()
             for (message in messages) {
                 Log.d(TAG, "${messages}")
             }
+
+            // createConversation
+            val recipientUserId = "ed4b93a3-3501-4a8b-bf4b-d755629ec493"  // happyatkoder
+            async(IO) { client.createConversation(recipientUserId, object: CompletionCallback() {
+                override fun onCompletion(result: Result<Any>) {
+                    when(result) {
+                        is Result.Success -> {
+                            Log.d(TAG, "createConversation ${result.data}")
+                        }
+                        is Result.Error -> {
+                        }
+                    }
+                }
+            }) }.await()
         }
     }
 }

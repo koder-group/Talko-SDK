@@ -36,14 +36,14 @@ class Messenger {
         val channelList: MutableList<String> = mutableListOf()
 
         // Application context
-        fun init(appId: String, context: Context?) {
+        @JvmStatic fun init(appId: String, context: Context?) {
             context?.let {
                 prefs = Prefs(context)
                 prefs?.appId = appId
             }
         }
 
-        fun set(userToken: String, externalUserId: String) {
+        @JvmStatic fun set(userToken: String, externalUserId: String) {
             // Store user token and user id
             prefs?.userToken = userToken
             prefs?.externalUserId = externalUserId
@@ -86,7 +86,7 @@ class Messenger {
             }
         }
 
-        fun addEventHandler(eventCallback: EventCallback) {
+        @JvmStatic fun addEventHandler(eventCallback: EventCallback) {
             var subscribeCallback: SubscribeCallback = object : SubscribeCallback() {
                 override fun signal(pubnub: PubNub, pnSignalResult: PNSignalResult) {
                 }

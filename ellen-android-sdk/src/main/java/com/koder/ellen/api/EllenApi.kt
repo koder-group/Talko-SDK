@@ -9,11 +9,11 @@ import retrofit2.http.*
 interface EllenApi {
 //    // Ellen
 //    // https://kdrellenplatformapimd18.azure-api.net/
-//    @GET("users/{publicId}")
-//    fun getEllenUser(@Path("publicId") publicId: String): Call<EllenUser>
-//
+    @GET("users/{publicId}")
+    fun getUser(@Path("publicId") publicId: String): Call<EllenUser>
+
     @GET("users/current")
-    fun getCurrentUser(): Call<CurrentUser>
+    fun getCurrentUser(): Call<EllenUser>
 
     @GET("platform/clientConfiguration/android-sdk")
     fun getClientConfiguration(): Call<ClientConfiguration>
@@ -28,12 +28,13 @@ interface EllenApi {
     fun getMessagesForConversation(@Path("conversationId") conversationId: String,
                                 @Body body: RequestBody): Call<MutableList<Message>>
 
+    @POST("conversation/")
+    fun createConversation(@Body body: RequestBody): Call<Conversation>
+
 //    @POST("conversation/{conversationId}/messages")
 //    fun createMessage(@Path("conversationId") conversationId: String,
 //                      @Body body: RequestBody): Call<ConversationMessage>
 //
-//    @POST("conversation/")
-//    fun createConversation(@Body body: RequestBody): Call<Conversation>
 //
 //    @DELETE("conversation/{conversationId}")
 //    fun deleteConversation(@Path("conversationId") conversationId: String): Call<Boolean>
