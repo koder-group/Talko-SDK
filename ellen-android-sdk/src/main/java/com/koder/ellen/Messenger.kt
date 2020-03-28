@@ -3,13 +3,10 @@ package com.koder.ellen
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Prefs
-import com.koder.ellen.data.Repository
-import com.koder.ellen.data.Result
-import com.koder.ellen.model.Conversation
-import com.koder.ellen.model.Message
-import com.koder.ellen.model.Participant
-import com.koder.ellen.model.User
+import com.koder.ellen.core.Utils
+import com.koder.ellen.model.*
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -21,10 +18,10 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.pubnub.api.models.consumer.pubsub.objects.PNMembershipResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 
 class Messenger {
@@ -57,15 +54,21 @@ class Messenger {
         }
 
         // Register Firebase Cloud Messaging notification token
-        fun setPushNotificationToken(fcmToken: String) {
+        @JvmStatic fun setPushNotificationToken(fcmToken: String) {
             GlobalScope.launch {
                 prefs?.notificationToken = fcmToken
-                val result = async(IO) {
-                    Repository.registerNotificationToken()
-                }.await()
-                if (result is Result.Success) {
-                    Log.d(TAG, "FCM notification token registered")
-                }
+                try {
+                    val requestBody = JSONObject()
+                    requestBody.put("token", prefs?.notificationToken)
+                    requestBody.put("platform", "ANDROID")
+                    val response = RetrofitClient.ellen.notificationRegistration(
+                        body = requestBody.toString().toRequestBody(Utils.MEDIA_TYPE_JSON)
+                    ).execute()
+                    Log.d(TAG, "${response}")
+                    if(response.isSuccessful) {
+                        Log.d(TAG, "FCM notification token registered")
+                    }
+                } catch (e: Exception) {}
             }
         }
 
@@ -201,22 +204,30 @@ class Messenger {
         // Get and store client configuration
         private fun initClientConfiguration() {
             GlobalScope.launch {
-                val result = async(IO) { Repository.getClientConfiguration() }.await()
-                if (result is Result.Success) {
-                    prefs?.clientConfiguration = result.data
-//                    Log.d(TAG, "Client configuration initialized")
-                }
+                try {
+                    val response = RetrofitClient.ellen.getClientConfiguration().execute()
+                    Log.d(TAG, "${response}")
+                    if (response.isSuccessful) {
+                        val body: ClientConfiguration = response.body()!!
+                        prefs?.clientConfiguration = body
+                        Log.d(TAG, "Client configuration initalized")
+                    }
+                } catch (e: Exception) {}
             }
         }
 
         // Get and store current user
         private fun initCurrentUser() {
             GlobalScope.launch {
-                val result = async(IO) { Repository.getCurrentUser() }.await()
-                if (result is Result.Success) {
-                    prefs?.currentUser = result.data
-//                    Log.d(TAG, "Current user initialized")
-                }
+                try {
+                    val response = RetrofitClient.ellen.getCurrentUser().execute()
+                    Log.d(TAG, "${response}")
+                    if (response.isSuccessful) {
+                        val body: EllenUser = response.body()!!
+                        prefs?.currentUser = body
+                        Log.d(TAG, "Current user initialized")
+                    }
+                } catch (e: Exception) {}
             }
         }
     }

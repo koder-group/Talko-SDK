@@ -4,7 +4,6 @@ import android.util.Log
 import com.google.gson.Gson
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Utils
-import com.koder.ellen.data.Result
 import com.koder.ellen.model.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -120,7 +119,23 @@ class Client {
             } catch (e: Exception) {}
         }
     }
-    fun getConversation() {}
+
+    fun getConversation(conversationId: String, completion: CompletionCallback? = null) {
+        GlobalScope.launch {
+            try {
+                Log.d(TAG, "Get ${conversationId}")
+                val response = RetrofitClient.ellen.getConversation(conversationId = conversationId).execute()
+                Log.d(TAG, "${response}")
+                if (response.isSuccessful) {
+                    val conversation = response.body()!!
+                    completion?.onCompletion(Result.Success(conversation))
+                }
+            } catch (e: Throwable) {
+                completion?.onCompletion(Result.Error(IOException("Error getting conversation")))
+            }
+        }
+    }
+
     fun closeConversation() {}
     fun addParticipant() {}
     fun removeParticipant() {}

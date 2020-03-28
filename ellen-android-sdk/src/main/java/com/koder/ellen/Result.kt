@@ -1,4 +1,4 @@
-package com.koder.ellen.data
+package com.koder.ellen
 
 /**
  * A generic class that holds a value with its loading status.

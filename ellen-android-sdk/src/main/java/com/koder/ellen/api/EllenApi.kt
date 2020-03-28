@@ -31,6 +31,10 @@ interface EllenApi {
     @POST("conversation/")
     fun createConversation(@Body body: RequestBody): Call<Conversation>
 
+    @GET("conversation/{conversationId}")
+    fun getConversation(@Path("conversationId") conversationId: String): Call<Conversation>
+
+
 //    @POST("conversation/{conversationId}/messages")
 //    fun createMessage(@Path("conversationId") conversationId: String,
 //                      @Body body: RequestBody): Call<ConversationMessage>
@@ -38,10 +42,7 @@ interface EllenApi {
 //
 //    @DELETE("conversation/{conversationId}")
 //    fun deleteConversation(@Path("conversationId") conversationId: String): Call<Boolean>
-//
-//    @GET("conversation/{conversationId}")
-//    fun getConversation(@Path("conversationId") conversationId: String): Call<Conversation>
-//
+
 //    @PUT("conversation/{conversationId}/participants/{participantId}")
 //    fun addParticipant(@Path("conversationId") conversationId: String,
 //                       @Path("participantId") participantId: String): Call<Any>
