@@ -25,7 +25,7 @@ class Client {
         val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
     }
 
-    fun getConversationsForLoggedInUser(): MutableList<Conversation> {
+    fun getConversationsForLoggedInUser(completion: CompletionCallback? = null): MutableList<Conversation> {
         try {
             val postBody = JSONObject()
             postBody.put("pageSize", 10000)
@@ -39,15 +39,19 @@ class Client {
                     response.body()!!,
                     ConversationState.active.value
                 )
+                completion?.onCompletion(Result.Success(filtered))
                 return filtered
+            } else {
+                completion?.onCompletion(Result.Error(IOException("Error getting conversations")))
             }
         } catch (e: Exception) {
+            completion?.onCompletion(Result.Error(IOException("Error getting conversations")))
             Log.d(TAG, "${e}")
         }
         return mutableListOf()
     }
 
-    fun getMessagesForConversation(conversationId: String): MutableList<Message> {
+    fun getMessagesForConversation(conversationId: String, completion: CompletionCallback? = null): MutableList<Message> {
         try {
             val postBody = JSONObject()
             postBody.put("sort", -1)    //  Sort by timeCreated
@@ -59,15 +63,19 @@ class Client {
             if(response.isSuccessful) {
                 val body: MutableList<Message> = response.body()!!  //  Ordered by timeCreated DESC
                 body.reverse()  //  Order by timeCreated ASC
+                completion?.onCompletion(Result.Success(body))
                 return body
+            } else {
+                completion?.onCompletion(Result.Error(IOException("Error getting messages for conversation")))
             }
         } catch (e: Exception) {
+            completion?.onCompletion(Result.Error(IOException("Error getting messages for conversation")))
             Log.d(TAG, "${e}")
         }
         return mutableListOf()
     }
 
-    private fun getUser(publicId: String): Result<EllenUser> {
+    private fun getUser(publicId: String, completion: CompletionCallback? = null): Result<EllenUser> {
         try {
             val response = RetrofitClient.ellen.getUser(
                 publicId = publicId
@@ -77,9 +85,13 @@ class Client {
                 Log.d(TAG, "getUser ${response.body()}")
                 val body: EllenUser = response.body()!!
                 Log.d(TAG, "getUser ${body}")
+                completion?.onCompletion(Result.Success(completion))
                 return Result.Success(body)
+            } else {
+                completion?.onCompletion(Result.Error(IOException("Error getting user")))
             }
         } catch (e: Throwable) {
+            completion?.onCompletion(Result.Error(IOException("Error getting user")))
             return Result.Error(IOException("Error getting user", e))
         }
 
