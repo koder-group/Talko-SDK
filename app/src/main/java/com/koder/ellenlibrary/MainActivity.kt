@@ -102,46 +102,46 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        client.getLoggedInUserProfile(object: CompletionCallback() {
-            override fun onCompletion(result: Result<Any>) {
-                if(result is Result.Success) {
-                    Log.d(TEST_OK, "getLoggedInUserProfile ${result.data}")
-                } else {
-                    Log.d(TEST_NOK, "getLoggedInUserProfile ${result}")
-                }
-            }
-        })
+//        client.getLoggedInUserProfile(object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TEST_OK, "getLoggedInUserProfile ${result.data}")
+//                } else {
+//                    Log.d(TEST_NOK, "getLoggedInUserProfile ${result}")
+//                }
+//            }
+//        })
 
-        client.getConversationsForLoggedInUser(object: CompletionCallback() {
-            override fun onCompletion(result: Result<Any>) {
-                if(result is Result.Success) {
-                    Log.d(TEST_OK, "getConversationsForLoggedInUser ${result.data}")
-                } else {
-                    Log.d(TEST_NOK, "getConversationsForLoggedInUser ${result}")
-                }
-            }
-        })
+//        client.getConversationsForLoggedInUser(object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TEST_OK, "getConversationsForLoggedInUser ${result.data}")
+//                } else {
+//                    Log.d(TEST_NOK, "getConversationsForLoggedInUser ${result}")
+//                }
+//            }
+//        })
 
         val conversationId = "df46647a-7143-4456-ab90-38b8904bafaa"
-        client.getMessagesForConversation(conversationId, object: CompletionCallback() {
-            override fun onCompletion(result: Result<Any>) {
-                if(result is Result.Success) {
-                    Log.d(TEST_OK, "getMessagesForConversation ${result.data}")
-                } else {
-                    Log.d(TEST_NOK, "getMessagesForConversation ${result}")
-                }
-            }
-        })
+//        client.getMessagesForConversation(conversationId, object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TEST_OK, "getMessagesForConversation ${result.data}")
+//                } else {
+//                    Log.d(TEST_NOK, "getMessagesForConversation ${result}")
+//                }
+//            }
+//        })
 
-        client.getConversation(conversationId, object: CompletionCallback() {
-            override fun onCompletion(result: Result<Any>) {
-                if(result is Result.Success) {
-                    Log.d(TEST_OK, "getConversation ${result.data}")
-                } else {
-                    Log.d(TEST_NOK, "getConversation ${result}")
-                }
-            }
-        })
+//        client.getConversation(conversationId, object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TEST_OK, "getConversation ${result.data}")
+//                } else {
+//                    Log.d(TEST_NOK, "getConversation ${result}")
+//                }
+//            }
+//        })
 
         val participantUserId = "ed4b93a3-3501-4a8b-bf4b-d755629ec493"  // happyatkoder
 
@@ -251,15 +251,15 @@ class MainActivity : AppCompatActivity() {
 //        })
 
         // user:typing:stop event
-        client.postControlEvent(userId, conversationId, Messenger.EventName.typingStop.value, object: CompletionCallback() {
-            override fun onCompletion(result: Result<Any>) {
-                if(result is Result.Success) {
-                    Log.d(TEST_OK, "postControlEvent ${Messenger.EventName.typingStop.value} ${result.data}")
-                } else {
-                    Log.d(TEST_NOK, "postControlEvent ${Messenger.EventName.typingStop.value} ${result}")
-                }
-            }
-        })
+//        client.postControlEvent(userId, conversationId, Messenger.EventName.typingStop.value, object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TEST_OK, "postControlEvent ${Messenger.EventName.typingStop.value} ${result.data}")
+//                } else {
+//                    Log.d(TEST_NOK, "postControlEvent ${Messenger.EventName.typingStop.value} ${result}")
+//                }
+//            }
+//        })
 
         val sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!)
         val message = Message(conversationId = conversationId, body = "createMessage test", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mutableListOf<Mention>())
@@ -283,15 +283,15 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        })
 
-        val closeConversationId = "7b4eab10-4a7a-4d39-bac4-377f33840047"
-        client.closeConversation(closeConversationId, object: CompletionCallback() {
-            override fun onCompletion(result: Result<Any>) {
-                if(result is Result.Success) {
-                    Log.d(TEST_OK, "closeConversation ${result.data}")
-                } else {
-                    Log.d(TEST_NOK, "closeConversation ${result}")
-                }
-            }
-        })
+//        val closeConversationId = "7b4eab10-4a7a-4d39-bac4-377f33840047"
+//        client.closeConversation(closeConversationId, object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TEST_OK, "closeConversation ${result.data}")
+//                } else {
+//                    Log.d(TEST_NOK, "closeConversation ${result}")
+//                }
+//            }
+//        })
     }
 }
