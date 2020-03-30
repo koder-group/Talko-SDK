@@ -87,5 +87,5 @@ interface EllenApi {
 
     @POST("conversation/{conversationId}/events")
     fun postControlEvent(@Path("conversationId") conversationId: String,
-                         @Body body: RequestBody): Call<Any>
+                         @Body body: RequestBody): Call<ResponseBody>
 }
