@@ -28,12 +28,13 @@ class MainActivity : AppCompatActivity() {
 
         Messenger.set(userToken, userId, object: CompletionCallback() {
             override fun onCompletion(result: Result<Any>) {
-                Log.d(TAG, "Messenger successfully set")
-                val messengerActivity = MessengerActivity
-                val intent = Intent(this@MainActivity, MessengerActivity::class.java)
-                startActivity(intent)
-                setResult(Activity.RESULT_OK)
-                finish()
+                if(result is Result.Success) {
+                    Log.d(TAG, "Messenger successfully set")
+                    val intent = Intent(this@MainActivity, MessengerActivity::class.java)
+                    startActivity(intent)
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
             }
         })
 
