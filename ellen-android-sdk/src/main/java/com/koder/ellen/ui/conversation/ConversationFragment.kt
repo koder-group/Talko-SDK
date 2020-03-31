@@ -45,8 +45,8 @@ class ConversationFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var mDrawer: DrawerLayout
-    private lateinit var mDrawerToggle: ActionBarDrawerToggle
+//    private lateinit var mDrawer: DrawerLayout
+//    private lateinit var mDrawerToggle: ActionBarDrawerToggle
     private lateinit var mToolbar: Toolbar
 
     // RecyclerView
@@ -105,18 +105,18 @@ class ConversationFragment : Fragment() {
             supportActionBar?.title = resources.getString(R.string.conversations)
 
             // Reference DrawerLayout to open Drawer
-            mDrawer = activity?.findViewById(R.id.drawer_layout) as DrawerLayout
-
-            // Navigation DrawerLayout
-            mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
-            mDrawerToggle = ActionBarDrawerToggle(
-                this, mDrawer, R.string.drawer_open, R.string.drawer_close
-            )
-            // Setup toggle to display hamburger icon with nice animation
-            mDrawerToggle.setDrawerIndicatorEnabled(true)
-            mDrawerToggle.syncState()
-            // Tie DrawerLayout events to the ActionBarToggle
-            mDrawer.addDrawerListener(mDrawerToggle)
+//            mDrawer = activity?.findViewById(R.id.drawer_layout) as DrawerLayout
+//
+//            // Navigation DrawerLayout
+//            mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
+//            mDrawerToggle = ActionBarDrawerToggle(
+//                this, mDrawer, R.string.drawer_open, R.string.drawer_close
+//            )
+//            // Setup toggle to display hamburger icon with nice animation
+//            mDrawerToggle.setDrawerIndicatorEnabled(true)
+//            mDrawerToggle.syncState()
+//            // Tie DrawerLayout events to the ActionBarToggle
+//            mDrawer.addDrawerListener(mDrawerToggle)
 
             // Setup RecyclerView
             viewManager = LinearLayoutManager(this)
@@ -230,7 +230,7 @@ class ConversationFragment : Fragment() {
             android.R.id.home -> {
                 // Open host Activity's Navigation Drawer
 //                Log.d(TAG, "Open drawer")
-                mDrawer.openDrawer(GravityCompat.START)
+//                mDrawer.openDrawer(GravityCompat.START)
                 true
             }
             R.id.action_message -> {

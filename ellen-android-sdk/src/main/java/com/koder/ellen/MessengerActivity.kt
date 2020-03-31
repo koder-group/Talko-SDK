@@ -60,9 +60,9 @@ class MessengerActivity : AppCompatActivity() {
             )
         }).get(MainViewModel::class.java)
     }
-    private lateinit var mDrawer: DrawerLayout
-    private lateinit var mDrawerToggle: ActionBarDrawerToggle
-    private lateinit var mNavView: NavigationView
+//    private lateinit var mDrawer: DrawerLayout
+//    private lateinit var mDrawerToggle: ActionBarDrawerToggle
+//    private lateinit var mNavView: NavigationView
     private lateinit var displayName: TextView
     private lateinit var profileImageView: ImageView
     private lateinit var userLink: String
@@ -128,48 +128,48 @@ class MessengerActivity : AppCompatActivity() {
 //        })
 
         // Navigation DrawerLayout
-        mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
-        mDrawerToggle = ActionBarDrawerToggle(
-            this, mDrawer, R.string.drawer_open, R.string.drawer_close
-        )
-        // Setup toggle to display hamburger icon with nice animation
-        mDrawerToggle.setDrawerIndicatorEnabled(true)
-        mDrawerToggle.syncState()
-        // Tie DrawerLayout events to the ActionBarToggle
-        mDrawer.addDrawerListener(mDrawerToggle)
-
-        // Set DrawerIndicator true for Fragment tag "Conversations"
-        supportFragmentManager.addOnBackStackChangedListener(object: FragmentManager.OnBackStackChangedListener {
-           override fun onBackStackChanged() {
-//               Log.d(TAG, "Backstack changed")
-                val currentBackStackFragment = supportFragmentManager.fragments.last()
-//               Log.d(TAG, "${currentBackStackFragment.tag}")
-               when(currentBackStackFragment.tag) {
-                   resources.getString(R.string.conversations) -> {
-                       mDrawerToggle.setDrawerIndicatorEnabled(true)
-                       true
-                   }
-                   else -> {
-                       mDrawerToggle.setDrawerIndicatorEnabled(false)
-                   }
-               }
-            }
-        })
-
-        // Navigation view
-        mNavView = findViewById(R.id.nav_view)
-        mNavView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_share -> {
-                    shareUser()
-//                    mDrawer.closeDrawers()
-                }
-                R.id.nav_logout -> {
-                    logoutUser()
-                }
-            }
-            true
-        }
+//        mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
+//        mDrawerToggle = ActionBarDrawerToggle(
+//            this, mDrawer, R.string.drawer_open, R.string.drawer_close
+//        )
+//        // Setup toggle to display hamburger icon with nice animation
+//        mDrawerToggle.setDrawerIndicatorEnabled(true)
+//        mDrawerToggle.syncState()
+//        // Tie DrawerLayout events to the ActionBarToggle
+//        mDrawer.addDrawerListener(mDrawerToggle)
+//
+//        // Set DrawerIndicator true for Fragment tag "Conversations"
+//        supportFragmentManager.addOnBackStackChangedListener(object: FragmentManager.OnBackStackChangedListener {
+//           override fun onBackStackChanged() {
+////               Log.d(TAG, "Backstack changed")
+//                val currentBackStackFragment = supportFragmentManager.fragments.last()
+////               Log.d(TAG, "${currentBackStackFragment.tag}")
+//               when(currentBackStackFragment.tag) {
+//                   resources.getString(R.string.conversations) -> {
+//                       mDrawerToggle.setDrawerIndicatorEnabled(true)
+//                       true
+//                   }
+//                   else -> {
+//                       mDrawerToggle.setDrawerIndicatorEnabled(false)
+//                   }
+//               }
+//            }
+//        })
+//
+//        // Navigation view
+//        mNavView = findViewById(R.id.nav_view)
+//        mNavView.setNavigationItemSelectedListener { menuItem ->
+//            when (menuItem.itemId) {
+//                R.id.nav_share -> {
+//                    shareUser()
+////                    mDrawer.closeDrawers()
+//                }
+//                R.id.nav_logout -> {
+//                    logoutUser()
+//                }
+//            }
+//            true
+//        }
 
         // Set Navigation Drawer layout
 //        initFirebaseUser()
@@ -204,7 +204,7 @@ class MessengerActivity : AppCompatActivity() {
 //        finish()  // TODO SDK
     }
 
-//    private fun setDrawerContent() {
+    private fun setDrawerContent() {
 //        // Inflate the header view at runtime
 //        val headerLayout = mNavView.inflateHeaderView(R.layout.nav_header)
 //
@@ -276,7 +276,7 @@ class MessengerActivity : AppCompatActivity() {
 //            imageViewQrCode.setImageBitmap(bitmap)
 //        } catch (e: java.lang.Exception) {
 //        }
-//    }
+    }
 
     private fun initPubNub() {
         var subscribeCallback: SubscribeCallback = object : SubscribeCallback() {
@@ -899,14 +899,14 @@ class MessengerActivity : AppCompatActivity() {
     }
 
     fun openDrawer() {
-        mDrawer.openDrawer(Gravity.LEFT)
+//        mDrawer.openDrawer(Gravity.LEFT)
     }
 
     fun setAvatar(profileImageUrl: String) {
 //        editUser(profileImageUrl = profileImageUrl)   // TODO
 //        Picasso.get().load(url).into(profileImageView)
         supportFragmentManager.popBackStack()
-        mDrawer.openDrawer(Gravity.LEFT)
+//        mDrawer.openDrawer(Gravity.LEFT)
     }
 
     fun convertDateToLong(date: String): Long {
