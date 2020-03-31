@@ -25,6 +25,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.IOException
 
 
 class Messenger {
@@ -50,15 +51,22 @@ class Messenger {
 
             GlobalScope.launch {
                 // Get client configuration
-                async(IO) { initClientConfiguration() }.await()
+                val clientConfig = async(IO) { initClientConfiguration() }
 
                 // Get current user
-                async(IO) { initCurrentUser() }.await()
+                val currentUser = async(IO) { initCurrentUser() }
 
                 // Initialize PubNub client
-                async(IO) { initPubNub() }.await()
+                async(IO) { initPubNub() }
 
-                completion?.onCompletion(Result.Success(true))
+                val clientConfigResult = clientConfig.await()
+                val currentUserResult = currentUser.await()
+
+                if(clientConfigResult is Result.Success && currentUserResult is Result.Success) {
+                    completion?.onCompletion(Result.Success(true))
+                } else {
+                    completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
+                }
             }
         }
 
@@ -211,33 +219,39 @@ class Messenger {
         }
 
         // Get and store client configuration
-        private fun initClientConfiguration() {
-            GlobalScope.launch {
+        private fun initClientConfiguration(): Result<ClientConfiguration> {
+//            GlobalScope.launch {
                 try {
+                    Log.d(TAG, "Init client config")
                     val response = RetrofitClient.ellen.getClientConfiguration().execute()
                     Log.d(TAG, "${response}")
                     if (response.isSuccessful) {
                         val body: ClientConfiguration = response.body()!!
                         prefs?.clientConfiguration = body
                         Log.d(TAG, "Client configuration initalized")
+                        return Result.Success(body)
                     }
                 } catch (e: Exception) {}
-            }
+//            }
+            return Result.Error(IOException("Error getting client configuration"))
         }
 
         // Get and store current user
-        private fun initCurrentUser() {
-            GlobalScope.launch {
+        private fun initCurrentUser(): Result<EllenUser> {
+//            GlobalScope.launch {
                 try {
+                    Log.d(TAG, "Init current user")
                     val response = RetrofitClient.ellen.getCurrentUser().execute()
                     Log.d(TAG, "${response}")
                     if (response.isSuccessful) {
                         val body: EllenUser = response.body()!!
                         prefs?.currentUser = body
                         Log.d(TAG, "Current user initialized")
+                        return Result.Success(body)
                     }
                 } catch (e: Exception) {}
-            }
+//            }
+            return Result.Error(IOException("Error getting current user"))
         }
     }
 
