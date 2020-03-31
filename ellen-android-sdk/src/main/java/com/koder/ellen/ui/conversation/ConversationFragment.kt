@@ -231,6 +231,9 @@ class ConversationFragment : Fragment() {
                 // Open host Activity's Navigation Drawer
 //                Log.d(TAG, "Open drawer")
 //                mDrawer.openDrawer(GravityCompat.START)
+
+                // Finish activity
+                (context as MessengerActivity).finishActivity()
                 true
             }
             R.id.action_message -> {

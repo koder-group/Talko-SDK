@@ -1,5 +1,6 @@
 package com.koder.ellen
 
+import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
@@ -946,6 +947,12 @@ class MessengerActivity : AppCompatActivity() {
         list.addAll(currentStatusMessages)
         currentStatusMessages.clear()
         return list
+    }
+
+    // Finish Activity
+    fun finishActivity() {
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 
     // Extensions for dp-px conversion
