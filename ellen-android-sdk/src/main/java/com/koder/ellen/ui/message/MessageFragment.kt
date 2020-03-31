@@ -672,12 +672,12 @@ open class MessageFragment : Fragment(),
                 (activity as MessengerActivity).showInfoFragment()
                 true
             }
-            R.id.action_video -> {
-                hideKeyboard(activity)
-                // Start VideoFragment
-                (activity as MessengerActivity).showVideoFragment()
-                true
-            }
+//            R.id.action_video -> {
+//                hideKeyboard(activity)
+//                // Start VideoFragment
+//                (activity as MessengerActivity).showVideoFragment()
+//                true
+//            }
             else -> super.onOptionsItemSelected(item)
         }
     }
