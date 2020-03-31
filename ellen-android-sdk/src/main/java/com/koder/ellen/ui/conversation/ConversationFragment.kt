@@ -99,10 +99,10 @@ class ConversationFragment : Fragment() {
 
             // Toolbar, DrawerLayout
 //            TODO This Activity already has an action bar supplied by the window decor. Do not request Window.FEATURE_SUPPORT_ACTION_BAR and set windowActionBar to false in your theme to use a Toolbar instead.
-//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))
-//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            supportActionBar?.setDisplayShowHomeEnabled(true)
-//            supportActionBar?.title = resources.getString(R.string.conversations)
+            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+            supportActionBar?.title = resources.getString(R.string.conversations)
 
             // Reference DrawerLayout to open Drawer
             mDrawer = activity?.findViewById(R.id.drawer_layout) as DrawerLayout

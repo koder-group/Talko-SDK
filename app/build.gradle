@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+    def material_version = '1.2.0-alpha03'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -58,4 +60,7 @@ dependencies {
 
     // Multidex
     implementation 'com.android.support:multidex:1.0.3'
+
+    // UI
+    implementation "com.google.android.material:material:$material_version"
 }
