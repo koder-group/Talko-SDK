@@ -1,0 +1,83 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:id="@+id/media_item_layout"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp">
+
+    <!-- Media input image -->
+    <com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/media_card_view"
+        android:layout_width="50dp"
+        android:layout_height="80dp"
+        app:cardCornerRadius="8dp"
+        app:strokeWidth="0dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#eee"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/media_item_image"
+                android:layout_width="50dp"
+                android:layout_height="80dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:animateLayoutChanges="true"/>
+        </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Close button -->
+<!--    <com.google.android.material.card.MaterialCardView-->
+<!--        android:id="@+id/close_button_view"-->
+<!--        android:layout_width="16dp"-->
+<!--        android:layout_height="16dp"-->
+<!--        app:cardCornerRadius="32dp"-->
+<!--        app:strokeWidth="4dp"-->
+<!--        app:strokeColor="#fff"-->
+<!--        app:cardElevation="0dp"-->
+
+<!--        app:layout_constraintTop_toTopOf="@id/media_item_layout"-->
+<!--        app:layout_constraintStart_toEndOf="@id/media_item_layout"-->
+<!--        android:layout_toRightOf="@id/media_item_layout"-->
+<!--        android:layout_marginLeft="-14dp"-->
+<!--        android:layout_marginTop="0dp"-->
+
+
+<!--        android:foreground="?android:attr/selectableItemBackground"-->
+<!--        android:clickable="true"-->
+<!--        app:cardBackgroundColor="#fff"-->
+<!--        >-->
+<!--        <ImageView-->
+<!--            android:layout_width="fill_parent"-->
+<!--            android:layout_height="fill_parent"-->
+<!--            android:id="@+id/close_icon"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            android:src="@drawable/ic_close_24" />-->
+<!--    </com.google.android.material.card.MaterialCardView>-->
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:id="@+id/close_button_view"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cancel_solid_24"
+
+        android:layout_toRightOf="@id/media_card_view"
+        android:layout_marginLeft="-14dp"
+        android:layout_marginTop="0dp"/>
+
+</RelativeLayout>

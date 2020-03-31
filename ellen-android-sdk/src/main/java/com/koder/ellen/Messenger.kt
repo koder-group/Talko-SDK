@@ -7,6 +7,7 @@ import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Prefs
 import com.koder.ellen.core.Utils
 import com.koder.ellen.model.*
+import com.koder.ellen.data.Result
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -18,7 +19,9 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.pubnub.api.models.consumer.pubsub.objects.PNMembershipResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
@@ -40,17 +43,23 @@ class Messenger {
             }
         }
 
-        @JvmStatic fun set(userToken: String, externalUserId: String) {
+        @JvmStatic fun set(userToken: String, externalUserId: String, completion: CompletionCallback? = null) {
             // Store user token and user id
             prefs?.userToken = userToken
             prefs?.externalUserId = externalUserId
 
-            // Get client configuration
-            initClientConfiguration()
-            // Get current user
-            initCurrentUser()
-            // Initialize PubNub client
-            initPubNub()
+            GlobalScope.launch {
+                // Get client configuration
+                async(IO) { initClientConfiguration() }.await()
+
+                // Get current user
+                async(IO) { initCurrentUser() }.await()
+
+                // Initialize PubNub client
+                async(IO) { initPubNub() }.await()
+
+                completion?.onCompletion(Result.Success(true))
+            }
         }
 
         // Register Firebase Cloud Messaging notification token

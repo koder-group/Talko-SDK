@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoPanelHeight="0dp"
+    sothree:umanoShadowHeight="0dp"
+    sothree:umanoParallaxOffset="100dp"
+    sothree:umanoOverlay="true"
+    sothree:umanoDragView="@+id/dragView">
+
+    <!-- Message -->
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.message.MessageFragment"
+        android:id="@+id/container">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="4dp"
+                android:fitsSystemWindows="true"
+                android:background="@color/white"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/message_input_layout"
+            android:layout_below="@id/appbar_layout"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:overScrollMode="never"
+                android:paddingTop="8dp"
+                android:clipToPadding="false"
+                />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Message input -->
+        <RelativeLayout
+            android:id="@+id/message_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_round_border_message"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/swipe_refresh_layout"
+
+            android:layout_alignParentBottom="true"
+
+            android:animateLayoutChanges="true">
+
+            <!-- Media input layout -->
+            <RelativeLayout
+                android:id="@+id/media_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_border_media_input"
+
+                android:paddingTop="11dp"
+                android:paddingRight="1dp"
+                android:paddingBottom="11dp"
+                android:paddingLeft="1dp"
+
+                android:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/media_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"
+                    android:clipToPadding="false"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="4dp"
+                    />
+
+            </RelativeLayout>
+
+            <!-- Text input layout -->
+            <RelativeLayout
+                android:id="@+id/text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@id/media_input_layout">
+
+                <ImageView
+                    android:id="@+id/message_send_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="@string/send"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_state"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:paddingTop="11dp"
+                    android:paddingRight="3dp"
+                    android:paddingBottom="11dp"
+                    android:paddingLeft="0dp"
+                    android:src="@drawable/ic_paper_plane_regular"
+                    />
+
+                <EditText
+                    android:id="@+id/message_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/message_dotdotdot"
+                    android:paddingTop="11dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="11dp"
+                    android:paddingLeft="15dp"
+                    android:maxLines="3"
+                    android:background="@android:color/transparent"
+                    android:textSize="16dp"
+
+                    android:layout_toStartOf="@id/message_send_btn"
+                    android:layout_toLeftOf="@id/message_send_btn"
+                    />
+
+                <ImageView
+                    android:id="@+id/add_image_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="@string/send"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_state"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:paddingTop="5dp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="0dp"
+                    android:layout_marginRight="50dp"
+                    android:src="@drawable/ic_image_24dp"/>
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mention_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/message_input_layout"
+            android:elevation="2dp"
+            android:outlineProvider="bounds"
+            android:background="@color/white"/>
+
+        <!-- Expanded image -->
+        <ImageView
+            android:id="@+id/expanded_image_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/expanded_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <!-- Sliding panel -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bg_round_top"
+        android:id="@+id/dragView"
+        android:gravity="center_horizontal"
+
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="8dp"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
+
+        <ImageView
+            android:id="@+id/sliding_handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="0dp"
+            android:src="@drawable/ic_handle_24dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="0dp"
+            />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="32dp"
+            app:strokeWidth="0dp"
+
+            android:layout_marginTop="20dp"
+            >
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/sliding_profile_image"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_account_circle_24dp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/sliding_display_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:text="display_name"
+
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

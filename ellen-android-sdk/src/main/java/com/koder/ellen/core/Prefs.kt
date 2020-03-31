@@ -3,13 +3,15 @@ package com.koder.ellen.core
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.koder.ellen.model.ClientConfiguration
 import com.koder.ellen.model.EllenUser
+import org.json.JSONObject
 
 class Prefs (context: Context) {
     companion object {
         const val TAG = "Prefs"
-        lateinit var prefs: SharedPreferences
+        private lateinit var prefs: SharedPreferences
 
         const val PREFS_FILENAME = "com.koder.ellen.prefs"
         const val APP_ID = "AppId"  // Application Id (Tenant Id?)
@@ -18,6 +20,7 @@ class Prefs (context: Context) {
         const val CLIENT_CONFIGURATION = "ClientConfiguration"
         const val CURRENT_USER = "CurrentUser"
         const val NOTIFICATION_TOKEN = "NotificationToken"
+        const val LAST_READ_MAP = "LastReadMap"
     }
 
     val gson = Gson()
@@ -69,4 +72,26 @@ class Prefs (context: Context) {
     var notificationToken: String?
         get() = prefs.getString(NOTIFICATION_TOKEN, null)
         set(token: String?) = prefs.edit().putString(NOTIFICATION_TOKEN, token).apply()
+
+    // New message indicator
+    // Map of <Conversation Id, Timestamp>
+    fun setConversationLastRead(conversationId: String, timeRead: Long) {
+        // Get map
+        var jsonString: String = prefs.getString(LAST_READ_MAP, JSONObject().toString())!!
+        val listType = object : TypeToken<HashMap<String, Long>>() {}.type
+        val map: HashMap<String, Long> = Gson().fromJson(jsonString, listType)
+        // Set map
+        map.set(conversationId, timeRead)
+        jsonString = Gson().toJson(map)
+        prefs.edit().putString(LAST_READ_MAP, jsonString).apply()
+    }
+
+    fun getConversationLastRead(conversationId: String): Long? {
+        // Get map
+        var jsonString: String = prefs.getString(LAST_READ_MAP, JSONObject().toString())!!
+        val listType = object : TypeToken<HashMap<String, Long>>() {}.type
+        val map: HashMap<String, Long> = Gson().fromJson(jsonString, listType)
+        // Read map
+        return map.get(conversationId)
+    }
 }

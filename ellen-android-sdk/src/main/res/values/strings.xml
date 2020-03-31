@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">Ellen Explorer</string>
+
+    <!-- Firebase -->
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+    <string name="default_notification_channel_id" translatable="false">default</string>
+    <string name="channel_name">Ellen</string>
+    <string name="channel_description">Notification channel for Ellen</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_username">Username</string>
+    <string name="action_sign_in">Create Account / Login</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_logout">Logout</string>
+    <string name="welcome">"Hello"</string>
+    <string name="invalid_username">Username cannot be blank</string>
+    <string name="invalid_password">Password cannot be blank</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="or_create_an_account"><u>or create an account</u></string>
+    <string name="welcome_header"><font size="28"><b>Welcome,</b></font>\nlogin or sign up to get started.</string>
+    <string name="forgot_password">Forgot?</string>
+    <string name="select_avatar">Select Avatar</string>
+
+    <!-- Conversations -->
+    <string name="conversations">Conversations</string>
+    <string name="action_share">Share</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="empty_conversations">You do not have any conversations</string>
+    <string name="conversation_closed">Conversation closed</string>
+    <string name="conversation_retry">Please try again</string>
+
+    <!-- Messages -->
+    <string name="message">Message</string>
+    <string name="message_dotdotdot">New message...</string>
+    <string name="send">Send</string>
+    <string name="reaction_code_like">REACTION_CODE_LIKE</string>
+    <string name="reaction_code_dislike">REACTION_CODE_DISLIKE</string>
+    <string name="copy_text">Copy text</string>
+    <string name="save">Save</string>
+    <string name="report">Report</string>
+    <string name="delete">Delete</string>
+    <string name="delivered">Delivered</string>
+
+    <!-- Message Info -->
+    <string name="title_activity_message_info">Info</string>
+    <string name="info">Info</string>
+    <string name="conversation_name">Conversation Name</string>
+    <string name="add_conversation_description">Add conversation description</string>
+    <string name="participants">Participants</string>
+    <string name="add_participant">Add Participant</string>
+    <string name="close_conversation">Close Conversation</string>
+    <string name="promote_to_moderator">Promote to moderator</string>
+    <string name="remove_as_moderator">Remove as moderator</string>
+    <string name="remove_from_conversation">Remove from conversation</string>
+    <string name="owner">Owner</string>
+    <string name="find_a_user">Find a user</string>
+
+    <!-- ActionBarDrawerToggle -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Search -->
+    <string name="search">Search</string>
+    <string name="new_message">New Message</string>
+    <string name="search_dot_dot_dot">Search...</string>
+    <string name="to">To</string>
+
+    <!-- Video -->
+    <string name="video">Video</string>
+</resources>

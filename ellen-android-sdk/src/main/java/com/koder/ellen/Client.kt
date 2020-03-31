@@ -1,10 +1,10 @@
 package com.koder.ellen
 
-import android.provider.MediaStore
 import android.util.Log
 import com.google.gson.Gson
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Utils
+import com.koder.ellen.data.Result
 import com.koder.ellen.model.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
