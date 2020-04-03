@@ -178,7 +178,7 @@ class SearchFragment : Fragment() {
             users.clear()
             users.addAll(it)
             // Remove the current user from results
-            val found = users.find { it.userId.equals(prefs?.externalUserId)}
+            val found = users.find { it.userId.equals(prefs?.externalUserId, ignoreCase = true)}
             found?.let {
                 users.remove(found)
             }

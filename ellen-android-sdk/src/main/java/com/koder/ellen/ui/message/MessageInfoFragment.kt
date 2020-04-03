@@ -111,7 +111,7 @@ class MessageInfoFragment : Fragment(), View.OnClickListener {
             viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
             // Get current user
-            val currentUser = participants.find { it.userId.equals(prefs?.externalUserId) }
+            val currentUser = participants.find { it.userId.equals(prefs?.externalUserId, ignoreCase = true) }
             viewAdapter = MessageInfoAdapter(this, currentUser!!, participants, this@MessageInfoFragment)
 
             recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {

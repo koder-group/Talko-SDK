@@ -1651,7 +1651,7 @@ open class MessageFragment : Fragment(),
         val conversation = (activity as MessengerActivity).getCurrentConversation()
         conversation?.let {
             // Current conversation
-            val participant = conversation.participants.find { it.user.userId.equals(prefs?.externalUserId) }
+            val participant = conversation.participants.find { it.user.userId.equals(prefs?.externalUserId, ignoreCase = true) }
             participant?.let {
                 // Current participant
                 return participant.state == 0

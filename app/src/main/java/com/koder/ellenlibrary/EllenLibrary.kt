@@ -15,6 +15,6 @@ class EllenLibrary: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Messenger.init(appId, this)
+//        Messenger.init(appId, this)
     }
 }

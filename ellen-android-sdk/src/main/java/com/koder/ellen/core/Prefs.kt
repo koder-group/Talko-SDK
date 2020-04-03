@@ -49,6 +49,10 @@ class Prefs (context: Context) {
     var externalUserId: String?
         get() = prefs.getString(EXTERNAL_USER_ID, null)
         set(userId: String?) = prefs.edit().putString(EXTERNAL_USER_ID, userId).apply()
+    // Alias of externalUserId
+    var userId: String?
+        get() = prefs.getString(EXTERNAL_USER_ID, null)
+        set(userId: String?) = prefs.edit().putString(EXTERNAL_USER_ID, userId).apply()
     var clientConfiguration: ClientConfiguration?
         get() {
             val json = prefs.getString(CLIENT_CONFIGURATION, null)

@@ -132,7 +132,7 @@ class ConversationAdapter(private val context: Context, private val dataset: Mut
         val bitmapList = mutableListOf<Bitmap>()
         for(participant in dataset.get(position).participants) {
             participant.user.profileImageUrl?.let {
-                if(!participant.user.userId.equals(prefs?.externalUserId) && count < 4) {
+                if(!participant.user.userId.equals(prefs?.externalUserId, ignoreCase = true) && count < 4) {
                     count++
 
 //                    Log.d(TAG, "participant ${participant.user.displayName}")
