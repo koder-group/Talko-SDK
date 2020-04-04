@@ -49,21 +49,14 @@ dependencies {
 </application>
 ```
 
-### 4. Initialize Messenger
-
-1. appId - Application/Tenant ID
-2. applicationContext - Application Context
-```
-Messenger.init(appId, applicationContext);
-```
-### 5. Set Messenger
+### 4. Set Messenger
 
 1. userToken - Messaging token from user authentication
-2. userId - User Id/public external Id from user authentication
+2. applicationContext - Application Context
 
 #### Java
 ```
-Messenger.set(userToken, userId, new CompletionCallback() {
+Messenger.set(userToken, applicationContext, new CompletionCallback() {
   @Override
   public void onCompletion(Result<?> result) {
     if(result instanceof Result.Success) {
