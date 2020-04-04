@@ -55,7 +55,7 @@ class Messenger {
             val decodedObj = JSONObject(decodedStr)
 
             // Create current user object
-            val currentUser = EllenUser(userId = decodedObj.get("user_id").toString(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
+            val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
 
             // Init Prefs
             prefs = Prefs(applicationContext)
@@ -64,7 +64,7 @@ class Messenger {
             // Set tenant Id
             prefs?.tenantId = decodedObj.get("tenant_id").toString()
             // Set user Id
-            prefs?.userId = decodedObj.get("user_id").toString()
+            prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
             // Set current user
             prefs?.currentUser = currentUser
 
