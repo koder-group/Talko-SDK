@@ -25,11 +25,12 @@ android {
 }
 
 dependencies {
+  def ellen_version = "0.2"
   def multidex_version = "2.0.1"
   def material_version ="1.1.0"
   def firebase_messaging_version="20.1.0"
 
-  implementation 'com.github.jffhsu:ellen-android-sdk:0.1'
+  implementation "com.github.jffhsu:ellen-android-sdk:$ellen_version"
   implementation "androidx.multidex:multidex:$multidex_version"
   implementation "com.google.android.material:material:$material_version" 
 }
