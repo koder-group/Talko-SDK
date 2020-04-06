@@ -1,10 +1,15 @@
 package com.koder.ellen.ui.message
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RoundRectShape
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -17,8 +22,10 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
@@ -27,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.internal.VisibilityAwareImageButton
+import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
 import com.koder.ellen.model.Message
@@ -61,7 +69,28 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
             .inflate(R.layout.item_message, parent, false) as ConstraintLayout
         // set the view's size, margins, paddings and layout parameters
         // ...
+        val senderBody = layout.findViewById<TextView>(R.id.sender_body)
+        val senderMediaLayout = layout.findViewById<MaterialCardView>(R.id.sender_media_layout)
+        val senderRadius = Messenger.senderMessageRadius.px.toFloat()
+        senderMediaLayout.radius = senderRadius
+        senderBody.background = getShape(senderRadius, Messenger.senderBackgroundColor)
+
+        val selfBody = layout.findViewById<TextView>(R.id.self_body)
+        val selfMediaLayout = layout.findViewById<MaterialCardView>(R.id.self_media_layout)
+        val selfRadius = Messenger.selfMessageRadius.px.toFloat()
+        selfMediaLayout.radius = selfRadius
+        selfBody.background = getShape(selfRadius, Messenger.selfBackgroundColor)
+
         return MyViewHolder(layout)
+    }
+
+    // Return shape drawable with corner radius and background color
+    // radius in pixels
+    // color in hex string #FFFFFF
+    private fun getShape(radius: Float, color: String): ShapeDrawable {
+        val shape = ShapeDrawable(RoundRectShape(floatArrayOf(radius, radius, radius, radius, radius, radius, radius, radius), null, null))
+        shape.getPaint().setColor(Color.parseColor(color))
+        return shape
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -612,4 +641,10 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
         this.movementMethod = LinkMovementMethod.getInstance() // without LinkMovementMethod, link can not click
         this.setText(spannableString, TextView.BufferType.SPANNABLE)
     }
+
+    // Extensions for dp-px conversion
+    val Int.dp: Int
+        get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+    val Int.px: Int
+        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 }

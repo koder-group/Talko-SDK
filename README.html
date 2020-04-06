@@ -327,7 +327,7 @@ dependencies {
 });
 </code></pre><h4 class="mume-header" id="kotlin">Kotlin</h4>
 
-<pre data-role="codeBlock" data-info class="language-"><code>Messenger.set(userToken, userId, object: CompletionCallback() {
+<pre data-role="codeBlock" data-info class="language-"><code>Messenger.set(userToken, applicationContext, object: CompletionCallback() {
   override fun onCompletion(result: Result&lt;Any&gt;) {
     if(result is Result.Success) {
       Log.d(TAG, &quot;Messenger successfully set&quot;)

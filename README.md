@@ -69,7 +69,7 @@ Messenger.set(userToken, applicationContext, new CompletionCallback() {
 
 #### Kotlin
 ```
-Messenger.set(userToken, userId, object: CompletionCallback() {
+Messenger.set(userToken, applicationContext, object: CompletionCallback() {
   override fun onCompletion(result: Result<Any>) {
     if(result is Result.Success) {
       Log.d(TAG, "Messenger successfully set")

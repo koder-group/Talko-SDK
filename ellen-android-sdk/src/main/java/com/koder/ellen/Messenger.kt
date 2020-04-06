@@ -3,6 +3,7 @@ package com.koder.ellen
 import android.content.Context
 import android.util.Base64
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Prefs
@@ -36,6 +37,12 @@ class Messenger {
 
         var prefs: Prefs? = null
         val channelList: MutableList<String> = mutableListOf()
+
+        // Message options
+        @JvmStatic var senderMessageRadius = 18 // dp
+        @JvmStatic var selfMessageRadius = 18
+        @JvmStatic var senderBackgroundColor = "#88000000"  // gray
+        @JvmStatic var selfBackgroundColor = "#1A73E9"  // blue
 
         // Application context
         @JvmStatic fun init(appId: String, context: Context?) {
