@@ -1,6 +1,6 @@
-## Ellen Android SDK Setup
+### Ellen Android SDK Setup
 
-### 1. build.gradle (project level)
+#### 1. build.gradle (project level)
 ```
 allprojects {
   repositories {
@@ -11,7 +11,7 @@ allprojects {
 }
 ```
 
-### 2. build.gradle (app level)
+#### 2. build.gradle (app level)
 ```
 android {
   defaultConfig {
@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-  def ellen_version = "0.1" // Or latest version
+  def ellen_version = "0.5" // Or latest version
   def multidex_version = "2.0.1"
   def material_version ="1.1.0"
   def firebase_messaging_version="20.1.0"
@@ -36,7 +36,7 @@ dependencies {
 }
 ```
 
-### 3. AndroidManifest.xml
+#### 3. AndroidManifest.xml
 ```
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -50,12 +50,12 @@ dependencies {
 </application>
 ```
 
-### 4. Set Messenger
+#### 4. Set Messenger
 
 1. userToken - Messaging token from user authentication
 2. applicationContext - Application Context
 
-#### Java
+##### Java
 ```
 Messenger.set(userToken, applicationContext, new CompletionCallback() {
   @Override
@@ -67,7 +67,7 @@ Messenger.set(userToken, applicationContext, new CompletionCallback() {
 });
 ```
 
-#### Kotlin
+##### Kotlin
 ```
 Messenger.set(userToken, applicationContext, object: CompletionCallback() {
   override fun onCompletion(result: Result<Any>) {
@@ -78,7 +78,38 @@ Messenger.set(userToken, applicationContext, object: CompletionCallback() {
 })
 ```
 
-### 5. Launch UI Unified
+#### 5. Launch UI Unified
 ```
 startActivity(new Intent(YourActivity.this, MessengerActivity.class));
+```
+
+#### 6. Implement onRefreshTokenRequest
+
+```
+// Add request handler at app-level
+public class MyApplication extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    // Request handler for refreshing user tokens
+    Messenger.addRequestHandler(new RequestHandler() {
+      @Override
+      public String onRefreshTokenRequest() {
+        // TODO Implement functionality and return a new user token
+        String newUserToken = getNewUserToken();
+        return newUserToken;
+      }
+    });
+  }
+}
+```
+
+```
+<!-- AndroidManifest.xml -->
+<application
+  android:name=".MyApplication"
+  ...
+  >
 ```

@@ -263,9 +263,9 @@ pre[data-line] .line-highlight[data-end]:after {
     </head>
     <body for="html-export">
       <div class="mume markdown-preview  ">
-      <h2 class="mume-header" id="ellen-android-sdk-setup">Ellen Android SDK Setup</h2>
+      <h3 class="mume-header" id="ellen-android-sdk-setup">Ellen Android SDK Setup</h3>
 
-<h3 class="mume-header" id="1-buildgradle-project-level">1. build.gradle (project level)</h3>
+<h4 class="mume-header" id="1-buildgradle-project-level">1. build.gradle (project level)</h4>
 
 <pre data-role="codeBlock" data-info class="language-"><code>allprojects {
   repositories {
@@ -274,7 +274,7 @@ pre[data-line] .line-highlight[data-end]:after {
     }
   }
 }
-</code></pre><h3 class="mume-header" id="2-buildgradle-app-level">2. build.gradle (app level)</h3>
+</code></pre><h4 class="mume-header" id="2-buildgradle-app-level">2. build.gradle (app level)</h4>
 
 <pre data-role="codeBlock" data-info class="language-"><code>android {
   defaultConfig {
@@ -288,7 +288,7 @@ pre[data-line] .line-highlight[data-end]:after {
 }
 
 dependencies {
-  def ellen_version = &quot;0.1&quot; // Or latest version
+  def ellen_version = &quot;0.5&quot; // Or latest version
   def multidex_version = &quot;2.0.1&quot;
   def material_version =&quot;1.1.0&quot;
   def firebase_messaging_version=&quot;20.1.0&quot;
@@ -297,7 +297,7 @@ dependencies {
   implementation &quot;androidx.multidex:multidex:$multidex_version&quot;
   implementation &quot;com.google.android.material:material:$material_version&quot; 
 }
-</code></pre><h3 class="mume-header" id="3-androidmanifestxml">3. AndroidManifest.xml</h3>
+</code></pre><h4 class="mume-header" id="3-androidmanifestxml">3. AndroidManifest.xml</h4>
 
 <pre data-role="codeBlock" data-info class="language-"><code>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
 &lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;
@@ -309,13 +309,13 @@ dependencies {
   android:launchMode=&quot;singleTop&quot;
   android:theme=&quot;@style/Theme.MaterialComponents.DayNight.NoActionBar&quot;&gt;&lt;/activity&gt;
 &lt;/application&gt;
-</code></pre><h3 class="mume-header" id="4-set-messenger">4. Set Messenger</h3>
+</code></pre><h4 class="mume-header" id="4-set-messenger">4. Set Messenger</h4>
 
 <ol>
 <li>userToken - Messaging token from user authentication</li>
 <li>applicationContext - Application Context</li>
 </ol>
-<h4 class="mume-header" id="java">Java</h4>
+<h5 class="mume-header" id="java">Java</h5>
 
 <pre data-role="codeBlock" data-info class="language-"><code>Messenger.set(userToken, applicationContext, new CompletionCallback() {
   @Override
@@ -325,7 +325,7 @@ dependencies {
     }
   }
 });
-</code></pre><h4 class="mume-header" id="kotlin">Kotlin</h4>
+</code></pre><h5 class="mume-header" id="kotlin">Kotlin</h5>
 
 <pre data-role="codeBlock" data-info class="language-"><code>Messenger.set(userToken, applicationContext, object: CompletionCallback() {
   override fun onCompletion(result: Result&lt;Any&gt;) {
@@ -334,9 +334,34 @@ dependencies {
     }
   }
 })
-</code></pre><h3 class="mume-header" id="5-launch-ui-unified">5. Launch UI Unified</h3>
+</code></pre><h4 class="mume-header" id="5-launch-ui-unified">5. Launch UI Unified</h4>
 
 <pre data-role="codeBlock" data-info class="language-"><code>startActivity(new Intent(YourActivity.this, MessengerActivity.class));
+</code></pre><h4 class="mume-header" id="6-implement-onrefreshtokenrequest">6. Implement onRefreshTokenRequest</h4>
+
+<pre data-role="codeBlock" data-info class="language-"><code>// Add request handler at app-level
+public class MyApplication extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    // Request handler for refreshing user tokens
+    Messenger.addRequestHandler(new RequestHandler() {
+      @Override
+      public String onRefreshTokenRequest() {
+        // TODO Implement functionality and return a new user token
+        String newUserToken = getNewUserToken();
+        return newUserToken;
+      }
+    });
+  }
+}
+</code></pre><pre data-role="codeBlock" data-info class="language-"><code>&lt;!-- AndroidManifest.xml --&gt;
+&lt;application
+  android:name=&quot;.MyApplication&quot;
+  ...
+  &gt;
 </code></pre>
       </div>
       
