@@ -587,7 +587,7 @@ open class MessageFragment : Fragment(),
         // message:userReaction
         messageViewModel.message.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "Update ${it}")
-            val message = messages.find { m-> m.messageId.equals(it.messageId) }
+            val message = messages.find { m-> m.messageId.equals(it.messageId, ignoreCase = true) }
             val index = messages.indexOf(message)
             messages.set(index, it)
             viewAdapter.notifyItemChanged(index)
@@ -916,11 +916,11 @@ open class MessageFragment : Fragment(),
         var title = ""
 
         // If the only participant is the sender (myself)
-        if(participants.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId))
+        if(participants.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId, ignoreCase = true))
             return "Me"
 
         for (participant in participants) {
-            if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName)) continue
+            if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
             if (title.isEmpty()) {
                 title += participant.user.displayName
                 continue
@@ -942,7 +942,7 @@ open class MessageFragment : Fragment(),
     }
 
     fun addMessage(message: Message) {
-        if(!message.sender.userId.equals(prefs?.externalUserId)) {
+        if(!message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
             // Add message from others
             addMessageToMessages(message)
         } else {
@@ -998,7 +998,7 @@ open class MessageFragment : Fragment(),
     private fun updateSelfMessage(message: Message) {
         Log.d(TAG, "updateSelfMessage ${message}")
 //        message.metadata.localReferenceId  // Delivered
-        val found = messages.find { it.metadata.localReferenceId.equals(message.metadata.localReferenceId) }
+        val found = messages.find { it.metadata.localReferenceId.equals(message.metadata.localReferenceId, ignoreCase = true) }
         found?.let {
             Log.d(TAG, "found ${found}")
             val index = messages.indexOf(found)
@@ -1009,7 +1009,7 @@ open class MessageFragment : Fragment(),
             }
 
             // Update previous Delivered status
-            val lastFound = messages.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId) }
+            val lastFound = messages.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId, ignoreCase = true) }
             val lastIndex = messages.indexOf(lastFound)
 
             messages.set(index, message)
@@ -1045,11 +1045,11 @@ open class MessageFragment : Fragment(),
         // Set color for mentioned names
         words.forEachIndexed {
                 index, word ->
-            if(word.first().equals('@')) {
+            if(word.first().equals('@', ignoreCase = true)) {
                 // @
                 val name = word.substring(1).trim()
 
-                val found = participantsList.find { it.displayName.equals(name) }
+                val found = participantsList.find { it.displayName.equals(name, ignoreCase = true) }
                 found?.let {
                     words.set(index, "<font color='#1A73E9'>${word}</font>")
                 }
@@ -1069,9 +1069,9 @@ open class MessageFragment : Fragment(),
         val words = text.split(" ").toMutableList()
         words.forEach {
             word ->
-            if(word.isNotEmpty() && word.first().equals('@') && word.length > 1) {
+            if(word.isNotEmpty() && word.first().equals('@', ignoreCase = true) && word.length > 1) {
                 val name = word.substring(1)
-                val found = conversation.participants.find { it.user.displayName.equals(name) }
+                val found = conversation.participants.find { it.user.displayName.equals(name, ignoreCase = true) }
                 found?.let {
                     setOfMentions.add(found.user)
                 }
@@ -1087,11 +1087,11 @@ open class MessageFragment : Fragment(),
         // Set color for mentioned names
         words.forEachIndexed {
             index, word ->
-            if(word.length > 1 && word.first().equals('@')) {
+            if(word.length > 1 && word.first().equals('@', ignoreCase = true)) {
                 // @
                 val name = word.substring(1)
 
-                val found = conversation.participants.find { it.user.displayName.equals(name) }
+                val found = conversation.participants.find { it.user.displayName.equals(name, ignoreCase = true) }
                 found?.let {
                     words.set(index, "<font color='#1A73E9'>${word}</font>")
                 }
@@ -1383,7 +1383,7 @@ open class MessageFragment : Fragment(),
         messageViewModel.deleteMessage(message)
     }
     fun deleteMessageFromList(message: Message) {
-        val found = messages.find { it.messageId.equals(message.messageId)}
+        val found = messages.find { it.messageId.equals(message.messageId, ignoreCase = true)}
         found?.let {
             val index = messages.indexOf(found)
             messages.removeAt(index)
@@ -1630,7 +1630,7 @@ open class MessageFragment : Fragment(),
     fun showMessageError(localReferenceId: String, errorMessage: String) {
         Log.d(TAG, "localReferenceId ${localReferenceId}")
         Log.d(TAG, "errorMessage ${errorMessage}")
-        val found = messages.find { it.metadata.localReferenceId.equals(localReferenceId) }
+        val found = messages.find { it.metadata.localReferenceId.equals(localReferenceId, ignoreCase = true) }
         found?.let {
             val index = messages.indexOf(found)
             found.metadata.error = true
@@ -1699,7 +1699,7 @@ open class MessageFragment : Fragment(),
             // Find message
             val localReferenceId = userTypingMap.get(initiatingUserId)
             localReferenceId?.let {
-                val message = messages.find { m -> m.metadata.localReferenceId.toUpperCase().equals(localReferenceId.toUpperCase()) }
+                val message = messages.find { m -> m.metadata.localReferenceId.equals(localReferenceId, ignoreCase = true) }
                 message?.let {
                     val index = messages.indexOf(message)
                     messages.remove(message)
@@ -1715,7 +1715,7 @@ open class MessageFragment : Fragment(),
     fun getDisplayName(userId: String): String {
         val conversation = (activity as MessengerActivity).getCurrentConversation()
         conversation?.let {
-            val found = conversation.participants.find { p -> p.user.userId.toUpperCase().equals(userId.toUpperCase()) }
+            val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
             found?.let {
                 return found.user.displayName
             }
@@ -1726,7 +1726,7 @@ open class MessageFragment : Fragment(),
     fun getProfileImageUrl(userId: String): String {
         val conversation = (activity as MessengerActivity).getCurrentConversation()
         conversation?.let {
-            val found = conversation.participants.find { p -> p.user.userId.toUpperCase().equals(userId.toUpperCase()) }
+            val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
             found?.let {
                 return found.user.profileImageUrl
             }

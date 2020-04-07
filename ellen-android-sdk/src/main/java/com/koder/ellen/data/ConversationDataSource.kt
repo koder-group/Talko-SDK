@@ -87,7 +87,7 @@ class ConversationDataSource {
                 return filterConversationsByState(response.body()!!, 1)
             }
 
-            if(response.code() == 401 && response.message().equals("Unauthorized")) {
+            if(response.code() == 401 && response.message().equals("Unauthorized", ignoreCase = true)) {
                 // Try refreshing
                 // Update messaging token, ngrok signin
 //                val result = refreshToken()

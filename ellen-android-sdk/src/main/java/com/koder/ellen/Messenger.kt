@@ -187,7 +187,7 @@ class Messenger {
                             val removedUserId = pnMessageResult.message.asJsonObject.get("userId").asString
                             eventCallback.onRemovedFromConversation(removedUserId)
                             // TODO Unsubscribe from channel, if this user is the removed participant -- needed?
-//                            if(prefs?.currentUser?.userId?.toUpperCase().equals(removedUser.userId.toUpperCase())) pubNub?.unsubscribe()?.channels(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute()
+//                            if(prefs?.currentUser?.userId?.toUpperCase().equals(removedUser.userId.toUpperCase(), ignoreCase = true)) pubNub?.unsubscribe()?.channels(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute()
                         }
                         EventName.participantStateChange.value -> {
                             // Participant state changed

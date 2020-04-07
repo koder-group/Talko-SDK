@@ -294,7 +294,7 @@ class MessengerActivity : AppCompatActivity() {
 
 
                     val affectedChannels = mutableListOf<String>()
-                    if(status.isError && status.operation.toString().equals("PNSubscribeOperation")) {
+                    if(status.isError && status.operation.toString().equals("PNSubscribeOperation", ignoreCase = true)) {
                         // Retry subscribe
                         status.affectedChannels?.let {
                             for(channel in status.affectedChannels!!) {
@@ -335,13 +335,13 @@ class MessengerActivity : AppCompatActivity() {
                         Log.d(TAG, "timeCreated ${timeCreated}")
 
 //                        Log.d(TAG, "conversationId ${conversationMessage.conversationId}")
-//                        Log.d(TAG, "${currentConversation?.conversationId.equals(conversationMessage.conversationId)}")
+//                        Log.d(TAG, "${currentConversation?.conversationId.equals(conversationMessage.conversationId, ignoreCase = true)}")
 
                         // If current fragment is MessageFragment
                         val frag: MessageFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
                         Log.d(TAG, "message frag ${frag}")
                         frag?.let {
-                            if(currentConversation?.conversationId.equals(conversationMessage.conversationId)) {
+                            if(currentConversation?.conversationId.equals(conversationMessage.conversationId, ignoreCase = true)) {
 //                                Log.d(TAG, "publish message to ${currentConversation}")
                                 // Update if the published message is for the current conversation
                                 it.addMessage(conversationMessage)
@@ -367,7 +367,7 @@ class MessengerActivity : AppCompatActivity() {
 //                        addToConversations(conversation)
 
                         // Add conversation if DNE
-                        val found = conversations.find { it.conversationId.equals(conversation.conversationId) }
+                        val found = conversations.find { it.conversationId.equals(conversation.conversationId, ignoreCase = true) }
                         Log.d(TAG, "found ${found}")
                         if(found == null) {
                             val convoFrag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.conversations)) as ConversationFragment
@@ -388,7 +388,7 @@ class MessengerActivity : AppCompatActivity() {
                         }
 
                         // Close Message fragment
-                        if(currentConversation?.conversationId.equals(conversation.conversationId)) {
+                        if(currentConversation?.conversationId.equals(conversation.conversationId, ignoreCase = true)) {
                             val infoFrag: MessageInfoFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.info)) as MessageInfoFragment?
                             val messageFrag: MessageFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
 
@@ -419,12 +419,12 @@ class MessengerActivity : AppCompatActivity() {
                         }
 
                         // Subscribe to channel, if this user is the added participant
-                        if(prefs?.externalUserId.equals(userId)) pubNub?.subscribe()?.channels(listOf("${tenantId}-${conversationId}".toUpperCase()))?.execute()   // TODO
+                        if(prefs?.externalUserId.equals(userId, ignoreCase = true)) pubNub?.subscribe()?.channels(listOf("${tenantId}-${conversationId}".toUpperCase()))?.execute()   // TODO
 
                         // Update MessageFragment title when participant is added
                         val messageFrag: MessageFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
                         val infoFrag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.info)) as MessageInfoFragment?
-                        if(currentConversation?.conversationId.equals(conversationId)) {
+                        if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
                             // Update MessageFragment
                             Log.d(TAG, "Update message fragment")
                             messageFrag?.let {
@@ -447,13 +447,13 @@ class MessengerActivity : AppCompatActivity() {
                         val initiatingUser = gson.fromJson(message.message.asJsonObject.get("context").asJsonObject.get("initiatingUser"), User::class.java)
 
                         // Update MessageFragment title when participant is removed
-                        if(currentConversation?.conversationId.equals(conversationId)) {
+                        if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
                             // Current conversation
                             Log.d(TAG, "currentConversation ${currentConversation}")
                             val infoFrag: MessageInfoFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.info)) as MessageInfoFragment?
                             val messageFrag: MessageFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
 
-                            val foundUser = currentConversation?.participants?.find { p -> p.user.userId.equals(removedUser.userId) }
+                            val foundUser = currentConversation?.participants?.find { p -> p.user.userId.equals(removedUser.userId, ignoreCase = true) }
                             var statusMessage = ""
                             Log.d(TAG, "foundUser ${foundUser}")
                             foundUser?.let { u ->
@@ -467,7 +467,7 @@ class MessengerActivity : AppCompatActivity() {
                             messageFrag?.let {
                                 Log.d(TAG, "initiatingUser ${initiatingUser.displayName}")
 //                                Log.d(TAG, "removedUser ${removedUserName}")
-                                val foundUser = currentConversation?.participants?.find { p -> p.user.userId.equals(removedUser.userId) }
+                                val foundUser = currentConversation?.participants?.find { p -> p.user.userId.equals(removedUser.userId, ignoreCase = true) }
                                 foundUser?.let { u ->
                                     it.showStatusMessage("${initiatingUser.displayName} removed ${u.user.displayName} from the conversation.")
 //                                it.updateConversation(conversationId)
@@ -475,7 +475,7 @@ class MessengerActivity : AppCompatActivity() {
                                     it.updateConversation(conversationId)
                                 }
                             }
-                            val found = currentConversation?.participants?.find { p -> p.user.userId.equals(removedUser.userId) }
+                            val found = currentConversation?.participants?.find { p -> p.user.userId.equals(removedUser.userId, ignoreCase = true) }
 //                            Log.d(TAG, "currentConversation ${currentConversation}")
                             found?.let {
                                 // Remove participant from current conversation
@@ -489,7 +489,7 @@ class MessengerActivity : AppCompatActivity() {
                         }
 
                         // If current user
-                        if(removedUser.userId.equals(prefs?.externalUserId)) {
+                        if(removedUser.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
                             // Remove Conversation
 //                        removeFromConversations(conversationId)   // TODO
 
@@ -499,7 +499,7 @@ class MessengerActivity : AppCompatActivity() {
                             }
 
                             // Close Message fragment
-                            if(currentConversation?.conversationId.equals(conversationId)) {
+                            if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
                                 val infoFrag: MessageInfoFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.info)) as MessageInfoFragment?
                                 val messageFrag: MessageFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
 
@@ -514,7 +514,7 @@ class MessengerActivity : AppCompatActivity() {
                         }
 
                         // Unsubscribe from channel, if this user is the removed participant
-                        if(prefs?.externalUserId.equals(removedUser.userId)) pubNub?.unsubscribe()?.channels(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute() // TODO
+                        if(prefs?.externalUserId.equals(removedUser.userId, ignoreCase = true)) pubNub?.unsubscribe()?.channels(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute() // TODO
 
                     } else if (message.message.asJsonObject.get("eventName").toString().replace("\"","")
                         == "message:userReaction") {
@@ -533,7 +533,7 @@ class MessengerActivity : AppCompatActivity() {
                         // If current fragment is MessageFragment
                         val frag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment
                         frag?.let {
-                            if(currentConversation?.conversationId.equals(conversationMessage.conversationId)) {
+                            if(currentConversation?.conversationId.equals(conversationMessage.conversationId, ignoreCase = true)) {
                                 // Update if the published message is for the current conversation
                                 it.updateMessage(conversationMessage)
                             }
@@ -544,7 +544,7 @@ class MessengerActivity : AppCompatActivity() {
 //                        deleteMessageFromList(conversationMessage)    // TODO
                         val frag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
                         frag?.let {
-                            if(currentConversation?.conversationId.equals(conversationMessage.conversationId)) {
+                            if(currentConversation?.conversationId.equals(conversationMessage.conversationId, ignoreCase = true)) {
                                 // Update if the published message is for the current conversation
                                 it.deleteMessageFromList(conversationMessage)
                             }
@@ -563,7 +563,7 @@ class MessengerActivity : AppCompatActivity() {
                             it.loadConversations()
                         }
 
-                        if(currentConversation?.conversationId.equals(conversationId)) {
+                        if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
                             val infoFrag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.info)) as MessageInfoFragment?
                             val messageFrag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
 
@@ -599,8 +599,8 @@ class MessengerActivity : AppCompatActivity() {
                         Log.d(TAG, "message:rejected, cId ${conversationMessage.conversationId} lRI ${conversationMessage.metadata.localReferenceId}")
                         val errorMessage = message.message.asJsonObject.get("rejectionReason").asJsonObject.get("message").asString
 
-                        if(currentConversation?.conversationId.equals(conversationMessage.conversationId) &&
-                                conversationMessage.sender.userId.equals(prefs?.externalUserId)) {
+                        if(currentConversation?.conversationId.equals(conversationMessage.conversationId, ignoreCase = true) &&
+                                conversationMessage.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
                             // Current conversation and current user
                             // Update message body
                             val messageFrag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
@@ -617,10 +617,10 @@ class MessengerActivity : AppCompatActivity() {
                         val conversationId = message.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString.replace("\"","")
                         // Update current conversation for Message/InfoFragments
                         currentConversation?.let { convo ->
-                            if(convo.conversationId.equals(conversationId)) {
+                            if(convo.conversationId.equals(conversationId, ignoreCase = true)) {
                                 // Current conversation
                                 // Update participant state
-                                val found = convo.participants.find { part -> part.user.userId.equals(participant.user.userId) }
+                                val found = convo.participants.find { part -> part.user.userId.equals(participant.user.userId, ignoreCase = true) }
                                 found?.let {part ->
                                     val index = convo.participants.indexOf(part)
                                     part.state = participant.state
@@ -635,7 +635,7 @@ class MessengerActivity : AppCompatActivity() {
                             it.updateConversationParticipant(conversationId, participant)   // Used when user is un/silenced
 
                             // Remove from current users's conversations list if banned
-                            if(participant.user.userId.equals(prefs?.externalUserId)) {
+                            if(participant.user.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
                                 when(participant.state) {
                                     20 -> {
                                         // Participant banned, remove conversation from list
@@ -658,7 +658,7 @@ class MessengerActivity : AppCompatActivity() {
                             }
 
                         }
-                    } else if(eventName.equals("controlEvent")) {
+                    } else if(eventName.equals("controlEvent", ignoreCase = true)) {
                         // {"eventName":"controlEvent","eventData":{"context":{"initiatingUser":"52312c01-c3d5-4ff3-8734-957f7f7377dd","conversationId":"d8be43ab-1caf-4468-aab9-b59598a5e7c6"},"eventName":"user:typing:start"}}
 
                         // message.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString.replace("\"","")
@@ -670,8 +670,8 @@ class MessengerActivity : AppCompatActivity() {
 //                        Log.d(TAG, "eventName ${eventName}")
 
                         // Send to current MessageFragment if current conversation and current user isn't the initiating user (self)
-                        if(currentConversation?.conversationId?.toUpperCase().equals(conversationId.toUpperCase()) &&
-                                !prefs?.externalUserId?.toUpperCase().equals(initiatingUser.toUpperCase())) {
+                        if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true) &&
+                                !prefs?.externalUserId.equals(initiatingUser.toUpperCase(), ignoreCase = true)) {
                             val messageFrag: MessageFragment? = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageFragment?
 
                             messageFrag?.let {
@@ -747,10 +747,10 @@ class MessengerActivity : AppCompatActivity() {
     }
 
     private fun getDisplayName(conversationId: String?, userId: String): String? {
-//        val found = conversations.find { c -> c.conversationId.equals(conversationId) }
+//        val found = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
 //        found?.let { c ->
             // Find participant
-            val participant = currentConversation?.participants?.find { it.user.userId.toUpperCase().equals(userId.toUpperCase()) }
+            val participant = currentConversation?.participants?.find { it.user.userId.equals(userId, ignoreCase = true) }
             participant?.let {
                 return participant.user.displayName
             }
@@ -892,7 +892,7 @@ class MessengerActivity : AppCompatActivity() {
     // Improve setting conversation name for MessageFragment
     fun updateCurrentConversationName(title: String, conversationId: String) {
         if(currentConversation != null){
-            if(currentConversation?.conversationId?.toUpperCase().equals(conversationId.toUpperCase())) {
+            if(currentConversation?.conversationId?.toUpperCase().equals(conversationId.toUpperCase(), ignoreCase = true)) {
                 currentConversation?.title = title
                 Log.d(TAG, "updateCurrentConversationName ${currentConversation}")
             }
@@ -918,9 +918,9 @@ class MessengerActivity : AppCompatActivity() {
 
     // Add added Participant to currentConversation
     fun addParticipantToCurrentConversation(conversationId: String, conversationUser: User) {
-        if(currentConversation?.conversationId.equals(conversationId)) {
+        if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
             val newParticipant = Participant(user = conversationUser)
-            val found = currentConversation?.participants?.find { p -> p.user.userId.equals(conversationUser.userId) }
+            val found = currentConversation?.participants?.find { p -> p.user.userId.equals(conversationUser.userId, ignoreCase = true) }
             if(found == null) {
                 currentConversation?.participants?.add(newParticipant)
             }
@@ -928,8 +928,8 @@ class MessengerActivity : AppCompatActivity() {
     }
 
     fun removeParticipantFromCurrentConversation(conversationId: String, conversationUser: User) {
-        if(currentConversation?.conversationId.equals(conversationId)) {
-            val found = currentConversation?.participants?.find { p -> p.user.userId.equals(conversationUser.userId) }
+        if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
+            val found = currentConversation?.participants?.find { p -> p.user.userId.equals(conversationUser.userId, ignoreCase = true) }
             found?.let {
                 currentConversation?.participants?.remove(found)
             }

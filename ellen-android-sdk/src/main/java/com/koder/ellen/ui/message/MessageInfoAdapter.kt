@@ -81,7 +81,7 @@ class MessageInfoAdapter(private val context: Context, private val currentUser: 
             val removeView = dialog.findViewById<TextView>(R.id.remove_view)
 
             // Do not allow user to promote or remove themself
-            if(user.userId.equals(prefs?.externalUserId)) {
+            if(user.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
                 promoteView?.visibility = View.GONE
                 removeView?.visibility = View.GONE
             }

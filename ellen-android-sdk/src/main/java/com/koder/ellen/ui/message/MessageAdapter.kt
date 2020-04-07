@@ -31,6 +31,7 @@ import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import androidx.core.widget.PopupWindowCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.internal.VisibilityAwareImageButton
@@ -183,10 +184,10 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
             showBottomSheetDialog(it, message)
             true
         }
-
+//        Picasso.get().setLoggingEnabled(true)
         // Set Message
         // Check if message is from a sender or self
-        if (message.sender.userId.equals(prefs?.externalUserId)) {
+        if (message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
             // Show self layout, hide sender
             selfLayout.visibility = View.VISIBLE
             senderLayout.visibility = View.GONE
@@ -195,10 +196,15 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
             message.media?.thumbnail?.let {
                 // Show message media if not null
                 // Check tag to prevent reload of image on Delivered status
-                if(!message.metadata.localReferenceId.equals(selfMedia.tag)) {
-                    Picasso.get().load(message.media?.thumbnail?.source).resize(0, 800)
-                        .into(selfMedia)
-                }
+//                selfMedia.tag?.let {
+                    if (!message.metadata.localReferenceId.equals(
+                            selfMedia.tag
+                        )
+                    ) {
+                        Picasso.get().load(message.media?.thumbnail?.source).resize(0, 800)
+                            .into(selfMedia)
+                    }
+//                }
                 // Set tag to prevent reload of image on Delivered status
                 selfMedia.tag = message.metadata.localReferenceId
 
@@ -213,7 +219,7 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
                 selfMediaLayout.visibility = View.VISIBLE
             }
             // Sender, body text
-            if (!message.body.equals("Sent an image")) {
+            if (!message.body.equals("Sent an image", ignoreCase = true)) {
                 // Hide sender body if messaage is media
 //                selfBody.text = message.body
 //                selfBody.setText( // TODO
@@ -302,7 +308,7 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
                 senderMediaLayout.visibility = View.VISIBLE
             }
             // Sender, body text
-            if (message.body.isNotBlank() && !message.body.equals("Sent an image")) {   // message.body.isNotBlank() for User typing...
+            if (message.body.isNotBlank() && !message.body.equals("Sent an image", ignoreCase = true)) {   // message.body.isNotBlank() for User typing...
                 // Hide sender body if messaage is media
 //                senderBody.text = message.body
 //                senderBody.setText(
@@ -428,7 +434,7 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
     // Returns true if current message's sender is the same as the one following it
     fun isSameSender(position: Int): Boolean {
         if (position < dataset.size - 1 &&
-            dataset.get(position).sender.userId.equals(dataset.get(position + 1).sender.userId)
+            dataset.get(position).sender.userId.equals(dataset.get(position + 1).sender.userId, ignoreCase = true)
         ) {
             return true
         }
@@ -529,7 +535,7 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
             }
         }
 
-        if (!message.sender.userId.equals(prefs?.externalUserId)) {
+        if (!message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
             // Report
             report!!.visibility = View.VISIBLE
             report!!.setOnClickListener {
@@ -578,7 +584,7 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
     fun processMentions(message: Message): String {
         val words = message.body.split(" ").toMutableList()
         words.forEachIndexed { index, word ->
-            val found = message.mentions.find { mention -> mention.mentionTextPattern.equals(word) }
+            val found = message.mentions.find { mention -> mention.mentionTextPattern.equals(word, ignoreCase = true) }
             found?.let {
                 words.set(index, "<font color='#e3f2fd'>${word}</font>")
             }
@@ -607,8 +613,8 @@ class MessageAdapter(private val context: Context, private val dataset: MutableL
 
     fun isLatestSelfMessage(message: Message): Boolean {
         val found =
-            dataset.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId) }
-        return found?.metadata?.localReferenceId.equals(message.metadata.localReferenceId)
+            dataset.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId, ignoreCase = true) }
+        return found?.metadata?.localReferenceId.equals(message.metadata.localReferenceId, ignoreCase = true)
     }
 
     fun TextView.makeLinks(links: MutableList<Pair<String, View.OnClickListener>>) {

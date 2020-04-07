@@ -323,7 +323,7 @@ class ConversationFragment : Fragment() {
     // conversation:created
     fun addConversation(conversation: Conversation) {
 //        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(conversation.conversationId)}
-        val found = conversations.find { it.conversationId.equals(conversation.conversationId) }
+        val found = conversations.find { it.conversationId.equals(conversation.conversationId, ignoreCase = true) }
 //        if (filteredList.isEmpty()) {
         if(found == null) {
             if(conversation.timeCreated.toString().contains("-")) {
@@ -340,7 +340,7 @@ class ConversationFragment : Fragment() {
 
     // conversation:closed
     fun removeConversation(conversation: Conversation) {
-        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(conversation.conversationId) }
+        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(conversation.conversationId, ignoreCase = true) }
         if(filteredList.isNotEmpty()) {
             val conversation = filteredList.first()
             val position = conversations.indexOf(conversation)
@@ -354,7 +354,7 @@ class ConversationFragment : Fragment() {
 
     // message:published
     fun addMessageToConversations(message: Message) {
-        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(message.conversationId)}
+        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(message.conversationId, ignoreCase = true)}
         if (filteredList.isNotEmpty()) {
             val conversation = filteredList.first()
 
@@ -373,7 +373,7 @@ class ConversationFragment : Fragment() {
 
     // conversation:participant:removed
     fun removeFromConversations(conversationId: String) {
-        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(conversationId) }
+        val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(conversationId, ignoreCase = true) }
         if(filteredList.isNotEmpty()) {
             val conversation = filteredList.first()
             val position = conversations.indexOf(conversation)
@@ -393,12 +393,12 @@ class ConversationFragment : Fragment() {
 
     // Update participant state
     fun updateConversationParticipant(conversationId: String, participant: Participant) {
-        val found = conversations.find { it.conversationId.equals(conversationId) }
+        val found = conversations.find { it.conversationId.equals(conversationId, ignoreCase = true) }
         val index = conversations.indexOf(found)
         found?.let { convo ->
             // Found conversation
             // Update participant state
-            val partFound = convo.participants.find { part -> part.user.userId.equals(participant.user.userId) }
+            val partFound = convo.participants.find { part -> part.user.userId.equals(participant.user.userId, ignoreCase = true) }
             partFound?.let {part ->
                 val partIndex = convo.participants.indexOf(part)
                 part.state = participant.state

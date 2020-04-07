@@ -179,13 +179,13 @@ class FindUserFragment : Fragment() {
             Log.d(TAG, "${it}")
             users.clear()
             users.addAll(it)
-//            val found = users.find { it.userId.equals(prefs.userId())}
+//            val found = users.find { it.userId.equals(prefs.userId(), ignoreCase = true)}
 //            found?.let {
 //                users.remove(found)
 //            }
             // Remove participants from search results
             for(userId in excludeUserIds) {
-                val found = users.find { it.userId.equals(userId) }
+                val found = users.find { it.userId.equals(userId, ignoreCase = true) }
                 found?.let {
                     users.remove(found)
                 }

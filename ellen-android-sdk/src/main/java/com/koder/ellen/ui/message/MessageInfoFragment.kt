@@ -199,7 +199,7 @@ class MessageInfoFragment : Fragment(), View.OnClickListener {
         messageViewModel.participantAdded.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "participantAdded ${it}")
 //            Log.d(TAG, "participants ${participants}")
-            val found = participants.find { p -> p.userId.equals(it.userId) }
+            val found = participants.find { p -> p.userId.equals(it.userId, ignoreCase = true) }
 //            if(!participants.contains(it)) {
 //                participants.add(it)
 //                viewAdapter.notifyItemInserted(participants.size-1)
@@ -234,7 +234,7 @@ class MessageInfoFragment : Fragment(), View.OnClickListener {
         // Observer, Moderator Added
         messageViewModel.moderatorAdded.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "moderatorAdded ${it}")
-            val found = participants.find { p -> p.userId.equals(it.userId) }
+            val found = participants.find { p -> p.userId.equals(it.userId, ignoreCase = true) }
             found?.let {
                 val index = participants.indexOf(found)
                 found.role = 10
@@ -246,7 +246,7 @@ class MessageInfoFragment : Fragment(), View.OnClickListener {
         // Observer, Moderator Removed
         messageViewModel.moderatorRemoved.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "moderatorRemoved ${it}")
-            val found = participants.find { p -> p.userId.equals(it.userId) }
+            val found = participants.find { p -> p.userId.equals(it.userId, ignoreCase = true) }
             found?.let {
                 val index = participants.indexOf(found)
                 found.role = 0
@@ -359,11 +359,11 @@ class MessageInfoFragment : Fragment(), View.OnClickListener {
         var title = ""
 
         // If the only participant is the sender (myself)
-        if(participants.size == 1 && participants.first().userId.equals(prefs?.externalUserId))
+        if(participants.size == 1 && participants.first().userId.equals(prefs?.externalUserId, ignoreCase = true))
             return "Me"
 
         for (participant in participants) {
-            if (participant.displayName.equals(prefs?.currentUser?.profile?.displayName)) continue
+            if (participant.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
             if (title.isEmpty()) {
                 title += participant.displayName
                 continue
@@ -418,7 +418,7 @@ class MessageInfoFragment : Fragment(), View.OnClickListener {
 
     fun removeParticipant(userId:String) {
         Log.d(TAG, "removeParticipant ${userId}")
-        val found = participants.find { p -> p.userId.equals(userId) }
+        val found = participants.find { p -> p.userId.equals(userId, ignoreCase = true) }
         found?.let {
             val index = participants.indexOf(found)
             participants.removeAt(index)

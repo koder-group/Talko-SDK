@@ -90,13 +90,13 @@ class MessageViewModel(private val messageRepository: MessageRepository, applica
         if(!words.last().isNullOrBlank() && words.last().length > 0) {
             // Match first letter
 //            Log.d(TAG, "${words.last().first()}")
-            if(words.last().first().equals('@') && words.last().length == 1) {
+            if(words.last().first().equals('@', ignoreCase = true) && words.last().length == 1) {
                 // If @ only
                 mentionedParticipants.value = participants.value
                 return
             }
 
-            if(words.last().first().equals('@') && words.last().length > 1) {
+            if(words.last().first().equals('@', ignoreCase = true) && words.last().length > 1) {
                 // If @ + chars
                 // Find matches in participants
                 val word = words.last().substring(1)
@@ -283,7 +283,7 @@ class MessageViewModel(private val messageRepository: MessageRepository, applica
                 // Get message to update
                 val result = async(IO) { messageRepository.getMessages(conversationMessage.conversationId) }.await()
                 if(result is Result.Success) {
-                    message.value = result.data.find { it.messageId.equals(conversationMessage.messageId) }
+                    message.value = result.data.find { it.messageId.equals(conversationMessage.messageId, ignoreCase = true) }
                 }
             } catch (e: Exception) {
             }

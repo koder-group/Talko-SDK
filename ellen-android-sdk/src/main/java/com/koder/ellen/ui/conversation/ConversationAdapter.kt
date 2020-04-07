@@ -121,7 +121,7 @@ class ConversationAdapter(private val context: Context, private val dataset: Mut
             icon = dataset.get(position).messages.first().sender.profileImageUrl
         }
         // Set icon to first participant's if it's the same as current user's
-        if (icon.equals(prefs?.currentUser?.profile?.profileImageUrl)) icon =
+        if (icon.equals(prefs?.currentUser?.profile?.profileImageUrl, ignoreCase = true)) icon =
             getFirstParticipantImageUrl(dataset.get(position).participants)
         // Load profile image
         val iconView = holder.layout.findViewById<ImageView>(R.id.conversation_icon)
@@ -260,12 +260,12 @@ class ConversationAdapter(private val context: Context, private val dataset: Mut
         var title = ""
 
         // If the only participant is the sender (myself)
-        if(participants.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId))
+        if(participants.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId, ignoreCase = true))
             return "Me"
 
         for (participant in participants) {
             if(participant.user.displayName != null) {
-                if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName)) continue
+                if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
                 if (title.isEmpty()) {
                     title += participant.user.displayName
                     continue
@@ -279,7 +279,7 @@ class ConversationAdapter(private val context: Context, private val dataset: Mut
     private fun getFirstParticipantImageUrl(participants: MutableList<Participant>): String {
         for (participant in participants) {
             if(participant.user.displayName != null) {
-                if (!participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName)) {
+                if (!participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) {
 //                Log.d(TAG, "participant ${participant.user.displayName}")
                     return participant.user.profileImageUrl
                 }
