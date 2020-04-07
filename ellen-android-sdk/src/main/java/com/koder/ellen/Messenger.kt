@@ -3,7 +3,6 @@ package com.koder.ellen
 import android.content.Context
 import android.util.Base64
 import android.util.Log
-import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Prefs
@@ -34,6 +33,7 @@ class Messenger {
     companion object {
         const val TAG = "Messenger"
         lateinit var pubNub: PubNub
+        lateinit var requestHandler: RequestHandler
 
         var prefs: Prefs? = null
         val channelList: MutableList<String> = mutableListOf()
@@ -275,6 +275,20 @@ class Messenger {
 //            }
             return Result.Error(IOException("Error getting current user"))
         }
+
+        // Set token refresh handler
+        @JvmStatic fun addRequestHandler(handler: RequestHandler) {
+            requestHandler = handler
+        }
+
+        // Request refresh token
+        fun refreshToken(): String {
+            val token = requestHandler.onRefreshTokenRequest()
+//            Log.d(TAG, "onUserTokenRequest ${token}")
+            // Set new token
+            prefs?.userToken = token
+            return token
+        }
     }
 
     enum class EventName(val value: String) {
@@ -315,5 +329,12 @@ interface EventInterface {
     fun onModeratorRemoved(moderatorId: String)
 }
 
+// Interface for refreshing user tokens
+interface RequestHandlerInterface {
+    fun onRefreshTokenRequest(): String
+}
+
 // Client callback for PubNub
 abstract class EventCallback: EventInterface {}
+// Request handler for refreshing user tokens
+abstract class RequestHandler: RequestHandlerInterface {}
