@@ -22,7 +22,7 @@ import com.squareup.picasso.Picasso
 import java.util.*
 
 
-class AvatarFragment : Fragment() {
+internal class AvatarFragment : Fragment() {
 
     companion object {
         fun newInstance() = AvatarFragment()

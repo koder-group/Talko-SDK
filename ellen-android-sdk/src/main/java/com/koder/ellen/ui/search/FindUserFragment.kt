@@ -31,7 +31,7 @@ import com.koder.ellen.ui.message.MessageViewModel
 import java.util.*
 
 // Used when adding a participant to a conversation
-class FindUserFragment : Fragment() {
+internal class FindUserFragment : Fragment() {
 
     companion object {
         fun newInstance() = FindUserFragment()

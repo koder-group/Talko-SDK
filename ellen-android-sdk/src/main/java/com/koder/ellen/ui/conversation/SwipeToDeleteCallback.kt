@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 
-abstract class SwipeToDeleteCallback(context: Context, deleteDrawable: Drawable) : ItemTouchHelper.Callback() {
+internal abstract class SwipeToDeleteCallback(context: Context, deleteDrawable: Drawable) : ItemTouchHelper.Callback() {
 
     val TAG = "SwipeToDeleteCallback"
     private val deleteIcon = deleteDrawable

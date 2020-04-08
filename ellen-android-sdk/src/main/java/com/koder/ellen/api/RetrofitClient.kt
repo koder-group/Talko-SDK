@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-object RetrofitClient {
+internal object RetrofitClient {
 
     // Platform
     private val ellenClient = OkHttpClient().newBuilder()

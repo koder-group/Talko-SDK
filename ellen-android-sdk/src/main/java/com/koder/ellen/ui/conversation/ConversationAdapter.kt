@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ConversationAdapter(private val context: Context, private val dataset: MutableList<Conversation>) :
+internal class ConversationAdapter(private val context: Context, private val dataset: MutableList<Conversation>) :
     RecyclerView.Adapter<ConversationAdapter.MyViewHolder>() {
 
     val TAG = "ConversationsAdapter"

@@ -8,7 +8,7 @@ import com.koder.ellen.model.ClientConfiguration
 import com.koder.ellen.model.EllenUser
 import org.json.JSONObject
 
-class Prefs (context: Context) {
+internal class Prefs (context: Context) {
     companion object {
         const val TAG = "Prefs"
         private lateinit var prefs: SharedPreferences

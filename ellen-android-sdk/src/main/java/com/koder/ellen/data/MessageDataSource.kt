@@ -24,7 +24,7 @@ import java.io.File
 /**
  * Class that handles retrieving Conversation information.
  */
-class MessageDataSource {
+internal class MessageDataSource {
     private val TAG = "MessageDataSource"
 
     // https://afed418a.ngrok.io/users/{publicId}

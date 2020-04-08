@@ -36,7 +36,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ConversationFragment : Fragment() {
+internal class ConversationFragment : Fragment() {
 
     companion object {
         fun newInstance() = ConversationFragment()

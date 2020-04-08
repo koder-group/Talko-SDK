@@ -46,7 +46,7 @@ import java.io.InputStream
 import java.util.*
 
 
-class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: MessageFragment?) :
+internal class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: MessageFragment?) :
     RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
     val TAG = "MessageAdapter"

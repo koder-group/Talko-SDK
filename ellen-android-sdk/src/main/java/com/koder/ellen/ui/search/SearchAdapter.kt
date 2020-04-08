@@ -24,7 +24,7 @@ import com.koder.ellen.model.User
 import com.koder.ellen.ui.message.MessageFragment
 
 
-class SearchAdapter(private val context: Context, private val dataset: MutableList<User>) :
+internal class SearchAdapter(private val context: Context, private val dataset: MutableList<User>) :
     RecyclerView.Adapter<SearchAdapter.MyViewHolder>() {
 
     val TAG = "SearchAdapter"

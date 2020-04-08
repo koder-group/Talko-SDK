@@ -10,7 +10,7 @@ import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
 import com.squareup.picasso.Picasso
 
-class AvatarAdapter(private val context: Context, private val dataset: MutableList<String>) :
+internal class AvatarAdapter(private val context: Context, private val dataset: MutableList<String>) :
     RecyclerView.Adapter<AvatarAdapter.MyViewHolder>() {
 
     val TAG = "AvatarAdapter"

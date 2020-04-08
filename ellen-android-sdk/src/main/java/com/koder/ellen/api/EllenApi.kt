@@ -7,7 +7,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
-interface EllenApi {
+internal interface EllenApi {
     // Ellen
     // https://kdrellenplatformapimd18.azure-api.net/
     @GET("users/{publicId}")

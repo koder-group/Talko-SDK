@@ -18,7 +18,7 @@ import com.koder.ellen.R
 import com.koder.ellen.model.User
 
 
-class FindUserAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: FindUserFragment? = null) :
+internal class FindUserAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: FindUserFragment? = null) :
     RecyclerView.Adapter<FindUserAdapter.MyViewHolder>() {
 
     val TAG = "FindUserAdapter"

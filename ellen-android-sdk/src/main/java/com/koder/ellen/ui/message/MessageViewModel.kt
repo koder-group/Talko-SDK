@@ -26,7 +26,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.*
 
-class MessageViewModel(private val messageRepository: MessageRepository, application: Application) :
+internal class MessageViewModel(private val messageRepository: MessageRepository, application: Application) :
     AndroidViewModel(application),
     CoroutineScope {
 

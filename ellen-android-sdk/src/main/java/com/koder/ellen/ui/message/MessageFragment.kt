@@ -67,7 +67,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-open class MessageFragment : Fragment(),
+internal class MessageFragment : Fragment(),
         View.OnClickListener {
 
     companion object {

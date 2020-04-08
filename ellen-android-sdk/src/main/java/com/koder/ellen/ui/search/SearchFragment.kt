@@ -39,7 +39,7 @@ import com.koder.ellen.ui.main.MainViewModel
 import com.koder.ellen.ui.message.MessageViewModel
 
 
-class SearchFragment : Fragment() {
+internal class SearchFragment : Fragment() {
 
     companion object {
         fun newInstance() = SearchFragment()

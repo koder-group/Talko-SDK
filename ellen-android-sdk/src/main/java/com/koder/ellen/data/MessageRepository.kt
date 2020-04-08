@@ -8,7 +8,7 @@ import okhttp3.MediaType
 import okhttp3.ResponseBody
 import java.io.File
 
-class MessageRepository(val dataSource: MessageDataSource) {
+internal class MessageRepository(val dataSource: MessageDataSource) {
     val TAG = "MessageRepository"
 
     fun getUser(publicId: String): Result<EllenUser> {

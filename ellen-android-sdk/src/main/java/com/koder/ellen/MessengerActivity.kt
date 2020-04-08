@@ -54,7 +54,7 @@ class MessengerActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "MainActivity"
     }
-    val viewModel: MainViewModel by lazy {
+    internal val viewModel: MainViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             MainViewModel(
                 ConversationRepository(ConversationDataSource())

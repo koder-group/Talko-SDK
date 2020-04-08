@@ -6,11 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.koder.ellen.*
-import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.data.Result
-import com.koder.ellen.model.*
-import java.util.*
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
     companion object {

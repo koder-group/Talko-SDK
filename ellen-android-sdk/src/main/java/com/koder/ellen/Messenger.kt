@@ -35,7 +35,7 @@ class Messenger {
         lateinit var pubNub: PubNub
         lateinit var requestHandler: RequestHandler
 
-        var prefs: Prefs? = null
+        internal var prefs: Prefs? = null
         val channelList: MutableList<String> = mutableListOf()
 
         // Message options

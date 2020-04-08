@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.item_message_mention.view.*
 import java.util.*
 
 
-class MessageMentionAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: MessageFragment? = null) :
+internal class MessageMentionAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: MessageFragment? = null) :
     RecyclerView.Adapter<MessageMentionAdapter.MyViewHolder>() {
 
     val TAG = "MessageMentionAdapter"

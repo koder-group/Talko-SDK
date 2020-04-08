@@ -4,7 +4,7 @@ import com.koder.ellen.model.ClientConfiguration
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.EllenUser
 
-class ConversationRepository(val dataSource: ConversationDataSource) {
+internal class ConversationRepository(val dataSource: ConversationDataSource) {
     val TAG = "ConversationsRepository"
 
     fun getClientConfig(): Result<ClientConfiguration> {

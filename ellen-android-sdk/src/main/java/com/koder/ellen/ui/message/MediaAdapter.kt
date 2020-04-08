@@ -10,7 +10,7 @@ import com.koder.ellen.R
 import com.koder.ellen.model.Message
 
 
-class MediaAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: MessageFragment?) :
+internal class MediaAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: MessageFragment?) :
     RecyclerView.Adapter<MediaAdapter.MyViewHolder>() {
 
     val TAG = "MessageAdapter"

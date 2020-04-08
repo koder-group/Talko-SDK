@@ -10,7 +10,7 @@ import com.koder.ellen.model.Conversation
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 
-class MainViewModel(private val conversationRepository: ConversationRepository) : ViewModel(), CoroutineScope {
+internal class MainViewModel(private val conversationRepository: ConversationRepository) : ViewModel(), CoroutineScope {
     // Coroutine/async
     private val job = Job()
     override val coroutineContext = job + Dispatchers.Main

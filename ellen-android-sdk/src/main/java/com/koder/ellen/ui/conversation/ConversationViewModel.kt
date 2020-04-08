@@ -12,7 +12,7 @@ import com.koder.ellen.model.ClientConfiguration
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.data.Result
 
-class ConversationViewModel(private val conversationRepository: ConversationRepository) : ViewModel(),
+internal class ConversationViewModel(val conversationRepository: ConversationRepository) : ViewModel(),
     CoroutineScope {
 
     // Fragment

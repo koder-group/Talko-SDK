@@ -16,7 +16,7 @@ import java.io.IOException
 /**
  * Class that handles retrieving Conversation information.
  */
-class ConversationDataSource {
+internal class ConversationDataSource {
     private val TAG = "ConversationsDataSource"
 
     // https://kdrellenplatformapimd18.azure-api.net/users/current

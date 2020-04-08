@@ -19,7 +19,7 @@ import com.koder.ellen.R
 import com.koder.ellen.model.User
 
 
-class MessageInfoAdapter(private val context: Context, private val currentUser: User? = null, private val dataset: MutableList<User>, private val fragment: MessageInfoFragment? = null) :
+internal class MessageInfoAdapter(private val context: Context, private val currentUser: User? = null, private val dataset: MutableList<User>, private val fragment: MessageInfoFragment? = null) :
     RecyclerView.Adapter<MessageInfoAdapter.MyViewHolder>() {
 
     val TAG = "MessageInfoAdapter"

@@ -3,7 +3,7 @@ package com.koder.ellen.core
 import com.koder.ellen.model.Conversation
 import okhttp3.MediaType.Companion.toMediaType
 
-class Utils {
+internal class Utils {
     companion object {
         val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
 

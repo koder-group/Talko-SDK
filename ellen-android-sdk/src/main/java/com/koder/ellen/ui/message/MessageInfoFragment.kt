@@ -31,7 +31,7 @@ import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.main.MainViewModel
 
 
-class MessageInfoFragment : Fragment(), View.OnClickListener {
+internal class MessageInfoFragment : Fragment(), View.OnClickListener {
 
     companion object {
         fun newInstance() = MessageInfoFragment()
