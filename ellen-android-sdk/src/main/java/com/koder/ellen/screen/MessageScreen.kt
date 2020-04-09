@@ -22,6 +22,7 @@ import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -67,7 +68,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-internal class MessageScreen : Fragment(),
+class MessageScreen : Fragment(),
     View.OnClickListener {
 
     companion object {
@@ -94,7 +95,7 @@ internal class MessageScreen : Fragment(),
     val messages: MutableList<Message> = mutableListOf()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
-    val messageViewModel: MessageViewModel by lazy {
+    private val messageViewModel: MessageViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             MessageViewModel(
                 MessageRepository(MessageDataSource()),
@@ -103,7 +104,7 @@ internal class MessageScreen : Fragment(),
         }).get(MessageViewModel::class.java)
     }
 
-    val conversationViewModel: ConversationViewModel by lazy {
+    private val conversationViewModel: ConversationViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             ConversationViewModel(
                 ConversationRepository(ConversationDataSource())
@@ -283,6 +284,10 @@ internal class MessageScreen : Fragment(),
             }
         }
 
+        // Set AppBar for expanded images
+//            appBar = (this).getAppBar()   // TODO UI Screens
+        appBar = rootView.findViewById(R.id.appbar_layout)
+
         return rootView
     }
 
@@ -290,7 +295,7 @@ internal class MessageScreen : Fragment(),
         super.onActivityCreated(savedInstanceState)
         activity?.run {
             Log.d(TAG, "onActivityCreated")
-            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+//            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)    // TODO UI Screens
 
             // QR code scanned
 //            qrPublicId = arguments?.getString("public_id")
@@ -304,26 +309,27 @@ internal class MessageScreen : Fragment(),
 //            }
 
             // Set current conversation
-            Log.d(TAG, "getCurrentConversation ${(this as MessengerActivity).getCurrentConversation()}")
-            if((this as MessengerActivity).getCurrentConversation() == null && qrPublicId == null) {
-                Log.d(TAG, "currentConversation null, go back to Conversation fragment")
-                activity?.supportFragmentManager?.popBackStack()
-                return
-            } else if ((this as MessengerActivity).getCurrentConversation() != null) {
-                conversation = (this as MessengerActivity).getCurrentConversation()!!
-            }
+//            Log.d(TAG, "getCurrentConversation ${(this as MessengerActivity).getCurrentConversation()}")  // TODO UI Screens
+//            if((this as MessengerActivity).getCurrentConversation() == null && qrPublicId == null) { // TODO UI Screens
+//                Log.d(TAG, "currentConversation null, go back to Conversation fragment")
+//                activity?.supportFragmentManager?.popBackStack()
+//                return
+//            } else if ((this as MessengerActivity).getCurrentConversation() != null) {
+//                conversation = (this as MessengerActivity).getCurrentConversation()!!
+//            } // TODO UI Screens
 //            Log.d(TAG, "onActivityCreated ${conversation}")
             // Set toolbar title
-            val title = getConversationTitle()
+//            val title = getConversationTitle()    // TODO UI Screens
             Log.d(TAG, "getConversationTitle ${title}")
 //            viewModel.updateActionBarTitle(title)
             // Toolbar
-            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-            supportActionBar?.title = title
+//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
+//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//            supportActionBar?.setDisplayShowHomeEnabled(true)
+//            supportActionBar?.title = title
+            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))
             // Set AppBar for expanded images
-            appBar = (this).getAppBar()
+//            appBar = (this).getAppBar()   // TODO UI Screens
             // RecyclerView for Messages
 //            val viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -628,7 +634,7 @@ internal class MessageScreen : Fragment(),
             // Subscribe to channel
             val channel = "${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()
 //            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
-            viewModel.subscribeChannelList.value = mutableListOf(channel)
+//            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
             swipeRefreshLayout.setRefreshing(false)
         })

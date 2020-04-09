@@ -283,6 +283,10 @@ internal class MessageFragment : Fragment(),
             }
         }
 
+        // Set AppBar for expanded images
+//            appBar = (this).getAppBar()   // TODO UI Screens
+        appBar = rootView.findViewById(R.id.appbar_layout)
+
         return rootView
     }
 
@@ -323,7 +327,7 @@ internal class MessageFragment : Fragment(),
             supportActionBar?.setDisplayShowHomeEnabled(true)
             supportActionBar?.title = title
             // Set AppBar for expanded images
-            appBar = (this).getAppBar()
+//            appBar = (this).getAppBar()
             // RecyclerView for Messages
 //            val viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
