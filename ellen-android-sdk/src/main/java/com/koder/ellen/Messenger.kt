@@ -1,6 +1,7 @@
 package com.koder.ellen
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.util.Base64
 import android.util.Log
 import com.google.gson.Gson
@@ -36,7 +37,7 @@ class Messenger {
         lateinit var requestHandler: RequestHandler
 
         internal var prefs: Prefs? = null
-        val channelList: MutableList<String> = mutableListOf()
+        internal val subscribedChannels: MutableSet<String> = mutableSetOf()
 
         // Message options
         @JvmStatic var senderMessageRadius = 18 // dp
@@ -130,11 +131,28 @@ class Messenger {
 
         @JvmStatic fun addEventHandler(eventCallback: EventCallback) {
             var subscribeCallback: SubscribeCallback = object : SubscribeCallback() {
+                var timer: CountDownTimer? = null
+
                 override fun signal(pubnub: PubNub, pnSignalResult: PNSignalResult) {
                 }
 
                 override fun status(pubnub: PubNub, pnStatus: PNStatus) {
                     Log.d(TAG, "${pnStatus}")
+                    if(pnStatus.isError && pnStatus.operation.toString().equals("PNSubscribeOperation", ignoreCase = true)) {
+                        // Retry subscribe
+                        pnStatus.affectedChannels?.let {
+                            for(channel in pnStatus.affectedChannels!!) {
+                                timer?.cancel()
+                                timer = object : CountDownTimer(1000, 1500) {
+                                    override fun onTick(millisUntilFinished: Long) {}
+                                    override fun onFinish() {
+                                        Log.d(TAG, "Retry subscribe ${channel}")
+                                        pubNub?.subscribe()?.channels(mutableListOf(channel))?.execute()
+                                    }
+                                }.start()
+                            }
+                        }
+                    }
                 }
 
                 override fun user(pubnub: PubNub, pnUserResult: PNUserResult) {
@@ -180,19 +198,28 @@ class Messenger {
                         EventName.participantAdded.value -> {
                             // Participant added
                             val addedUserId = pnMessageResult.message.asJsonObject.get("userId").asString
-                            eventCallback.onAddedToConversation(addedUserId)
+                            val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
+                            eventCallback.onAddedToConversation(addedUserId, conversationId)
+                            if(prefs?.userId.equals(addedUserId, ignoreCase = true)) {
+                                // Current user, subscribe to channel
+                                subscribeToChannelList(mutableListOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
+                            }
                         }
                         EventName.participantRemoved.value -> {
                             // Participant removed
-                            val removedUserId = pnMessageResult.message.asJsonObject.get("userId").asString
-                            eventCallback.onRemovedFromConversation(removedUserId)
-                            // TODO Unsubscribe from channel, if this user is the removed participant -- needed?
-//                            if(prefs?.currentUser?.userId?.toUpperCase().equals(removedUser.userId.toUpperCase(), ignoreCase = true)) pubNub?.unsubscribe()?.channels(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute()
+                            val removedUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), User::class.java)
+                            val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
+                            eventCallback.onRemovedFromConversation(removedUser.userId, conversationId)
+                            if(removedUser.userId.equals(prefs?.userId, ignoreCase = true)) {
+                                // Current user, unsubscribe to channel
+                                unsubscribeFromChannelList(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
+                            }
                         }
                         EventName.participantStateChange.value -> {
                             // Participant state changed
                             val participant = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Participant::class.java)
-                            eventCallback.onParticipantStateChanged(participant)
+                            val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
+                            eventCallback.onParticipantStateChanged(participant, conversationId)
                         }
                         EventName.moderatorAdded.value -> {
                             val userId = pnMessageResult.message.asJsonObject.get("userId").asString
@@ -281,6 +308,19 @@ class Messenger {
             requestHandler = handler
         }
 
+        @JvmStatic fun subscribeToChannelList(channelList: MutableList<String>) {
+//            Log.d(TAG, "subscribeToChannelList ${channelList}")
+            pubNub.subscribe().channels(channelList).execute()
+            subscribedChannels.addAll(channelList)
+        }
+
+        @JvmStatic fun unsubscribeFromChannelList(channelList: List<String>) {
+            pubNub.unsubscribe()?.channels(channelList).execute()
+            for(channel in channelList) {
+                subscribedChannels.remove(channel)
+            }
+        }
+
         // Request refresh token
         fun refreshToken(): String {
             val token = requestHandler.onRefreshTokenRequest()
@@ -315,9 +355,9 @@ interface EventInterface {
     fun onConversationCreated(conversation: Conversation)
     fun onConversationClosed(conversation: Conversation)
     fun onConversationModified(conversationId: String)
-    fun onParticipantStateChanged(participant: Participant)
-    fun onAddedToConversation(userId: String)
-    fun onRemovedFromConversation(userId: String)
+    fun onParticipantStateChanged(participant: Participant, conversationId: String)
+    fun onAddedToConversation(userId: String, conversationId: String)
+    fun onRemovedFromConversation(userId: String, conversationId: String)
     fun onMessageReceived(message: Message)
     fun onMessageRejected(message: Message)
     fun onMessageDeleted(message: Message)
