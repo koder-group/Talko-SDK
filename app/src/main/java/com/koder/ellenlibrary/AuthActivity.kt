@@ -26,9 +26,9 @@ class AuthActivity : AppCompatActivity() {
                 if(result is Result.Success) {
                     Log.d(TAG, "Messenger successfully set")
                     // UI Unified
-//                    val intent = Intent(this@AuthActivity, MessengerActivity::class.java)
+                    val intent = Intent(this@AuthActivity, MessengerActivity::class.java)
                     // UI Screens
-                    val intent = Intent(this@AuthActivity, MainActivity::class.java)
+//                    val intent = Intent(this@AuthActivity, MainActivity::class.java)
                     startActivity(intent)
                     setResult(Activity.RESULT_OK)
                     finish()
