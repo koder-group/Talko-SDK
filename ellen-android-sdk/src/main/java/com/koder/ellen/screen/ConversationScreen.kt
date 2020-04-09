@@ -1,6 +1,5 @@
 package com.koder.ellen.screen
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,14 +7,10 @@ import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -23,7 +18,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
@@ -44,11 +38,21 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ConversationFragment : Fragment() {
+class ConversationScreen : Fragment() {
 
     companion object {
-        fun newInstance() = ConversationFragment()
+        fun newInstance() = ConversationScreen()
+        var mClickListener: OnItemClickListener? = null
+        fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+            mClickListener = onItemClickListener
+        }
+
         private const val TAG = "ConversationFragment"
+    }
+
+    abstract class OnItemClickListener: ClickInterface {}
+    interface ClickInterface {
+        fun OnItemClickListener(conversation: Conversation, position: Int)
     }
 
     private lateinit var viewModel: MainViewModel
@@ -120,7 +124,7 @@ class ConversationFragment : Fragment() {
 
             // Setup RecyclerView
             viewManager = LinearLayoutManager(this)
-            viewAdapter = ConversationAdapter(this, conversations)
+            viewAdapter = ConversationAdapter(this, conversations, this@ConversationScreen)
             recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {
                 // use this setting to improve performance if you know that changes
                 // in content do not change the layout size of the RecyclerView
@@ -489,5 +493,9 @@ class ConversationFragment : Fragment() {
             }
         }
         if(list.size > 0) Messenger.subscribeToChannelList(list)
+    }
+
+    fun sendClick(conversation: Conversation, position: Int) {
+        mClickListener?.OnItemClickListener(conversation, position)
     }
 }

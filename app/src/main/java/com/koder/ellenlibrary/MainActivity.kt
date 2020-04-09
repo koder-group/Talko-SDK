@@ -1,12 +1,10 @@
 package com.koder.ellenlibrary
 
-import android.app.Activity
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.koder.ellen.*
-import com.koder.ellen.data.Result
+import com.koder.ellen.model.Conversation
+import com.koder.ellen.screen.ConversationScreen
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -18,6 +16,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Conversation Screen click listener
+//        ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
+//            override fun OnItemClickListener(conversation: Conversation, position: Int) {
+//                Log.d(TAG, "OnItemClickListener")
+//                Log.d(TAG, "Conversation ${conversation}")
+//                Log.d(TAG, "Position ${position}")
+//            }
+//        })
 
 //        val userToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IjE3YzRhYmQ4YTE3MjQ0OTdiZmViMjBiMWM0ZDhmYjU0IiwidHlwIjoiSldUIn0.eyJ0ZW5hbnRfaWQiOiJFRkI5NEM3RS03MUU5LTQwNkItOTA1OS02MUFDMDUyMjdGMUIiLCJ1c2VyX2lkIjoiNEVFRDg2Q0UtNDZCNi00NjNGLUJBMjgtQzgzN0IzNDVBRUIzIiwidXNlcl9uYW1lIjoiamVmZmF0a29kZXIiLCJwcm9maWxlX2ltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9lbGxlbi1maXJlYmFzZS1leGFtcGxlLmFwcHNwb3QuY29tL28vQXZhdGFycyUyRnVzZXItMjEucG5nP2FsdD1tZWRpYSZ0b2tlbj1lZjhhYmI1MC0wNjJkLTQ1ZDItOTcwYS1mNDIxNjRmYzA0OWYiLCJleHAiOjE1ODY0MDkyNTgsImlzcyI6Imh0dHBzOi8vZWxsZW4ua29kZXIuY29tL2FwaS9tYW5hZ2VtZW50IiwiYXVkIjoiaHR0cHM6Ly9lbGxlbi5rb2Rlci5jb20vYXBpL21lc3NhZ2luZyJ9.bYBdNZ6BDtpX4TUjDZZ_vOUP8Of87PHnd1Sb9EHtFwA"
 

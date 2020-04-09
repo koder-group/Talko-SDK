@@ -20,7 +20,7 @@
         android:id="@+id/conversationList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        class="com.koder.ellen.screen.ConversationFragment"
+        class="com.koder.ellen.screen.ConversationScreen"
 
         app:layout_constraintTop_toBottomOf="@id/textView"
         app:layout_constraintBottom_toBottomOf="parent"

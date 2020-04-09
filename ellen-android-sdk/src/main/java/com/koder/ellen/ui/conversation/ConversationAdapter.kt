@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -28,7 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-internal class ConversationAdapter(private val context: Context, private val dataset: MutableList<Conversation>) :
+internal class ConversationAdapter(private val context: Context, private val dataset: MutableList<Conversation>, private val fragment: Fragment? = null) :
     RecyclerView.Adapter<ConversationAdapter.MyViewHolder>() {
 
     val TAG = "ConversationsAdapter"
@@ -203,12 +204,17 @@ internal class ConversationAdapter(private val context: Context, private val dat
             // Hide new message dot
 //            Log.d(TAG, "timeCreated ${dataset.get(position).timeCreated}")
 //            Log.d(TAG, "currentTimeMillis ${System.currentTimeMillis()}")
-            prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())
-            cardView.strokeWidth = 0
-            newMessageDot.visibility = View.GONE
+            if(fragment == null) {
+                prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())
+                cardView.strokeWidth = 0
+                newMessageDot.visibility = View.GONE
 
-            // Communicate with host Activity to show MessageFragment
-            (context as MessengerActivity).showMessageFragment(dataset.get(position))
+                // Communicate with host Activity to show MessageFragment
+                (context as MessengerActivity).showMessageFragment(dataset.get(position))
+            } else if(fragment is com.koder.ellen.screen.ConversationScreen) {
+                fragment.sendClick(dataset.get(position), position)
+            }
+
         }
     }
 
