@@ -81,6 +81,8 @@ class MessageScreen : Fragment(),
 //        lateinit var viewManager: RecyclerView.LayoutManager
     }
 
+    private lateinit var conversationId: String
+
     private lateinit var rootView: View
     private lateinit var containerView: RelativeLayout
     private lateinit var viewModel: MainViewModel
@@ -168,7 +170,13 @@ class MessageScreen : Fragment(),
         // Enable App Bar menu
         setHasOptionsMenu(true)
 
-        Log.d(TAG, "onCreate")
+//        val bundle = arguments
+//        bundle?.let {
+//            conversationId = bundle.getString("CONVERSATION_ID")!!
+//            Log.d(TAG, "conversationId ${conversationId}")
+//        }
+        conversationId = arguments?.getString("CONVERSATION_ID")!!
+        Log.d(TAG, "conversationId ${conversationId}")
     }
 
     override fun onCreateView(
@@ -218,7 +226,8 @@ class MessageScreen : Fragment(),
                     Log.d(TAG, "User stop typing")
                     userTyping = false
                     prefs?.externalUserId?.let {
-                        messageViewModel.typingStopped(it, conversation.conversationId)
+//                        messageViewModel.typingStopped(it, conversation.conversationId)
+                        messageViewModel.typingStopped(it, conversationId)
                     }
                 }
             }
@@ -232,7 +241,8 @@ class MessageScreen : Fragment(),
                     Log.d(TAG, "User start typing")
                     userTyping = true
                     prefs?.externalUserId?.let {
-                        messageViewModel.typingStarted(it, conversation.conversationId)
+//                        messageViewModel.typingStarted(it, conversation.conversationId)
+                        messageViewModel.typingStarted(it, conversationId)
                     }
                 }
                 // Remove this to run only once
@@ -576,11 +586,11 @@ class MessageScreen : Fragment(),
             recyclerView.scrollToPosition(messages.size-1)
             swipeRefreshLayout.setRefreshing(false)
 
-            if(!(activity as MessengerActivity).isCurrentStatusMessagesEmpty()) {
-                currentStatusMessages.clear()
-                currentStatusMessages.addAll((activity as MessengerActivity).getAndClearCurrentStatusMessages())
-                showAllCurrentStatusMessages()
-            }
+//            if(!(activity as MessengerActivity).isCurrentStatusMessagesEmpty()) { // TODO UI Screens
+//                currentStatusMessages.clear()
+//                currentStatusMessages.addAll((activity as MessengerActivity).getAndClearCurrentStatusMessages())
+//                showAllCurrentStatusMessages()
+//            } // TODO UI Screens
         })
         // Mentioned Participants
         messageViewModel.mentionedParticipants.observe(viewLifecycleOwner, Observer {
@@ -632,7 +642,8 @@ class MessageScreen : Fragment(),
             // Pubnub
 //            if(pubNub == null) initPubNub()
             // Subscribe to channel
-            val channel = "${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()
+//            val channel = "${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()
+            val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
 //            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
 //            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
@@ -691,7 +702,7 @@ class MessageScreen : Fragment(),
     override fun onClick(v: View) {
         when (v.id) {
             R.id.message_send_btn -> {
-                if((conversation != null) || conversation.conversationId.isNotBlank()) {
+//                if((conversation != null) || conversation.conversationId.isNotBlank()) {
 
                     if(mediaList.size > 0) {
                         // Send media messages
@@ -716,7 +727,7 @@ class MessageScreen : Fragment(),
                     }
 
                     if(messageEditText.text.isNotBlank()) {
-                        val convoId = if (conversation.conversationId.isNotBlank()) conversation.conversationId else conversation!!.conversationId
+//                        val convoId = if (conversation.conversationId.isNotBlank()) conversation.conversationId else conversation!!.conversationId
 
                         val text: String = messageEditText.text.toString()
 //                Log.d(TAG, "${text}")
@@ -738,7 +749,7 @@ class MessageScreen : Fragment(),
                             mentions.add(mention)
                         }
 
-                        val message = Message(conversationId = convoId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
+                        val message = Message(conversationId = conversationId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
                         Log.d(TAG, "ifAllowedToSend() ${allowedToSend()}")
 
                         // Validate if allowed to send client-side
@@ -757,7 +768,7 @@ class MessageScreen : Fragment(),
                     }
 
                     true
-                }
+//                }
             }
             R.id.add_image_btn -> {
 //                Log.d(TAG, "Start photo picker")
@@ -852,7 +863,8 @@ class MessageScreen : Fragment(),
             content = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString()),
             thumbnail = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString())
         )
-        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
+//        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
+        val message = Message(conversationId = conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
         return message
     }
 
@@ -938,13 +950,15 @@ class MessageScreen : Fragment(),
 
     // Load Messages
     private fun loadMessages() {
-        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
-        if(::conversation.isInitialized) {
-            if (!conversation.conversationId.isNullOrBlank()) {
+//        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
+        Log.d(TAG, "loadMessages")
+//        if(::conversation.isInitialized) {
+//            if (!conversation.conversationId.isNullOrBlank()) {
                 swipeRefreshLayout.isRefreshing = true
-                messageViewModel.getMessages(conversation.conversationId)
-            }
-        }
+//                messageViewModel.getMessages(conversation.conversationId)
+        messageViewModel.getMessages(conversationId)
+//            }
+//        }
     }
 
     fun addMessage(message: Message) {
@@ -1654,16 +1668,17 @@ class MessageScreen : Fragment(),
     // 10 = silenced
     // 20 = banned
     private fun allowedToSend(): Boolean {
-        val conversation = (activity as MessengerActivity).getCurrentConversation()
-        conversation?.let {
-            // Current conversation
-            val participant = conversation.participants.find { it.user.userId.equals(prefs?.externalUserId, ignoreCase = true) }
-            participant?.let {
-                // Current participant
-                return participant.state == 0
-            }
-        }
-        return false
+//        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
+//        conversation?.let {
+//            // Current conversation
+//            val participant = conversation.participants.find { it.user.userId.equals(prefs?.externalUserId, ignoreCase = true) }
+//            participant?.let {
+//                // Current participant
+//                return participant.state == 0
+//            }
+//        }
+//        return false // TODO UI Screens
+        return true // for now, TODO UI Screens
     }
 
     // User profile (slide-up panel)
@@ -1684,7 +1699,8 @@ class MessageScreen : Fragment(),
         val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
         val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")
-        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
+//        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
+        val message = Message(conversationId = conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
 
         if(!userTypingMap.containsKey(initiatingUserId)) {
             // Store reference of <initiatingUserId, localReferenceId>
