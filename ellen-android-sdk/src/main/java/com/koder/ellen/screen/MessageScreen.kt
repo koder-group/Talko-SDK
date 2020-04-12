@@ -38,6 +38,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.appbar.AppBarLayout
+import com.koder.ellen.EventCallback
+import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
@@ -165,6 +167,11 @@ class MessageScreen : Fragment(),
     private lateinit var mediaViewManager: RecyclerView.LayoutManager
     private val mediaList: MutableList<Message> = mutableListOf()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        setEventHandler()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
@@ -177,6 +184,8 @@ class MessageScreen : Fragment(),
 //        }
         conversationId = arguments?.getString("CONVERSATION_ID")!!
         Log.d(TAG, "conversationId ${conversationId}")
+        val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
+        if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
     }
 
     override fun onCreateView(
@@ -883,7 +892,8 @@ class MessageScreen : Fragment(),
     private fun checkReadPermissions() {
         // Check permissions
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+//        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+        if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
 
@@ -1468,7 +1478,8 @@ class MessageScreen : Fragment(),
 
         // Check permissions
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+//        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+        if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
 
@@ -1562,12 +1573,14 @@ class MessageScreen : Fragment(),
     fun saveImageToFile(bitmap: Bitmap, url: String) {
         val uri = Uri.parse(url)
         val file = File(uri.toString())
-        val mimeType = (activity as MessengerActivity).getContentResolver().getType(uri)
+//        val mimeType = (activity as MessengerActivity).getContentResolver().getType(uri)
+        val mimeType = (activity as AppCompatActivity).getContentResolver().getType(uri)
 
         var fos: OutputStream? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Log.d(TAG, ">= Build Q")
-            val resolver = (activity as MessengerActivity).getContentResolver()
+//            val resolver = (activity as MessengerActivity).getContentResolver()
+            val resolver = (activity as AppCompatActivity).getContentResolver()
             val contentValues = ContentValues()
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.name)
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
@@ -1597,9 +1610,10 @@ class MessageScreen : Fragment(),
 //            Environment.getExternalStorageDirectory().toString() + "/Ellen"
 //        )
         val direct = File(
-            (activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
+//            (activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
+            (activity as AppCompatActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
         )
-        Log.d(TAG, "${(activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath} + \"/Pictures/Ellen\"")
+//        Log.d(TAG, "${(activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath} + \"/Pictures/Ellen\"")
         if (!direct.exists()) {
             val wallpaperDirectory = File("/sdcard/Pictures/Ellen/")
             wallpaperDirectory.mkdirs()
@@ -1614,7 +1628,8 @@ class MessageScreen : Fragment(),
             out.flush()
             out.close()
 
-            MediaScannerConnection.scanFile(activity as MessengerActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
+//            MediaScannerConnection.scanFile(activity as MessengerActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
+            MediaScannerConnection.scanFile(activity as AppCompatActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -1787,6 +1802,53 @@ class MessageScreen : Fragment(),
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    private fun setEventHandler() {
+        Messenger.addEventHandler(object: EventCallback() {
+            override fun onConversationCreated(conversation: Conversation) {
+            }
+
+            override fun onConversationClosed(conversation: Conversation) {
+            }
+
+            override fun onConversationModified(conversationId: String) {
+            }
+
+            override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
+            }
+
+            override fun onAddedToConversation(userId: String, conversationId: String) {
+            }
+
+            override fun onRemovedFromConversation(userId: String, conversationId: String) {
+            }
+
+            override fun onMessageReceived(message: Message) {
+                Log.d(TAG, "onMessageReceived ${message}")
+            }
+
+            override fun onMessageRejected(message: Message) {
+            }
+
+            override fun onMessageDeleted(message: Message) {
+            }
+
+            override fun onMessageUserReaction(message: Message) {
+            }
+
+            override fun onUserTypingStart(initiatingUserId: String) {
+            }
+
+            override fun onUserTypingStop(initiatingUserId: String) {
+            }
+
+            override fun onModeratorAdded(userId: String) {
+            }
+
+            override fun onModeratorRemoved(moderatorId: String) {
+            }
+        })
+    }
 }
 
 // Override LayoutManager to disable scroll
