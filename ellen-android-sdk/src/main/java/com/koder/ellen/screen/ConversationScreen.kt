@@ -2,9 +2,15 @@ package com.koder.ellen.screen
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -60,6 +66,8 @@ class ConversationScreen : Fragment() {
 //    private lateinit var mDrawer: DrawerLayout
 //    private lateinit var mDrawerToggle: ActionBarDrawerToggle
     private lateinit var mToolbar: Toolbar
+    private lateinit var rootView: View
+    private lateinit var listFrame: FrameLayout
 
     // RecyclerView
     private lateinit var recyclerView: RecyclerView
@@ -92,7 +100,7 @@ class ConversationScreen : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate Fragment's view
-        val rootView = inflater.inflate(R.layout.fragment_conversation, container, false)
+        rootView = inflater.inflate(R.layout.fragment_conversation, container, false)
 
         mToolbar = rootView.findViewById<Toolbar>(R.id.toolbar)
 
@@ -102,6 +110,8 @@ class ConversationScreen : Fragment() {
             conversationViewModel.loadConversations()
 //            swipeRefreshLayout.setRefreshing(false)
         }
+
+        listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
 
         return rootView
     }
@@ -120,7 +130,8 @@ class ConversationScreen : Fragment() {
 //            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //            supportActionBar?.setDisplayShowHomeEnabled(true)
 //            supportActionBar?.title = resources.getString(R.string.conversations)
-            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))
+
+//            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))
 
             // Setup RecyclerView
             viewManager = LinearLayoutManager(this)
@@ -228,8 +239,8 @@ class ConversationScreen : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
-        inflater.inflate(R.menu.conversation_menu, menu)
+//        menu.clear()  // TODO UI Screens
+//        inflater.inflate(R.menu.conversation_menu, menu)  // TODO UI Screens
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
@@ -498,4 +509,30 @@ class ConversationScreen : Fragment() {
     fun sendClick(conversation: Conversation, position: Int) {
         mClickListener?.OnItemClickListener(conversation, position)
     }
+
+    // UI Screens
+    fun setBackgroundColor(color: String) {
+        Log.d(TAG, "setBackgroundColor ${color}")
+        rootView.setBackgroundColor(Color.parseColor(color))
+    }
+
+    fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
+        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
+        listFrame.background = shape
+    }
+
+    // Return shape drawable with corner radius and background color
+    // radius in pixels
+    // color in hex string #FFFFFF
+    private fun getShape(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float, color: String): ShapeDrawable {
+        val shape = ShapeDrawable(RoundRectShape(floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft), null, null))
+        shape.getPaint().setColor(Color.parseColor(color))
+        return shape
+    }
+
+    // Extensions for dp-px conversion
+    val Int.dp: Int
+        get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+    val Int.px: Int
+        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 }
