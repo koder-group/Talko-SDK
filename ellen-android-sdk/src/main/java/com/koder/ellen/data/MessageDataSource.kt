@@ -205,6 +205,7 @@ internal class MessageDataSource {
                     conversationId = conversationId,
                     body = postBody.toString().toRequestBody())
                     .execute()
+            Log.d(TAG, "${response}")
             if(response.isSuccessful) {
                 val body: MutableList<Message> = response.body()!!  //  Ordered by timeCreated DESC
                 body.reverse()  //  Order by timeCreated ASC

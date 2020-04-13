@@ -35,6 +35,7 @@ import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.Message
 import com.koder.ellen.model.Participant
+import com.koder.ellen.model.User
 import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.conversation.ConversationAdapter
 import com.koder.ellen.ui.conversation.ConversationViewModel
@@ -443,7 +444,11 @@ class ConversationScreen : Fragment() {
                 removeConversation(conversation)
             }
 
-            override fun onConversationModified(conversationId: String) {
+            override fun onConversationModified(
+                initiatingUser: User,
+                title: String?,
+                conversationId: String
+            ) {
                 loadConversations()
             }
 
@@ -454,11 +459,19 @@ class ConversationScreen : Fragment() {
                 }
             }
 
-            override fun onAddedToConversation(userId: String, conversationId: String) {
+            override fun onAddedToConversation(
+                initiatingUser: User,
+                userId: String,
+                conversationId: String
+            ) {
                 loadConversations()
             }
 
-            override fun onRemovedFromConversation(userId: String, conversationId: String) {
+            override fun onRemovedFromConversation(
+                initiatingUser: User,
+                userId: String,
+                conversationId: String
+            ) {
                 if(userId.equals(prefs?.userId, ignoreCase = true)) {
                     // Current user
                     removeFromConversations(conversationId)
@@ -469,7 +482,7 @@ class ConversationScreen : Fragment() {
                 addMessageToConversations(message)
             }
 
-            override fun onMessageRejected(message: Message) {
+            override fun onMessageRejected(message: Message, errorMessage: String) {
             }
 
             override fun onMessageDeleted(message: Message) {
@@ -487,7 +500,7 @@ class ConversationScreen : Fragment() {
             override fun onModeratorAdded(userId: String) {
             }
 
-            override fun onModeratorRemoved(moderatorId: String) {
+            override fun onModeratorRemoved(userId: String) {
             }
         })
     }

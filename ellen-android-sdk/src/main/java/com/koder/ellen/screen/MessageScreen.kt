@@ -1,4 +1,4 @@
-package com.koder.ellen.ui.message
+package com.koder.ellen.screen
 
 import android.Manifest
 import android.animation.*
@@ -22,6 +22,7 @@ import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -37,6 +38,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.appbar.AppBarLayout
+import com.koder.ellen.EventCallback
+import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
@@ -67,18 +70,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-internal class MessageFragment : Fragment(),
-        View.OnClickListener {
+class MessageScreen : Fragment(),
+    View.OnClickListener {
 
     companion object {
-        fun newInstance() = MessageFragment()
-        private const val TAG = "MessageFragment"
+        fun newInstance() = MessageScreen()
+        private const val TAG = "MessageScreen"
         private const val IMAGE_REQUEST = 2
         private const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 3
         private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 4
         lateinit var viewAdapter: RecyclerView.Adapter<*>
 //        lateinit var viewManager: RecyclerView.LayoutManager
     }
+
+    private lateinit var conversationId: String
 
     private lateinit var rootView: View
     private lateinit var containerView: RelativeLayout
@@ -89,21 +94,21 @@ internal class MessageFragment : Fragment(),
 
     // RecyclerView
     private lateinit var recyclerView: RecyclerView
-//    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    //    private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     val messages: MutableList<Message> = mutableListOf()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
-    val messageViewModel: MessageViewModel by lazy {
+    private val messageViewModel: MessageViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             MessageViewModel(
-                    MessageRepository(MessageDataSource()),
-                    activity!!.application
+                MessageRepository(MessageDataSource()),
+                activity!!.application
             )
         }).get(MessageViewModel::class.java)
     }
 
-    val conversationViewModel: ConversationViewModel by lazy {
+    private val conversationViewModel: ConversationViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             ConversationViewModel(
                 ConversationRepository(ConversationDataSource())
@@ -162,12 +167,25 @@ internal class MessageFragment : Fragment(),
     private lateinit var mediaViewManager: RecyclerView.LayoutManager
     private val mediaList: MutableList<Message> = mutableListOf()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        setEventHandler()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
         setHasOptionsMenu(true)
 
-        Log.d(TAG, "onCreate")
+//        val bundle = arguments
+//        bundle?.let {
+//            conversationId = bundle.getString("CONVERSATION_ID")!!
+//            Log.d(TAG, "conversationId ${conversationId}")
+//        }
+        conversationId = arguments?.getString("CONVERSATION_ID")!!
+        Log.d(TAG, "conversationId ${conversationId}")
+        val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
+        if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
     }
 
     override fun onCreateView(
@@ -217,7 +235,8 @@ internal class MessageFragment : Fragment(),
                     Log.d(TAG, "User stop typing")
                     userTyping = false
                     prefs?.externalUserId?.let {
-                        messageViewModel.typingStopped(it, conversation.conversationId)
+//                        messageViewModel.typingStopped(it, conversation.conversationId)
+                        messageViewModel.typingStopped(it, conversationId)
                     }
                 }
             }
@@ -231,7 +250,8 @@ internal class MessageFragment : Fragment(),
                     Log.d(TAG, "User start typing")
                     userTyping = true
                     prefs?.externalUserId?.let {
-                        messageViewModel.typingStarted(it, conversation.conversationId)
+//                        messageViewModel.typingStarted(it, conversation.conversationId)
+                        messageViewModel.typingStarted(it, conversationId)
                     }
                 }
                 // Remove this to run only once
@@ -240,13 +260,13 @@ internal class MessageFragment : Fragment(),
             override fun afterTextChanged(s: Editable?) {
                 // Avoid triggering event when text is empty
 //                if (s.toString().length > 0) {
-                    lastTextEdit = System.currentTimeMillis()
-                    handler.postDelayed(inputFinishChecker, delay);
+                lastTextEdit = System.currentTimeMillis()
+                handler.postDelayed(inputFinishChecker, delay);
 //                }
 
                 messageViewModel.messageDataChanged(
-                        messageEditText.text.toString(),    // Text input
-                        mediaList                           // Media input
+                    messageEditText.text.toString(),    // Text input
+                    mediaList                           // Media input
                 )
 
                 // Prevent infinite loop by unregistering and registering listener
@@ -294,7 +314,7 @@ internal class MessageFragment : Fragment(),
         super.onActivityCreated(savedInstanceState)
         activity?.run {
             Log.d(TAG, "onActivityCreated")
-            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+//            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)    // TODO UI Screens
 
             // QR code scanned
 //            qrPublicId = arguments?.getString("public_id")
@@ -308,30 +328,31 @@ internal class MessageFragment : Fragment(),
 //            }
 
             // Set current conversation
-            Log.d(TAG, "getCurrentConversation ${(this as MessengerActivity).getCurrentConversation()}")
-            if((this as MessengerActivity).getCurrentConversation() == null && qrPublicId == null) {
-                Log.d(TAG, "currentConversation null, go back to Conversation fragment")
-                activity?.supportFragmentManager?.popBackStack()
-                return
-            } else if ((this as MessengerActivity).getCurrentConversation() != null) {
-                conversation = (this as MessengerActivity).getCurrentConversation()!!
-            }
+//            Log.d(TAG, "getCurrentConversation ${(this as MessengerActivity).getCurrentConversation()}")  // TODO UI Screens
+//            if((this as MessengerActivity).getCurrentConversation() == null && qrPublicId == null) { // TODO UI Screens
+//                Log.d(TAG, "currentConversation null, go back to Conversation fragment")
+//                activity?.supportFragmentManager?.popBackStack()
+//                return
+//            } else if ((this as MessengerActivity).getCurrentConversation() != null) {
+//                conversation = (this as MessengerActivity).getCurrentConversation()!!
+//            } // TODO UI Screens
 //            Log.d(TAG, "onActivityCreated ${conversation}")
             // Set toolbar title
-            val title = getConversationTitle()
+//            val title = getConversationTitle()    // TODO UI Screens
             Log.d(TAG, "getConversationTitle ${title}")
 //            viewModel.updateActionBarTitle(title)
             // Toolbar
-            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-            supportActionBar?.title = title
+//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
+//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//            supportActionBar?.setDisplayShowHomeEnabled(true)
+//            supportActionBar?.title = title
+//            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
             // Set AppBar for expanded images
-//            appBar = (this).getAppBar()
+//            appBar = (this).getAppBar()   // TODO UI Screens
             // RecyclerView for Messages
 //            val viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-            viewAdapter = MessageAdapter(this, messages, this@MessageFragment)
+            viewAdapter = MessageAdapter(this, messages, this@MessageScreen)
 
             recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {
                 // use this setting to improve performance if you know that changes
@@ -500,14 +521,14 @@ internal class MessageFragment : Fragment(),
 
             // Keyboard listener
             KeyboardVisibilityEvent.setEventListener(
-                    this,
-                    object: KeyboardVisibilityEventListener {
-                        override fun onVisibilityChanged(isOpen: Boolean) {
+                this,
+                object: KeyboardVisibilityEventListener {
+                    override fun onVisibilityChanged(isOpen: Boolean) {
 //                Log.d(TAG, "Keyboard open ${isOpen}")
-                            // Scroll to latest message
-                            if(isOpen && messages.size > 0) recyclerView.smoothScrollToPosition(messages.size - 1)
-                        }
-                    })
+                        // Scroll to latest message
+                        if(isOpen && messages.size > 0) recyclerView.smoothScrollToPosition(messages.size - 1)
+                    }
+                })
         } ?: throw Throwable("invalid activity")
 
         // Mentions
@@ -540,7 +561,7 @@ internal class MessageFragment : Fragment(),
 //        for(i in 1..10) {
 //            mediaList.add("Test")
 //        }
-        mediaAdapter = MediaAdapter(activity as Context, mediaList, this)
+        mediaAdapter = MediaAdapter(activity as Context, mediaList, this@MessageScreen)
 
         mediaRecyclerView = activity!!.findViewById<RecyclerView>(R.id.media_recycler_view).apply {
             // use this setting to improve performance if you know that changes
@@ -574,11 +595,11 @@ internal class MessageFragment : Fragment(),
             recyclerView.scrollToPosition(messages.size-1)
             swipeRefreshLayout.setRefreshing(false)
 
-            if(!(activity as MessengerActivity).isCurrentStatusMessagesEmpty()) {
-                currentStatusMessages.clear()
-                currentStatusMessages.addAll((activity as MessengerActivity).getAndClearCurrentStatusMessages())
-                showAllCurrentStatusMessages()
-            }
+//            if(!(activity as MessengerActivity).isCurrentStatusMessagesEmpty()) { // TODO UI Screens
+//                currentStatusMessages.clear()
+//                currentStatusMessages.addAll((activity as MessengerActivity).getAndClearCurrentStatusMessages())
+//                showAllCurrentStatusMessages()
+//            } // TODO UI Screens
         })
         // Mentioned Participants
         messageViewModel.mentionedParticipants.observe(viewLifecycleOwner, Observer {
@@ -630,9 +651,10 @@ internal class MessageFragment : Fragment(),
             // Pubnub
 //            if(pubNub == null) initPubNub()
             // Subscribe to channel
-            val channel = "${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()
+//            val channel = "${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()
+            val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
 //            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
-            viewModel.subscribeChannelList.value = mutableListOf(channel)
+//            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
             swipeRefreshLayout.setRefreshing(false)
         })
@@ -658,8 +680,8 @@ internal class MessageFragment : Fragment(),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
-        inflater.inflate(R.menu.message_menu, menu)
+//        menu.clear()  // TODO UI Screens
+//        inflater.inflate(R.menu.message_menu, menu)   // TODO UI Screens
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
@@ -673,7 +695,7 @@ internal class MessageFragment : Fragment(),
                 // Hide keyboard
                 hideKeyboard(activity)
                 // Show MessageInfoFragment and add to backstack
-                (activity as MessengerActivity).showInfoFragment()
+//                (activity as MessengerActivity).showInfoFragment()    // TODO UI Screens
                 true
             }
 //            R.id.action_video -> {
@@ -689,7 +711,7 @@ internal class MessageFragment : Fragment(),
     override fun onClick(v: View) {
         when (v.id) {
             R.id.message_send_btn -> {
-                if((conversation != null) || conversation.conversationId.isNotBlank()) {
+//                if((conversation != null) || conversation.conversationId.isNotBlank()) {
 
                     if(mediaList.size > 0) {
                         // Send media messages
@@ -714,7 +736,7 @@ internal class MessageFragment : Fragment(),
                     }
 
                     if(messageEditText.text.isNotBlank()) {
-                        val convoId = if (conversation.conversationId.isNotBlank()) conversation.conversationId else conversation!!.conversationId
+//                        val convoId = if (conversation.conversationId.isNotBlank()) conversation.conversationId else conversation!!.conversationId
 
                         val text: String = messageEditText.text.toString()
 //                Log.d(TAG, "${text}")
@@ -736,7 +758,7 @@ internal class MessageFragment : Fragment(),
                             mentions.add(mention)
                         }
 
-                        val message = Message(conversationId = convoId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
+                        val message = Message(conversationId = conversationId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
                         Log.d(TAG, "ifAllowedToSend() ${allowedToSend()}")
 
                         // Validate if allowed to send client-side
@@ -755,7 +777,7 @@ internal class MessageFragment : Fragment(),
                     }
 
                     true
-                }
+//                }
             }
             R.id.add_image_btn -> {
 //                Log.d(TAG, "Start photo picker")
@@ -808,18 +830,18 @@ internal class MessageFragment : Fragment(),
                 mediaInputLayout.visibility = View.VISIBLE
 
 //                for(i in 0..10) {
-                    val mediaMessage = buildMediaMessage(it)
-                    mediaList.add(mediaMessage)
-                    mediaAdapter.notifyItemInserted(mediaList.size-1)
+                val mediaMessage = buildMediaMessage(it)
+                mediaList.add(mediaMessage)
+                mediaAdapter.notifyItemInserted(mediaList.size-1)
 
-                    // Add media to layout
-                    // Scroll to latest media item
-                    mediaRecyclerView.scrollToPosition(mediaList.size-1)
+                // Add media to layout
+                // Scroll to latest media item
+                mediaRecyclerView.scrollToPosition(mediaList.size-1)
 //                }
 
                 messageViewModel.messageDataChanged(
-                        messageEditText.text.toString(),    // Text input
-                        mediaList                           // Media input
+                    messageEditText.text.toString(),    // Text input
+                    mediaList                           // Media input
                 )
             }
         }
@@ -837,8 +859,8 @@ internal class MessageFragment : Fragment(),
         }
 
         messageViewModel.messageDataChanged(
-                messageEditText.text.toString(),    // Text input
-                mediaList                           // Media input
+            messageEditText.text.toString(),    // Text input
+            mediaList                           // Media input
         )
     }
 
@@ -847,10 +869,11 @@ internal class MessageFragment : Fragment(),
         val contentType = activity?.contentResolver?.getType(imageUri)
         val sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!)
         val conversationMedia = ConversationMedia(
-                content = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString()),
-                thumbnail = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString())
+            content = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString()),
+            thumbnail = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString())
         )
-        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
+//        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
+        val message = Message(conversationId = conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
         return message
     }
 
@@ -869,7 +892,8 @@ internal class MessageFragment : Fragment(),
     private fun checkReadPermissions() {
         // Check permissions
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+//        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+        if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
 
@@ -936,13 +960,15 @@ internal class MessageFragment : Fragment(),
 
     // Load Messages
     private fun loadMessages() {
-        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
-        if(::conversation.isInitialized) {
-            if (!conversation.conversationId.isNullOrBlank()) {
+//        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
+        Log.d(TAG, "loadMessages")
+//        if(::conversation.isInitialized) {
+//            if (!conversation.conversationId.isNullOrBlank()) {
                 swipeRefreshLayout.isRefreshing = true
-                messageViewModel.getMessages(conversation.conversationId)
-            }
-        }
+//                messageViewModel.getMessages(conversation.conversationId)
+        messageViewModel.getMessages(conversationId)
+//            }
+//        }
     }
 
     fun addMessage(message: Message) {
@@ -1072,7 +1098,7 @@ internal class MessageFragment : Fragment(),
         val setOfMentions = mutableSetOf<User>()
         val words = text.split(" ").toMutableList()
         words.forEach {
-            word ->
+                word ->
             if(word.isNotEmpty() && word.first().equals('@', ignoreCase = true) && word.length > 1) {
                 val name = word.substring(1)
                 val found = conversation.participants.find { it.user.displayName.equals(name, ignoreCase = true) }
@@ -1090,7 +1116,7 @@ internal class MessageFragment : Fragment(),
         Log.d(TAG, "words ${words}")
         // Set color for mentioned names
         words.forEachIndexed {
-            index, word ->
+                index, word ->
             if(word.length > 1 && word.first().equals('@', ignoreCase = true)) {
                 // @
                 val name = word.substring(1)
@@ -1151,7 +1177,7 @@ internal class MessageFragment : Fragment(),
         // properties (X, Y).
         thumbView.getGlobalVisibleRect(startBoundsInt)
         rootView.findViewById<View>(R.id.container)
-                .getGlobalVisibleRect(finalBoundsInt, globalOffset)
+            .getGlobalVisibleRect(finalBoundsInt, globalOffset)
 //        activity!!.findViewById<View>(R.id.container_content)
 //                .getGlobalVisibleRect(finalBoundsInt, globalOffset)
         startBoundsInt.offset(-globalOffset.x, -globalOffset.y)
@@ -1200,10 +1226,10 @@ internal class MessageFragment : Fragment(),
         // scale properties (X, Y, SCALE_X, and SCALE_Y).
         currentAnimator = AnimatorSet().apply {
             play(ObjectAnimator.ofFloat(
-                    expandedImageView,
-                    View.X,
-                    startBounds.left,
-                    finalBounds.left)
+                expandedImageView,
+                View.X,
+                startBounds.left,
+                finalBounds.left)
             ).apply {
                 with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top, finalBounds.top))
                 with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScale, 1f))
@@ -1267,14 +1293,14 @@ internal class MessageFragment : Fragment(),
         // set its visibility to GONE as an optimization step (it won't
         // participate in layout passes, etc.)
         appBar.animate()
-                .alpha(0f)
-                .setDuration(shortAnimationDuration.toLong())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
+            .alpha(0f)
+            .setDuration(shortAnimationDuration.toLong())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
 //                        appBar.visibility = View.GONE
-                        appBar.visibility = View.INVISIBLE
-                    }
-                })
+                    appBar.visibility = View.INVISIBLE
+                }
+            })
 
         // Upon clicking the zoomed-in image, it should zoom back down
         // to the original bounds and show the thumbnail instead of
@@ -1353,9 +1379,9 @@ internal class MessageFragment : Fragment(),
             // Animate the content view to 100% opacity, and clear any animation
             // listener set on the view.
             animate()
-                    .alpha(1f)
-                    .setDuration(shortAnimationDuration.toLong())
-                    .setListener(null)
+                .alpha(1f)
+                .setDuration(shortAnimationDuration.toLong())
+                .setListener(null)
         }
     }
 
@@ -1452,7 +1478,8 @@ internal class MessageFragment : Fragment(),
 
         // Check permissions
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+//        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
+        if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
 
@@ -1464,16 +1491,16 @@ internal class MessageFragment : Fragment(),
 //                // this thread waiting for the user's response! After the user
 //                // sees the explanation, try again to request the permission.
 //            } else {
-                // No explanation needed, we can request the permission.
+            // No explanation needed, we can request the permission.
 //                ActivityCompat.requestPermissions(activity as MainActivity,
 //                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
 //                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
-                requestPermissions(
+            requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
 //            }
         } else {
             // Permission has already been granted
@@ -1546,12 +1573,14 @@ internal class MessageFragment : Fragment(),
     fun saveImageToFile(bitmap: Bitmap, url: String) {
         val uri = Uri.parse(url)
         val file = File(uri.toString())
-        val mimeType = (activity as MessengerActivity).getContentResolver().getType(uri)
+//        val mimeType = (activity as MessengerActivity).getContentResolver().getType(uri)
+        val mimeType = (activity as AppCompatActivity).getContentResolver().getType(uri)
 
         var fos: OutputStream? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Log.d(TAG, ">= Build Q")
-            val resolver = (activity as MessengerActivity).getContentResolver()
+//            val resolver = (activity as MessengerActivity).getContentResolver()
+            val resolver = (activity as AppCompatActivity).getContentResolver()
             val contentValues = ContentValues()
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.name)
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
@@ -1581,9 +1610,10 @@ internal class MessageFragment : Fragment(),
 //            Environment.getExternalStorageDirectory().toString() + "/Ellen"
 //        )
         val direct = File(
-            (activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
+//            (activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
+            (activity as AppCompatActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
         )
-        Log.d(TAG, "${(activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath} + \"/Pictures/Ellen\"")
+//        Log.d(TAG, "${(activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath} + \"/Pictures/Ellen\"")
         if (!direct.exists()) {
             val wallpaperDirectory = File("/sdcard/Pictures/Ellen/")
             wallpaperDirectory.mkdirs()
@@ -1598,7 +1628,8 @@ internal class MessageFragment : Fragment(),
             out.flush()
             out.close()
 
-            MediaScannerConnection.scanFile(activity as MessengerActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
+//            MediaScannerConnection.scanFile(activity as MessengerActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
+            MediaScannerConnection.scanFile(activity as AppCompatActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -1617,11 +1648,11 @@ internal class MessageFragment : Fragment(),
     }
 
     fun updateTitle(newTitle: String) {
-        if(this@MessageFragment.isVisible) {
+        if(this@MessageScreen.isVisible) {
             Log.d(TAG, "${newTitle}")
             if(newTitle.isBlank()) {
-    //            supportActionBar?.title = title
-    //            val title = getTitleByParticipants(participantsList)
+                //            supportActionBar?.title = title
+                //            val title = getTitleByParticipants(participantsList)
                 Log.d(TAG, "")
                 (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()
                 return
@@ -1652,16 +1683,17 @@ internal class MessageFragment : Fragment(),
     // 10 = silenced
     // 20 = banned
     private fun allowedToSend(): Boolean {
-        val conversation = (activity as MessengerActivity).getCurrentConversation()
-        conversation?.let {
-            // Current conversation
-            val participant = conversation.participants.find { it.user.userId.equals(prefs?.externalUserId, ignoreCase = true) }
-            participant?.let {
-                // Current participant
-                return participant.state == 0
-            }
-        }
-        return false
+//        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
+//        conversation?.let {
+//            // Current conversation
+//            val participant = conversation.participants.find { it.user.userId.equals(prefs?.externalUserId, ignoreCase = true) }
+//            participant?.let {
+//                // Current participant
+//                return participant.state == 0
+//            }
+//        }
+//        return false // TODO UI Screens
+        return true // for now, TODO UI Screens
     }
 
     // User profile (slide-up panel)
@@ -1678,11 +1710,12 @@ internal class MessageFragment : Fragment(),
     fun userStartTyping(initiatingUserId: String) {
         Log.d(TAG, "userStartTyping ${initiatingUserId}")
 
-        val displayName = getDisplayName(initiatingUserId) + " is typing..."
-        val profileImageUrl = getProfileImageUrl(initiatingUserId)
+        val displayName = getDisplayName(initiatingUserId) + " is typing..."    // TODO UI Screens
+//        val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
         val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")
-        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
+//        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
+        val message = Message(conversationId = conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
 
         if(!userTypingMap.containsKey(initiatingUserId)) {
             // Store reference of <initiatingUserId, localReferenceId>
@@ -1717,7 +1750,8 @@ internal class MessageFragment : Fragment(),
     }
 
     fun getDisplayName(userId: String): String {
-        val conversation = (activity as MessengerActivity).getCurrentConversation()
+        val conversation: Conversation? = null  // TODO UI Screens
+//        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
         conversation?.let {
             val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
             found?.let {
@@ -1769,6 +1803,119 @@ internal class MessageFragment : Fragment(),
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    private fun setEventHandler() {
+        Messenger.addEventHandler(object: EventCallback() {
+            override fun onConversationCreated(conversation: Conversation) {
+            }
+
+            override fun onConversationClosed(conversation: Conversation) {
+                if(conversationId.equals(conversation.conversationId, ignoreCase = true)) {
+                    // Close conversation
+                }
+            }
+
+            override fun onConversationModified(
+                initiatingUser: User,
+                title: String?,
+                conversationId: String
+            ) {
+                activity?.runOnUiThread {
+                    title?.let { t ->
+                        showStatusMessage("${initiatingUser.displayName} changed the conversation name to ${t}")
+                    }
+                }
+            }
+
+            override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
+            }
+
+            override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(
+                            this@MessageScreen.conversationId,
+                            ignoreCase = true
+                        )
+                    ) {
+                        showStatusMessage("${initiatingUser.displayName} added a new user to the conversation.")
+                    }
+                }
+            }
+
+            override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(
+                            this@MessageScreen.conversationId,
+                            ignoreCase = true
+                        )
+                    ) {
+                        showStatusMessage("${initiatingUser.displayName} removed a user from the conversation.")
+                    }
+
+                    if (removedUserId.equals(prefs?.externalUserId, ignoreCase = true)) {
+                        // Close conversation for removed user
+                    }
+                }
+            }
+
+            override fun onMessageReceived(message: Message) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        addMessage(message)
+//                        Log.d(TAG, "${message.timeCreated.toString()}")
+//                        val timeCreated = convertDateToLong(message.timeCreated.toString())
+                        prefs?.setConversationLastRead(message.conversationId, message.timeCreated.toLong())
+                    }
+                }
+            }
+
+            override fun onMessageRejected(message: Message, errorMessage: String) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true) &&
+                        message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)
+                    ) {
+                        showMessageError(message.metadata.localReferenceId, errorMessage)
+                    }
+                }
+            }
+
+            override fun onMessageDeleted(message: Message) {
+                activity?.runOnUiThread {
+                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        deleteMessageFromList(message)
+                    }
+                }
+            }
+
+            override fun onMessageUserReaction(message: Message) {
+                activity?.runOnUiThread {
+                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        updateMessage(message)
+                    }
+                }
+            }
+
+            override fun onUserTypingStart(initiatingUserId: String) {
+                activity?.runOnUiThread {
+                    userStartTyping(initiatingUserId)
+                }
+            }
+
+            override fun onUserTypingStop(initiatingUserId: String) {
+                activity?.runOnUiThread {
+                    userStopTyping(initiatingUserId)
+                }
+            }
+
+            override fun onModeratorAdded(userId: String) {
+                Log.d(TAG, "Moderator added ${userId}")
+            }
+
+            override fun onModeratorRemoved(userId: String) {
+                Log.d(TAG, "Moderator removed ${userId}")
+            }
+        })
+    }
 }
 
 // Override LayoutManager to disable scroll

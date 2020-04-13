@@ -4,13 +4,15 @@ import android.content.Context
 import android.content.res.Resources
 import android.view.*
 import android.widget.*
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.koder.ellen.R
 import com.koder.ellen.model.Message
+import com.koder.ellen.screen.MessageScreen
 
 
-internal class MediaAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: MessageFragment?) :
+internal class MediaAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: Fragment?) :
     RecyclerView.Adapter<MediaAdapter.MyViewHolder>() {
 
     val TAG = "MessageAdapter"
@@ -63,7 +65,12 @@ internal class MediaAdapter(private val context: Context, private val dataset: M
         val message = dataset.get(position)
         val closeView = holder.layout.findViewById<ImageView>(R.id.close_button_view)
         closeView.setOnClickListener {
-            fragment?.removeMediaItem(message)
+            if(fragment is MessageFragment) {
+                fragment?.removeMediaItem(message)
+            }
+            if(fragment is MessageScreen) {
+                fragment?.removeMediaItem(message)
+            }
         }
 
         val mediaView = holder.layout.findViewById<ImageView>(R.id.media_item_image)

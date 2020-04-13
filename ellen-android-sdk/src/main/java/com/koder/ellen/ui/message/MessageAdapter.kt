@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import androidx.core.widget.PopupWindowCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -39,6 +40,7 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
 import com.koder.ellen.model.Message
+import com.koder.ellen.screen.MessageScreen
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.dialog_message_actions.view.*
@@ -46,7 +48,7 @@ import java.io.InputStream
 import java.util.*
 
 
-internal class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: MessageFragment?) :
+internal class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: Fragment?) :
     RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
     val TAG = "MessageAdapter"
@@ -146,17 +148,34 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         // Thumbnail click listeners for expanded image
         selfMedia.setOnClickListener {
 //            (context as MessageActivity).showExpandedImage(   // TODO
-            fragment?.showExpandedImage(
-                it as ImageView,
-                message.media!!.content.source
-            )
+            if(fragment is MessageFragment) {
+                fragment?.showExpandedImage(
+                    it as ImageView,
+                    message.media!!.content.source
+                )
+            }
+            if(fragment is MessageScreen) {
+                fragment?.showExpandedImage(
+                    it as ImageView,
+                    message.media!!.content.source
+                )
+            }
+
         }
         senderMedia.setOnClickListener {
 //            (context as MessageActivity).showExpandedImage(   // TODO
-            fragment?.showExpandedImage(
-                it as ImageView,
-                message.media!!.content.source
-            )
+            if(fragment is MessageFragment) {
+                fragment?.showExpandedImage(
+                    it as ImageView,
+                    message.media!!.content.source
+                )
+            }
+            if(fragment is MessageScreen) {
+                fragment?.showExpandedImage(
+                    it as ImageView,
+                    message.media!!.content.source
+                )
+            }
         }
 
         // Message body click listeners for reactions popup menu
@@ -294,7 +313,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
 
                 // Sender's user profile link on icon
                 icon.setOnClickListener {
-                    fragment?.showProfile(message.sender)
+                    if(fragment is MessageFragment) {
+                        fragment?.showProfile(message.sender)
+                    }
+                    if(fragment is MessageScreen) {
+                        fragment?.showProfile(message.sender)
+                    }
                 }
             } else {
                 senderIconLayout.visibility = View.INVISIBLE
@@ -491,10 +515,18 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         // Reaction, Like
         likeBtn!!.setOnClickListener {
 //            (context as MessageActivity).setReaction( // TODO
-            fragment?.setReaction(
-                message,
-                context.getResources().getString(R.string.reaction_code_like)
-            )
+            if(fragment is MessageFragment) {
+                fragment?.setReaction(
+                    message,
+                    context.getResources().getString(R.string.reaction_code_like)
+                )
+            }
+            if(fragment is MessageScreen) {
+                fragment?.setReaction(
+                    message,
+                    context.getResources().getString(R.string.reaction_code_like)
+                )
+            }
             Handler().postDelayed({
                 dialog.dismiss()
             }, 200)
@@ -503,10 +535,18 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         // Reaction, Dislike
         dislikeBtn!!.setOnClickListener {
 //            (context as MessageActivity).setReaction( // TODO
-            fragment?.setReaction(
-                message,
-                context.getResources().getString(R.string.reaction_code_dislike)
-            )
+            if(fragment is MessageFragment) {
+                fragment?.setReaction(
+                    message,
+                    context.getResources().getString(R.string.reaction_code_dislike)
+                )
+            }
+            if(fragment is MessageScreen) {
+                fragment?.setReaction(
+                    message,
+                    context.getResources().getString(R.string.reaction_code_dislike)
+                )
+            }
             Handler().postDelayed({
                 dialog.dismiss()
             }, 200)
@@ -518,7 +558,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             copyText!!.visibility = View.VISIBLE
             copyText!!.setOnClickListener {
 //                (context as MessageActivity).copyText(message, it)    // TODO
-                fragment?.copyText(message, it)
+                if(fragment is MessageFragment) {
+                    fragment?.copyText(message, it)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.copyText(message, it)
+                }
                 Handler().postDelayed({
                     dialog.dismiss()
                 }, 200)
@@ -528,7 +573,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             saveMedia!!.visibility = View.VISIBLE
             saveMedia!!.setOnClickListener {
 //                (context as MessageActivity).saveMedia(message, it)   // TODO
-                fragment?.saveMedia(message, it)
+                if(fragment is MessageFragment) {
+                    fragment?.saveMedia(message, it)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.saveMedia(message, it)
+                }
                 Handler().postDelayed({
                     dialog.dismiss()
                 }, 200)
@@ -540,7 +590,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             report!!.visibility = View.VISIBLE
             report!!.setOnClickListener {
 //                (context as MessageActivity).reportMessage(message, it)   // TODO
-                fragment?.reportMessage(message, it)
+                if(fragment is MessageFragment) {
+                    fragment?.reportMessage(message, it)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.reportMessage(message, it)
+                }
                 Handler().postDelayed({
                     dialog.dismiss()
                 }, 200)
@@ -550,7 +605,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             delete!!.visibility = View.VISIBLE
             delete!!.setOnClickListener {
 //                (context as MessageActivity).deleteMessage(message, it)   // TODO
-                fragment?.deleteMessage(message, it)
+                if(fragment is MessageFragment) {
+                    fragment?.deleteMessage(message, it)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.deleteMessage(message, it)
+                }
                 Handler().postDelayed({
                     dialog.dismiss()
                 }, 200)
@@ -571,7 +631,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             delete!!.text = "Remove"
             delete!!.setOnClickListener {
 //                (context as MessageActivity).deleteMessage(message, it)   // TODO
-                fragment?.deleteMessageFromList(message)
+                if(fragment is MessageFragment) {
+                    fragment?.deleteMessageFromList(message)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.deleteMessageFromList(message)
+                }
                 Handler().postDelayed({
                     dialog.dismiss()
                 }, 200)
@@ -604,7 +669,14 @@ internal class MessageAdapter(private val context: Context, private val dataset:
 //        Log.d(TAG, "getMentionPairs ${message}")
         val pairs = mutableListOf<Pair<String, View.OnClickListener>>()
         for(mention in message.mentions) {
-            val pair = Pair(mention.mentionTextPattern, View.OnClickListener { fragment?.showProfile(mention.user) })
+            val pair = Pair(mention.mentionTextPattern, View.OnClickListener {
+                if(fragment is MessageFragment) {
+                    fragment?.showProfile(mention.user)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.showProfile(mention.user)
+                }
+            })
             pairs.add(pair)
 //            Log.d(TAG, "pair ${pair}")
         }

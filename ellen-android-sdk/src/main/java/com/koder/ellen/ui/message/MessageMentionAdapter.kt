@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import androidx.core.widget.PopupWindowCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -24,12 +25,13 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.internal.VisibilityAwareImageButton
 import com.koder.ellen.R
 import com.koder.ellen.model.User
+import com.koder.ellen.screen.MessageScreen
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_message_mention.view.*
 import java.util.*
 
 
-internal class MessageMentionAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: MessageFragment? = null) :
+internal class MessageMentionAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: Fragment? = null) :
     RecyclerView.Adapter<MessageMentionAdapter.MyViewHolder>() {
 
     val TAG = "MessageMentionAdapter"
@@ -78,7 +80,12 @@ internal class MessageMentionAdapter(private val context: Context, private val d
         layout.setOnClickListener {
             Handler().postDelayed({
 //                (context as MessageActivity).mentionUser(it as ConstraintLayout, user)    // TODO
-                fragment?.mentionUser(it as ConstraintLayout, user)
+                if(fragment is MessageFragment) {
+                    fragment?.mentionUser(it as ConstraintLayout, user)
+                }
+                if(fragment is MessageScreen) {
+                    fragment?.mentionUser(it as ConstraintLayout, user)
+                }
             }, 200)
         }
     }

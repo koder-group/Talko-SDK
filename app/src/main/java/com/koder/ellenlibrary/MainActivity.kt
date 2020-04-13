@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.screen.ConversationScreen
+import com.koder.ellen.screen.MessageScreen
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -31,6 +32,13 @@ class MainActivity : AppCompatActivity() {
         conversationScreen.setListCornerRadius(20, 20, 0, 0)
 
         getSupportActionBar()?.setElevation(0f)
+
+        // Message Screen
+        val bundle = Bundle()
+        val messageScreen = MessageScreen()
+        bundle.putString("CONVERSATION_ID", "743e2aca-0460-4b68-9a74-f263038419fa")
+        messageScreen.setArguments(bundle)
+        getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen).commit()
 
 //        val userToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IjE3YzRhYmQ4YTE3MjQ0OTdiZmViMjBiMWM0ZDhmYjU0IiwidHlwIjoiSldUIn0.eyJ0ZW5hbnRfaWQiOiJFRkI5NEM3RS03MUU5LTQwNkItOTA1OS02MUFDMDUyMjdGMUIiLCJ1c2VyX2lkIjoiNEVFRDg2Q0UtNDZCNi00NjNGLUJBMjgtQzgzN0IzNDVBRUIzIiwidXNlcl9uYW1lIjoiamVmZmF0a29kZXIiLCJwcm9maWxlX2ltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9lbGxlbi1maXJlYmFzZS1leGFtcGxlLmFwcHNwb3QuY29tL28vQXZhdGFycyUyRnVzZXItMjEucG5nP2FsdD1tZWRpYSZ0b2tlbj1lZjhhYmI1MC0wNjJkLTQ1ZDItOTcwYS1mNDIxNjRmYzA0OWYiLCJleHAiOjE1ODY0MDkyNTgsImlzcyI6Imh0dHBzOi8vZWxsZW4ua29kZXIuY29tL2FwaS9tYW5hZ2VtZW50IiwiYXVkIjoiaHR0cHM6Ly9lbGxlbi5rb2Rlci5jb20vYXBpL21lc3NhZ2luZyJ9.bYBdNZ6BDtpX4TUjDZZ_vOUP8Of87PHnd1Sb9EHtFwA"
 
