@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
@@ -113,6 +114,8 @@ class ConversationScreen : Fragment() {
         }
 
         listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
+        val appBar = rootView.findViewById(R.id.appbar_layout) as AppBarLayout
+        appBar.visibility = View.GONE
 
         return rootView
     }

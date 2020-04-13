@@ -306,6 +306,7 @@ class MessageScreen : Fragment(),
         // Set AppBar for expanded images
 //            appBar = (this).getAppBar()   // TODO UI Screens
         appBar = rootView.findViewById(R.id.appbar_layout)
+        appBar.visibility = View.GONE
 
         return rootView
     }
@@ -1298,7 +1299,7 @@ class MessageScreen : Fragment(),
             .setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
 //                        appBar.visibility = View.GONE
-                    appBar.visibility = View.INVISIBLE
+//                    appBar.visibility = View.INVISIBLE
                 }
             })
 
@@ -1374,7 +1375,8 @@ class MessageScreen : Fragment(),
             // Set the content view to 0% opacity but visible, so that it is visible
             // (but fully transparent) during the animation.
             alpha = 0f
-            visibility = View.VISIBLE
+//            visibility = View.VISIBLE
+            visibility = View.GONE
 
             // Animate the content view to 100% opacity, and clear any animation
             // listener set on the view.
