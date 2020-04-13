@@ -687,18 +687,18 @@ class MessageScreen : Fragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
         return when (item.itemId) {
-            android.R.id.home -> {
-                Log.d(TAG, "popBackStack")
-                activity?.supportFragmentManager?.popBackStack()
-                true
-            }
-            R.id.action_info -> {
-                // Hide keyboard
-                hideKeyboard(activity)
-                // Show MessageInfoFragment and add to backstack
-//                (activity as MessengerActivity).showInfoFragment()    // TODO UI Screens
-                true
-            }
+//            android.R.id.home -> {
+//                Log.d(TAG, "popBackStack")
+//                activity?.supportFragmentManager?.popBackStack()
+//                true
+//            }
+//            R.id.action_info -> {
+//                // Hide keyboard
+//                hideKeyboard(activity)
+//                // Show MessageInfoFragment and add to backstack
+////                (activity as MessengerActivity).showInfoFragment()    // TODO UI Screens
+//                true
+//            }
 //            R.id.action_video -> {
 //                hideKeyboard(activity)
 //                // Start VideoFragment

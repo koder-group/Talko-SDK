@@ -3,6 +3,8 @@ package com.koder.ellenlibrary
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.screen.ConversationScreen
 import com.koder.ellen.screen.MessageScreen
@@ -12,6 +14,24 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "MainActivity"
         const val TEST_OK = "TEST_OK"
         const val TEST_NOK = "TEST_NOK"
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        return super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.conversation_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_message -> {
+                // Show user search fragment
+                Log.d(TAG, "Show user search screen")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -249,29 +249,29 @@ class ConversationScreen : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
         return when (item.itemId) {
-            android.R.id.home -> {
-                // Open host Activity's Navigation Drawer
-//                Log.d(TAG, "Open drawer")
-//                mDrawer.openDrawer(GravityCompat.START)
-
-                // Finish activity
-                (context as MessengerActivity).finishActivity()
-                true
-            }
-            R.id.action_message -> {
-//                val integrator = IntentIntegrator.forSupportFragment(this)
-//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-//                integrator.setOrientationLocked(false)
-//                integrator.setPrompt("")
-//                integrator.setBeepEnabled(false)
-//                integrator.setCaptureActivity(CustomScannerActivity::class.java)
-//                integrator.initiateScan()
-//                Log.d(TAG, "action_message")
-
-                // Show user search fragment
-                (context as MessengerActivity).showSearchFragment()
-                true
-            }
+//            android.R.id.home -> {
+//                // Open host Activity's Navigation Drawer
+////                Log.d(TAG, "Open drawer")
+////                mDrawer.openDrawer(GravityCompat.START)
+//
+//                // Finish activity
+//                (context as MessengerActivity).finishActivity()
+//                true
+//            }
+//            R.id.action_message -> {
+////                val integrator = IntentIntegrator.forSupportFragment(this)
+////                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+////                integrator.setOrientationLocked(false)
+////                integrator.setPrompt("")
+////                integrator.setBeepEnabled(false)
+////                integrator.setCaptureActivity(CustomScannerActivity::class.java)
+////                integrator.initiateScan()
+////                Log.d(TAG, "action_message")
+//
+//                // Show user search fragment
+//                (context as MessengerActivity).showSearchFragment()
+//                true
+//            }
             else -> super.onOptionsItemSelected(item)
         }
     }
