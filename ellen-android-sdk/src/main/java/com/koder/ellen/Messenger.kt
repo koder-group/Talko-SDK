@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import android.util.Base64
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Prefs
 import com.koder.ellen.core.Utils
@@ -193,13 +194,20 @@ class Messenger {
                         EventName.conversationModified.value -> {
                             // Conversation modified
                             val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
-                            eventCallback.onConversationModified(conversationId)
+                            val initiatingUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("initiatingUser"), User::class.java)
+                            var titleEl: JsonElement? = pnMessageResult.message.asJsonObject.get("title")
+                            var title: String? = null
+                            if(!titleEl!!.isJsonNull) {
+                                title = titleEl.asString
+                            }
+                            eventCallback.onConversationModified(initiatingUser, title, conversationId)
                         }
                         EventName.participantAdded.value -> {
                             // Participant added
                             val addedUserId = pnMessageResult.message.asJsonObject.get("userId").asString
                             val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
-                            eventCallback.onAddedToConversation(addedUserId, conversationId)
+                            val initiatingUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("initiatingUser"), User::class.java)
+                            eventCallback.onAddedToConversation(initiatingUser, addedUserId, conversationId)
                             if(prefs?.userId.equals(addedUserId, ignoreCase = true)) {
                                 // Current user, subscribe to channel
                                 subscribeToChannelList(mutableListOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
@@ -209,7 +217,8 @@ class Messenger {
                             // Participant removed
                             val removedUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), User::class.java)
                             val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
-                            eventCallback.onRemovedFromConversation(removedUser.userId, conversationId)
+                            val initiatingUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("initiatingUser"), User::class.java)
+                            eventCallback.onRemovedFromConversation(initiatingUser, removedUser.userId, conversationId)
                             if(removedUser.userId.equals(prefs?.userId, ignoreCase = true)) {
                                 // Current user, unsubscribe to channel
                                 unsubscribeFromChannelList(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
@@ -226,8 +235,8 @@ class Messenger {
                             eventCallback.onModeratorAdded(userId)
                         }
                         EventName.moderatorRemoved.value -> {
-                            val moderatorId = pnMessageResult.message.asJsonObject.get("moderatorId").asString
-                            eventCallback.onModeratorRemoved(moderatorId)
+                            val userId = pnMessageResult.message.asJsonObject.get("moderatorId").asString
+                            eventCallback.onModeratorRemoved(userId)
                         }
                         EventName.messageUserReaction.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Message::class.java)
@@ -239,7 +248,8 @@ class Messenger {
                         }
                         EventName.messageRejected.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
-                            eventCallback.onMessageRejected(message)
+                            val errorMessage = pnMessageResult.message.asJsonObject.get("rejectionReason").asJsonObject.get("message").asString
+                            eventCallback.onMessageRejected(message, errorMessage)
                         }
                         EventName.controlEvent.value -> {
                             // Control event
@@ -354,19 +364,19 @@ class Messenger {
 interface EventInterface {
     fun onConversationCreated(conversation: Conversation)
     fun onConversationClosed(conversation: Conversation)
-    fun onConversationModified(conversationId: String)
+    fun onConversationModified(initiatingUser: User, title: String?, conversationId: String)
     fun onParticipantStateChanged(participant: Participant, conversationId: String)
-    fun onAddedToConversation(userId: String, conversationId: String)
-    fun onRemovedFromConversation(userId: String, conversationId: String)
+    fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String)
+    fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String)
     fun onMessageReceived(message: Message)
-    fun onMessageRejected(message: Message)
+    fun onMessageRejected(message: Message, errorMessage: String)
     fun onMessageDeleted(message: Message)
     fun onMessageUserReaction(message: Message)
 //    fun onControlMessage(data: String)
     fun onUserTypingStart(initiatingUserId: String)
     fun onUserTypingStop(initiatingUserId: String)
     fun onModeratorAdded(userId: String)
-    fun onModeratorRemoved(moderatorId: String)
+    fun onModeratorRemoved(userId: String)
 }
 
 // Interface for refreshing user tokens

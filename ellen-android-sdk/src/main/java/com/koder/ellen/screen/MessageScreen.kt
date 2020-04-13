@@ -346,7 +346,7 @@ class MessageScreen : Fragment(),
 //            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //            supportActionBar?.setDisplayShowHomeEnabled(true)
 //            supportActionBar?.title = title
-            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))
+//            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
             // Set AppBar for expanded images
 //            appBar = (this).getAppBar()   // TODO UI Screens
             // RecyclerView for Messages
@@ -680,8 +680,8 @@ class MessageScreen : Fragment(),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
-        inflater.inflate(R.menu.message_menu, menu)
+//        menu.clear()  // TODO UI Screens
+//        inflater.inflate(R.menu.message_menu, menu)   // TODO UI Screens
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
@@ -695,7 +695,7 @@ class MessageScreen : Fragment(),
                 // Hide keyboard
                 hideKeyboard(activity)
                 // Show MessageInfoFragment and add to backstack
-                (activity as MessengerActivity).showInfoFragment()
+//                (activity as MessengerActivity).showInfoFragment()    // TODO UI Screens
                 true
             }
 //            R.id.action_video -> {
@@ -1710,8 +1710,8 @@ class MessageScreen : Fragment(),
     fun userStartTyping(initiatingUserId: String) {
         Log.d(TAG, "userStartTyping ${initiatingUserId}")
 
-        val displayName = getDisplayName(initiatingUserId) + " is typing..."
-        val profileImageUrl = getProfileImageUrl(initiatingUserId)
+        val displayName = getDisplayName(initiatingUserId) + " is typing..."    // TODO UI Screens
+//        val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
         val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")
 //        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
@@ -1750,7 +1750,8 @@ class MessageScreen : Fragment(),
     }
 
     fun getDisplayName(userId: String): String {
-        val conversation = (activity as MessengerActivity).getCurrentConversation()
+        val conversation: Conversation? = null  // TODO UI Screens
+//        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
         conversation?.let {
             val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
             found?.let {
@@ -1809,43 +1810,109 @@ class MessageScreen : Fragment(),
             }
 
             override fun onConversationClosed(conversation: Conversation) {
+                if(conversationId.equals(conversation.conversationId, ignoreCase = true)) {
+                    // Close conversation
+                }
             }
 
-            override fun onConversationModified(conversationId: String) {
+            override fun onConversationModified(
+                initiatingUser: User,
+                title: String?,
+                conversationId: String
+            ) {
+                activity?.runOnUiThread {
+                    title?.let { t ->
+                        showStatusMessage("${initiatingUser.displayName} changed the conversation name to ${t}")
+                    }
+                }
             }
 
             override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
             }
 
-            override fun onAddedToConversation(userId: String, conversationId: String) {
+            override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(
+                            this@MessageScreen.conversationId,
+                            ignoreCase = true
+                        )
+                    ) {
+                        showStatusMessage("${initiatingUser.displayName} added a new user to the conversation.")
+                    }
+                }
             }
 
-            override fun onRemovedFromConversation(userId: String, conversationId: String) {
+            override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(
+                            this@MessageScreen.conversationId,
+                            ignoreCase = true
+                        )
+                    ) {
+                        showStatusMessage("${initiatingUser.displayName} removed a user from the conversation.")
+                    }
+
+                    if (removedUserId.equals(prefs?.externalUserId, ignoreCase = true)) {
+                        // Close conversation for removed user
+                    }
+                }
             }
 
             override fun onMessageReceived(message: Message) {
-                Log.d(TAG, "onMessageReceived ${message}")
+                activity?.runOnUiThread {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        addMessage(message)
+//                        Log.d(TAG, "${message.timeCreated.toString()}")
+//                        val timeCreated = convertDateToLong(message.timeCreated.toString())
+                        prefs?.setConversationLastRead(message.conversationId, message.timeCreated.toLong())
+                    }
+                }
             }
 
-            override fun onMessageRejected(message: Message) {
+            override fun onMessageRejected(message: Message, errorMessage: String) {
+                activity?.runOnUiThread {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true) &&
+                        message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)
+                    ) {
+                        showMessageError(message.metadata.localReferenceId, errorMessage)
+                    }
+                }
             }
 
             override fun onMessageDeleted(message: Message) {
+                activity?.runOnUiThread {
+                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        deleteMessageFromList(message)
+                    }
+                }
             }
 
             override fun onMessageUserReaction(message: Message) {
+                activity?.runOnUiThread {
+                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        updateMessage(message)
+                    }
+                }
             }
 
             override fun onUserTypingStart(initiatingUserId: String) {
+                activity?.runOnUiThread {
+                    userStartTyping(initiatingUserId)
+                }
             }
 
             override fun onUserTypingStop(initiatingUserId: String) {
+                activity?.runOnUiThread {
+                    userStopTyping(initiatingUserId)
+                }
             }
 
             override fun onModeratorAdded(userId: String) {
+                Log.d(TAG, "Moderator added ${userId}")
             }
 
-            override fun onModeratorRemoved(moderatorId: String) {
+            override fun onModeratorRemoved(userId: String) {
+                Log.d(TAG, "Moderator removed ${userId}")
             }
         })
     }
