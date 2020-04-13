@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-  def ellen_version = "0.5" // Or latest version
+  def ellen_version = "0.6" // Or latest version
   def multidex_version = "2.0.1"
   def material_version ="1.1.0"
   def firebase_messaging_version="20.1.0"
@@ -78,12 +78,7 @@ Messenger.set(userToken, applicationContext, object: CompletionCallback() {
 })
 ```
 
-#### 5. Launch UI Unified
-```
-startActivity(new Intent(YourActivity.this, MessengerActivity.class));
-```
-
-#### 6. Implement onRefreshTokenRequest
+#### 5. Implement onRefreshTokenRequest
 
 ```
 // Add request handler at app-level
@@ -112,4 +107,38 @@ public class MyApplication extends Application {
   android:name=".MyApplication"
   ...
   >
+```
+
+#### 5. UI Kit
+
+##### 5a. UI Unified
+```
+startActivity(new Intent(YourActivity.this, MessengerActivity.class));
+```
+##### 5b. UI Screens
+
+In your layout.xml, add the following snippet to use the Conversation list screen
+```
+<fragment
+  android:id="@+id/conversation_screen"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  class="com.koder.ellen.screen.ConversationScreen"
+  />
+```
+
+To get the click event of the list you must use setItemClickListener
+```
+ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
+  override fun OnItemClickListener(conversation: Conversation, position: Int) {
+
+  }
+})
+```
+
+Setting background color and corner radius
+```
+val conversationScreen = supportFragmentManager.findFragmentById(R.id.conversation_screen) as ConversationScreen
+conversationScreen.setBackgroundColor("#00CCCC")
+conversationScreen.setListCornerRadius(20, 20, 0, 0)  // dp
 ```

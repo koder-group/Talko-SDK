@@ -288,7 +288,7 @@ pre[data-line] .line-highlight[data-end]:after {
 }
 
 dependencies {
-  def ellen_version = &quot;0.5&quot; // Or latest version
+  def ellen_version = &quot;0.6&quot; // Or latest version
   def multidex_version = &quot;2.0.1&quot;
   def material_version =&quot;1.1.0&quot;
   def firebase_messaging_version=&quot;20.1.0&quot;
@@ -334,10 +334,7 @@ dependencies {
     }
   }
 })
-</code></pre><h4 class="mume-header" id="5-launch-ui-unified">5. Launch UI Unified</h4>
-
-<pre data-role="codeBlock" data-info class="language-"><code>startActivity(new Intent(YourActivity.this, MessengerActivity.class));
-</code></pre><h4 class="mume-header" id="6-implement-onrefreshtokenrequest">6. Implement onRefreshTokenRequest</h4>
+</code></pre><h4 class="mume-header" id="5-implement-onrefreshtokenrequest">5. Implement onRefreshTokenRequest</h4>
 
 <pre data-role="codeBlock" data-info class="language-"><code>// Add request handler at app-level
 public class MyApplication extends Application {
@@ -362,6 +359,30 @@ public class MyApplication extends Application {
   android:name=&quot;.MyApplication&quot;
   ...
   &gt;
+</code></pre><h4 class="mume-header" id="5-ui-kit">5. UI Kit</h4>
+
+<h5 class="mume-header" id="5a-ui-unified">5a. UI Unified</h5>
+
+<pre data-role="codeBlock" data-info class="language-"><code>startActivity(new Intent(YourActivity.this, MessengerActivity.class));
+</code></pre><h5 class="mume-header" id="5b-ui-screens">5b. UI Screens</h5>
+
+<p>In your layout.xml, add the following snippet to use the Conversation list screen</p>
+<pre data-role="codeBlock" data-info class="language-"><code>&lt;fragment
+  android:id=&quot;@+id/conversation_screen&quot;
+  android:layout_width=&quot;match_parent&quot;
+  android:layout_height=&quot;match_parent&quot;
+  class=&quot;com.koder.ellen.screen.ConversationScreen&quot;
+  /&gt;
+</code></pre><p>To get the click event of the list you must use setItemClickListener</p>
+<pre data-role="codeBlock" data-info class="language-"><code>ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
+  override fun OnItemClickListener(conversation: Conversation, position: Int) {
+
+  }
+})
+</code></pre><p>Setting background color and corner radius</p>
+<pre data-role="codeBlock" data-info class="language-"><code>val conversationScreen = supportFragmentManager.findFragmentById(R.id.conversation_screen) as ConversationScreen
+conversationScreen.setBackgroundColor(&quot;#00CCCC&quot;)
+conversationScreen.setListCornerRadius(20, 20, 0, 0)  // dp
 </code></pre>
       </div>
       
