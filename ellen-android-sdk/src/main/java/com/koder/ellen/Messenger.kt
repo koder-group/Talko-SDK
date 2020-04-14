@@ -45,6 +45,8 @@ class Messenger {
         @JvmStatic var selfMessageRadius = 18
         @JvmStatic var senderBackgroundColor = "#88000000"  // gray
         @JvmStatic var selfBackgroundColor = "#1A73E9"  // blue
+        @JvmStatic var screenBackgroundColor = "#FFFFFF"
+        @JvmStatic var screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 
         // Application context
         @JvmStatic fun init(appId: String, context: Context?) {

@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.koder.ellen.model.Conversation
+import com.koder.ellen.model.User
 import com.koder.ellen.screen.ConversationScreen
 import com.koder.ellen.screen.MessageScreen
+import com.koder.ellen.screen.UserSearchScreen
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -54,13 +56,13 @@ class MainActivity : AppCompatActivity() {
 //        conversationScreen.setListCornerRadius(20, 20, 0, 0)
 
         // Message Screen
-        val bundle = Bundle()
-        val messageScreen = MessageScreen.newInstance()
-        bundle.putString("CONVERSATION_ID", "743e2aca-0460-4b68-9a74-f263038419fa")
-        bundle.putString("BACKGROUND_COLOR", "#00CCCC")
-        bundle.putIntArray("CORNER_RADIUS", intArrayOf(20, 20, 0, 0)) // top left, top right, bottom right, top left
-        messageScreen.setArguments(bundle)
-        getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).commit()
+//        val bundle = Bundle()
+//        val messageScreen = MessageScreen.newInstance()
+//        bundle.putString("CONVERSATION_ID", "743e2aca-0460-4b68-9a74-f263038419fa")
+//        bundle.putString("BACKGROUND_COLOR", "#00CCCC")
+//        bundle.putIntArray("CORNER_RADIUS", intArrayOf(20, 20, 0, 0)) // top left, top right, bottom right, top left
+//        messageScreen.setArguments(bundle)
+//        getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).commit()
 
         // Customize UI, background color and rounded corners
         val messageFrag = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message)) as MessageScreen?
@@ -75,6 +77,15 @@ class MainActivity : AppCompatActivity() {
 //                messageScreen.setListCornerRadius(20,20,0,0)
 //            }
 //        })
+
+        // User search screen
+        UserSearchScreen.setItemClickListener(object: UserSearchScreen.OnItemClickListener() {
+            override fun OnItemClickListener(user: User, position: Int) {
+                Log.d(TAG, "OnItemClickListener")
+                Log.d(TAG, "User ${user}")
+                Log.d(TAG, "Position ${position}")
+            }
+        })
 
 //        val userToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IjE3YzRhYmQ4YTE3MjQ0OTdiZmViMjBiMWM0ZDhmYjU0IiwidHlwIjoiSldUIn0.eyJ0ZW5hbnRfaWQiOiJFRkI5NEM3RS03MUU5LTQwNkItOTA1OS02MUFDMDUyMjdGMUIiLCJ1c2VyX2lkIjoiNEVFRDg2Q0UtNDZCNi00NjNGLUJBMjgtQzgzN0IzNDVBRUIzIiwidXNlcl9uYW1lIjoiamVmZmF0a29kZXIiLCJwcm9maWxlX2ltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9lbGxlbi1maXJlYmFzZS1leGFtcGxlLmFwcHNwb3QuY29tL28vQXZhdGFycyUyRnVzZXItMjEucG5nP2FsdD1tZWRpYSZ0b2tlbj1lZjhhYmI1MC0wNjJkLTQ1ZDItOTcwYS1mNDIxNjRmYzA0OWYiLCJleHAiOjE1ODY0MDkyNTgsImlzcyI6Imh0dHBzOi8vZWxsZW4ua29kZXIuY29tL2FwaS9tYW5hZ2VtZW50IiwiYXVkIjoiaHR0cHM6Ly9lbGxlbi5rb2Rlci5jb20vYXBpL21lc3NhZ2luZyJ9.bYBdNZ6BDtpX4TUjDZZ_vOUP8Of87PHnd1Sb9EHtFwA"
 

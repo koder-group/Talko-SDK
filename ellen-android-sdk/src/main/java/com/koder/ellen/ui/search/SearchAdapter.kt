@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.koder.ellen.MessengerActivity
@@ -21,10 +22,11 @@ import com.squareup.picasso.Picasso
 import java.util.*
 import com.koder.ellen.R
 import com.koder.ellen.model.User
+import com.koder.ellen.screen.UserSearchScreen
 import com.koder.ellen.ui.message.MessageFragment
 
 
-internal class SearchAdapter(private val context: Context, private val dataset: MutableList<User>) :
+internal class SearchAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: Fragment? = null) :
     RecyclerView.Adapter<SearchAdapter.MyViewHolder>() {
 
     val TAG = "SearchAdapter"
@@ -77,8 +79,11 @@ internal class SearchAdapter(private val context: Context, private val dataset: 
 
 //            Log.d(TAG, "publicIdFromImageUrl ${publicId}")
 
-            // TODO Uncomment
-            (context as MessengerActivity).createConversationFromSearch(user.userId)
+            if(fragment == null) {
+                (context as MessengerActivity).createConversationFromSearch(user.userId)
+            } else if (fragment is UserSearchScreen) {
+                fragment.sendClick(dataset.get(position), position)
+            }
 
             // Communicate with host Activity to show MessageFragment
 //            (context as MainActivity).showMessageFragment(dataset.get(position))
