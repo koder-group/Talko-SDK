@@ -10,6 +10,8 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RoundRectShape
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.*
@@ -84,6 +86,8 @@ class MessageScreen : Fragment(),
     }
 
     private lateinit var conversationId: String
+    private var backgroundColor: String? = null
+    private var cornerRadius: IntArray? = null
 
     private lateinit var rootView: View
     private lateinit var containerView: RelativeLayout
@@ -91,6 +95,9 @@ class MessageScreen : Fragment(),
     private lateinit var conversation: Conversation
     private var qrPublicId: String? = null
     private var created: Boolean = false
+
+//    private lateinit var mCompleteListener: OnLayoutCompleteListener
+    private lateinit var listFrame: FrameLayout
 
     // RecyclerView
     private lateinit var recyclerView: RecyclerView
@@ -170,6 +177,7 @@ class MessageScreen : Fragment(),
     override fun onAttach(context: Context) {
         super.onAttach(context)
         setEventHandler()
+        Log.d(TAG, "onAttach")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -183,9 +191,17 @@ class MessageScreen : Fragment(),
 //            Log.d(TAG, "conversationId ${conversationId}")
 //        }
         conversationId = arguments?.getString("CONVERSATION_ID")!!
+        backgroundColor = arguments?.getString("BACKGROUND_COLOR")
+        cornerRadius = arguments?.getIntArray("CORNER_RADIUS")
+
         Log.d(TAG, "conversationId ${conversationId}")
+        Log.d(TAG, "backgroundColor ${backgroundColor}")
+        Log.d(TAG, "cornerRadius ${Arrays.toString(cornerRadius)}")
+
         val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
         if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
+
+        Log.d(TAG, "onCreate")
     }
 
     override fun onCreateView(
@@ -308,7 +324,23 @@ class MessageScreen : Fragment(),
         appBar = rootView.findViewById(R.id.appbar_layout)
         appBar.visibility = View.GONE
 
+        // UI Screens
+        listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
+
+        backgroundColor?.let { color ->
+            setBackgroundColor(color)
+        }
+        cornerRadius?.let {arr ->
+            setListCornerRadius(arr[0],arr[1],arr[2],arr[3])
+        }
+
         return rootView
+    }
+
+    override fun onStart() {
+        super.onStart()
+//        Log.d(TAG, "onStart")
+//        if(this::mCompleteListener.isInitialized) mCompleteListener.onComplete()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -1899,13 +1931,13 @@ class MessageScreen : Fragment(),
 
             override fun onUserTypingStart(initiatingUserId: String) {
                 activity?.runOnUiThread {
-                    userStartTyping(initiatingUserId)
+//                    userStartTyping(initiatingUserId)
                 }
             }
 
             override fun onUserTypingStop(initiatingUserId: String) {
                 activity?.runOnUiThread {
-                    userStopTyping(initiatingUserId)
+//                    userStopTyping(initiatingUserId)
                 }
             }
 
@@ -1918,6 +1950,40 @@ class MessageScreen : Fragment(),
             }
         })
     }
+
+    // UI Screens
+    fun setBackgroundColor(color: String) {
+        Log.d(TAG, "setBackgroundColor ${color}")
+        containerView.setBackgroundColor(Color.parseColor(color))
+//        val container = rootView.findViewById<RelativeLayout>(R.id.container)
+//        container.setBackgroundColor(Color.parseColor(color))
+    }
+
+    fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
+        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
+        listFrame.background = shape
+    }
+
+    // Return shape drawable with corner radius and background color
+    // radius in pixels
+    // color in hex string #FFFFFF
+    private fun getShape(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float, color: String): ShapeDrawable {
+        val shape = ShapeDrawable(RoundRectShape(floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft), null, null))
+        shape.getPaint().setColor(Color.parseColor(color))
+        return shape
+    }
+
+    // OnLayoutComplete listener
+//    interface CompleteInterface {
+//        fun onComplete()
+//    }
+//
+//    // On completion callback for
+//    abstract class OnLayoutCompleteListener: CompleteInterface {}
+//
+//    fun addLayoutCompleteListener(listener: OnLayoutCompleteListener) {
+//        mCompleteListener = listener
+//    }
 }
 
 // Override LayoutManager to disable scroll

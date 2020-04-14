@@ -7,18 +7,18 @@
     tools:context=".MainActivity">
 
     <!-- Conversation Screen -->
-    <fragment
-        android:id="@+id/conversation_screen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.koder.ellen.screen.ConversationScreen"
-       />
-
-    <!-- Message screen -->
-<!--    <FrameLayout-->
-<!--        android:id="@+id/screenFrame"-->
+<!--    <fragment-->
+<!--        android:id="@+id/conversation_screen"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
-<!--        />-->
+<!--        class="com.koder.ellen.screen.ConversationScreen"-->
+<!--       />-->
+
+    <!-- Message screen -->
+    <FrameLayout
+        android:id="@+id/screenFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

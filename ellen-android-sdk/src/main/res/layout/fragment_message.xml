@@ -43,29 +43,34 @@
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/message_input_layout"
+            android:layout_above="@id/message_input_frame"
             android:layout_below="@id/appbar_layout"
             >
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
+            <FrameLayout
+                android:id="@+id/list_frame"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:overScrollMode="never"
-                android:paddingTop="8dp"
-                android:clipToPadding="false"
-                />
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:overScrollMode="never"
+                    android:paddingTop="8dp"
+                    android:clipToPadding="false"
+                    />
+
+            </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <!-- Message input -->
-        <RelativeLayout
-            android:id="@+id/message_input_layout"
+        <FrameLayout
+            android:id="@+id/message_input_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/bg_round_border_message"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,103 +79,122 @@
 
             android:layout_alignParentBottom="true"
 
-            android:animateLayoutChanges="true">
+            android:animateLayoutChanges="true"
 
-            <!-- Media input layout -->
+            android:background="#FFF">
             <RelativeLayout
-                android:id="@+id/media_input_layout"
+                android:id="@+id/message_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_border_media_input"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_round_border_message"
 
-                android:paddingTop="11dp"
-                android:paddingRight="1dp"
-                android:paddingBottom="11dp"
-                android:paddingLeft="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/swipe_refresh_layout"
 
-                android:visibility="gone">
+                android:layout_alignParentBottom="true"
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/media_recycler_view"
+                android:animateLayoutChanges="true">
+
+                <!-- Media input layout -->
+                <RelativeLayout
+                    android:id="@+id/media_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:overScrollMode="never"
-                    android:clipToPadding="false"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="4dp"
-                    />
+                    android:background="@drawable/bg_border_media_input"
 
-            </RelativeLayout>
-
-            <!-- Text input layout -->
-            <RelativeLayout
-                android:id="@+id/text_input_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_below="@id/media_input_layout">
-
-                <ImageView
-                    android:id="@+id/message_send_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/send"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_state"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
                     android:paddingTop="11dp"
-                    android:paddingRight="3dp"
+                    android:paddingRight="1dp"
                     android:paddingBottom="11dp"
-                    android:paddingLeft="0dp"
-                    android:src="@drawable/ic_paper_plane_regular"
-                    />
+                    android:paddingLeft="1dp"
 
-                <EditText
-                    android:id="@+id/message_input"
+                    android:visibility="gone">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/media_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:overScrollMode="never"
+                        android:clipToPadding="false"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="4dp"
+                        />
+
+                </RelativeLayout>
+
+                <!-- Text input layout -->
+                <RelativeLayout
+                    android:id="@+id/text_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/message_dotdotdot"
-                    android:paddingTop="11dp"
-                    android:paddingRight="0dp"
-                    android:paddingBottom="11dp"
-                    android:paddingLeft="15dp"
-                    android:maxLines="3"
-                    android:background="@android:color/transparent"
-                    android:textSize="16dp"
 
-                    android:layout_toStartOf="@id/message_send_btn"
-                    android:layout_toLeftOf="@id/message_send_btn"
-                    />
+                    android:layout_below="@id/media_input_layout">
 
-                <ImageView
-                    android:id="@+id/add_image_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/send"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_state"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:paddingTop="5dp"
-                    android:paddingRight="0dp"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="0dp"
-                    android:layout_marginRight="50dp"
-                    android:src="@drawable/ic_image_24dp"/>
+                    <ImageView
+                        android:id="@+id/message_send_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:text="@string/send"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_state"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingTop="11dp"
+                        android:paddingRight="3dp"
+                        android:paddingBottom="11dp"
+                        android:paddingLeft="0dp"
+                        android:src="@drawable/ic_paper_plane_regular"
+                        />
+
+                    <EditText
+                        android:id="@+id/message_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/message_dotdotdot"
+                        android:paddingTop="11dp"
+                        android:paddingRight="0dp"
+                        android:paddingBottom="11dp"
+                        android:paddingLeft="15dp"
+                        android:maxLines="3"
+                        android:background="@android:color/transparent"
+                        android:textSize="16dp"
+
+                        android:layout_toStartOf="@id/message_send_btn"
+                        android:layout_toLeftOf="@id/message_send_btn"
+                        />
+
+                    <ImageView
+                        android:id="@+id/add_image_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:text="@string/send"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_state"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:paddingTop="5dp"
+                        android:paddingRight="0dp"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="0dp"
+                        android:layout_marginRight="50dp"
+                        android:src="@drawable/ic_image_24dp"/>
+                </RelativeLayout>
+
             </RelativeLayout>
+        </FrameLayout>
 
-        </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mention_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/message_input_layout"
+            android:layout_above="@id/message_input_frame"
             android:elevation="2dp"
             android:outlineProvider="bounds"
             android:background="@color/white"/>
