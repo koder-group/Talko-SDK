@@ -327,12 +327,16 @@ class MessageScreen : Fragment(),
         // UI Screens
         listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
 
-        backgroundColor?.let { color ->
-            setBackgroundColor(color)
-        }
-        cornerRadius?.let {arr ->
-            setListCornerRadius(arr[0],arr[1],arr[2],arr[3])
-        }
+//        backgroundColor?.let { color ->
+//            setBackgroundColor(color)
+//        }
+//        cornerRadius?.let {arr ->
+//            setListCornerRadius(arr[0],arr[1],arr[2],arr[3])
+//        }
+
+        // Customizable UI options
+        setBackgroundColor(Messenger.screenBackgroundColor)
+        setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
 
         return rootView
     }
@@ -638,7 +642,9 @@ class MessageScreen : Fragment(),
         messageViewModel.mentionedParticipants.observe(viewLifecycleOwner, Observer {
             //            Log.d(TAG, "Mentioned participants")
 //            Log.d(TAG, "${it.size} ${it}")
-            mentionViewAdapter.setData(it)
+            it?.let {
+                mentionViewAdapter.setData(it)
+            }
         })
         // Observer, Update Message
         // message:published

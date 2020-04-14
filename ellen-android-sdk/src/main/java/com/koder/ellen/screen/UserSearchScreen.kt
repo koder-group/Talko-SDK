@@ -154,6 +154,7 @@ class UserSearchScreen : Fragment() {
         val appBar = rootView.findViewById<AppBarLayout>(R.id.appbar_layout)
         appBar.visibility = View.GONE
 
+        // Customizable UI options
         rootView.setBackgroundColor(Color.parseColor(Messenger.screenBackgroundColor))
         val contentFrame = rootView.findViewById<LinearLayout>(R.id.content_frame)
         val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), "#FFFFFF")
