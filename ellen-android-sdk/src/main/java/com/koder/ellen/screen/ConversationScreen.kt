@@ -10,10 +10,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -29,7 +27,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
-import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
 import com.koder.ellen.data.ConversationDataSource
 import com.koder.ellen.data.ConversationRepository
@@ -50,12 +47,12 @@ class ConversationScreen : Fragment() {
 
     companion object {
         fun newInstance() = ConversationScreen()
+        private const val TAG = "ConversationFragment"
+
         var mClickListener: OnItemClickListener? = null
-        fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        @JvmStatic fun setItemClickListener(onItemClickListener: OnItemClickListener) {
             mClickListener = onItemClickListener
         }
-
-        private const val TAG = "ConversationFragment"
     }
 
     abstract class OnItemClickListener: ClickInterface {}
