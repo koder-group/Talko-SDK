@@ -47,7 +47,7 @@ class ConversationScreen : Fragment() {
 
     companion object {
         fun newInstance() = ConversationScreen()
-        private const val TAG = "ConversationFragment"
+        private const val TAG = "ConversationScreen"
 
         var mClickListener: OnItemClickListener? = null
         @JvmStatic fun setItemClickListener(onItemClickListener: OnItemClickListener) {

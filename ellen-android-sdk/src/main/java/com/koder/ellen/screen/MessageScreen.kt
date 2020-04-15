@@ -85,7 +85,7 @@ class MessageScreen : Fragment(),
 //        lateinit var viewManager: RecyclerView.LayoutManager
     }
 
-    private lateinit var conversationId: String
+    private var conversationId: String? = null
     private var backgroundColor: String? = null
     private var cornerRadius: IntArray? = null
 
@@ -93,6 +93,7 @@ class MessageScreen : Fragment(),
     private lateinit var containerView: RelativeLayout
     private lateinit var viewModel: MainViewModel
     private lateinit var conversation: Conversation
+
     private var qrPublicId: String? = null
     private var created: Boolean = false
 
@@ -190,20 +191,28 @@ class MessageScreen : Fragment(),
 //            conversationId = bundle.getString("CONVERSATION_ID")!!
 //            Log.d(TAG, "conversationId ${conversationId}")
 //        }
-        conversationId = arguments?.getString("CONVERSATION_ID")!!
+        conversationId = arguments?.getString("CONVERSATION_ID")
+        qrPublicId = arguments?.getString("ADD_USER_ID")
+//        Log.d(TAG, "qrPublicId ${qrPublicId}")
+
         backgroundColor = arguments?.getString("BACKGROUND_COLOR")
         cornerRadius = arguments?.getIntArray("CORNER_RADIUS")
 
-        Log.d(TAG, "conversationId ${conversationId}")
-        Log.d(TAG, "backgroundColor ${backgroundColor}")
-        Log.d(TAG, "cornerRadius ${Arrays.toString(cornerRadius)}")
+//        Log.d(TAG, "conversationId ${conversationId}")
+//        Log.d(TAG, "backgroundColor ${backgroundColor}")
+//        Log.d(TAG, "cornerRadius ${Arrays.toString(cornerRadius)}")
 
         // Set fragment conversation
-        conversation = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }!!
+        val found = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+        found?.let {
+            conversation = it
+        }
 
         // Subscribe to conversation channel
-        val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
-        if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
+        conversationId?.let {
+            val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
+            if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
+        }
     }
 
     override fun onCreateView(
@@ -251,8 +260,7 @@ class MessageScreen : Fragment(),
                     Log.d(TAG, "User stop typing")
                     userTyping = false
                     prefs?.externalUserId?.let {
-//                        messageViewModel.typingStopped(it, conversation.conversationId)
-                        messageViewModel.typingStopped(it, conversationId)
+                        messageViewModel.typingStopped(it, conversation.conversationId)
                     }
                 }
             }
@@ -266,8 +274,7 @@ class MessageScreen : Fragment(),
                     Log.d(TAG, "User start typing")
                     userTyping = true
                     prefs?.externalUserId?.let {
-//                        messageViewModel.typingStarted(it, conversation.conversationId)
-                        messageViewModel.typingStarted(it, conversationId)
+                        messageViewModel.typingStarted(it, conversation.conversationId)
                     }
                 }
                 // Remove this to run only once
@@ -305,7 +312,7 @@ class MessageScreen : Fragment(),
         shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime)
 
         // QR code scanned or user searched
-        qrPublicId = arguments?.getString("public_id")
+//        qrPublicId = arguments?.getString("public_id")
 
         // Prevent recreating when going back from Message Info
         if(!created) {
@@ -681,7 +688,7 @@ class MessageScreen : Fragment(),
 
         // Observer, Conversation
         messageViewModel.conversation.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "Conversation changed ${it}")
+            Log.d(TAG, "Conversation created ${it}")
             conversation = it
 
             // Populate participants list for Mentions
@@ -692,7 +699,8 @@ class MessageScreen : Fragment(),
 //            (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()  // TODO UI Screens
 
             // Subscribe to channel as needed
-//            val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()    // TODO UI Screens
+            val channel = "${prefs?.tenantId}-${it.conversationId}".toUpperCase()
+            Messenger.subscribeToChannelList(mutableListOf(channel))
 //            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
 //            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
@@ -798,7 +806,7 @@ class MessageScreen : Fragment(),
                             mentions.add(mention)
                         }
 
-                        val message = Message(conversationId = conversationId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
+                        val message = Message(conversationId = conversation.conversationId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
                         Log.d(TAG, "ifAllowedToSend() ${allowedToSend()}")
 
                         // Validate if allowed to send client-side
@@ -912,8 +920,7 @@ class MessageScreen : Fragment(),
             content = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString()),
             thumbnail = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString())
         )
-//        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
-        val message = Message(conversationId = conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
+        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
         return message
     }
 
@@ -1002,13 +1009,12 @@ class MessageScreen : Fragment(),
     private fun loadMessages() {
 //        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
         Log.d(TAG, "loadMessages")
-//        if(::conversation.isInitialized) {
-//            if (!conversation.conversationId.isNullOrBlank()) {
+        if(::conversation.isInitialized) {
+            if (!conversation.conversationId.isNullOrBlank()) {
                 swipeRefreshLayout.isRefreshing = true
-//                messageViewModel.getMessages(conversation.conversationId)
-        messageViewModel.getMessages(conversationId)
-//            }
-//        }
+                messageViewModel.getMessages(conversation.conversationId)
+            }
+        }
     }
 
     fun addMessage(message: Message) {
@@ -1755,8 +1761,7 @@ class MessageScreen : Fragment(),
 //        val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
         val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")
-//        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
-        val message = Message(conversationId = conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
+        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
 
         if(!userTypingMap.containsKey(initiatingUserId)) {
             // Store reference of <initiatingUserId, localReferenceId>

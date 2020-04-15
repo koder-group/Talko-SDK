@@ -50,7 +50,7 @@ class UserSearchScreen : Fragment() {
         private const val TAG = "UserSearchScreen"
 
         var mClickListener: OnItemClickListener? = null
-        fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        @JvmStatic fun setItemClickListener(onItemClickListener: OnItemClickListener) {
             mClickListener = onItemClickListener
         }
     }
