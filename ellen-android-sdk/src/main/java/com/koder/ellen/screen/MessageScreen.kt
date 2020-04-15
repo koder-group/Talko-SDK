@@ -198,18 +198,18 @@ class MessageScreen : Fragment(),
         Log.d(TAG, "backgroundColor ${backgroundColor}")
         Log.d(TAG, "cornerRadius ${Arrays.toString(cornerRadius)}")
 
+        // Set fragment conversation
+        conversation = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }!!
+
+        // Subscribe to conversation channel
         val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
         if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
-
-        Log.d(TAG, "onCreate")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d(TAG, "onCreateView")
-
         // Inflate Fragment's view
         rootView = inflater.inflate(R.layout.fragment_message, container, false)
         containerView = rootView.findViewById<RelativeLayout>(R.id.container)
@@ -343,8 +343,8 @@ class MessageScreen : Fragment(),
 
     override fun onStart() {
         super.onStart()
-//        Log.d(TAG, "onStart")
-//        if(this::mCompleteListener.isInitialized) mCompleteListener.onComplete()
+        // Get conversation
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -549,6 +549,10 @@ class MessageScreen : Fragment(),
                 }
             })
 
+            // Load conversation
+//            if(!::conversation.isInitialized) {
+//                messageViewModel.getConversation(conversationId)
+//            }
 
             // Load Messages
             if(!messagesLoaded) {
@@ -587,7 +591,7 @@ class MessageScreen : Fragment(),
         }
         mentionRecyclerView.addItemDecoration(DividerItemDecoration(mentionRecyclerView.context, DividerItemDecoration.VERTICAL))
         // Populate participants list
-        if(::conversation.isInitialized) messageViewModel.participants.value = getParticipantsList(conversation)
+        if(::conversation.isInitialized) messageViewModel.participants.value = getParticipantsList(conversation)    // TODO UI Screens
 
         // Media input
 //        private lateinit var mediaRecyclerView: RecyclerView
@@ -642,9 +646,8 @@ class MessageScreen : Fragment(),
         messageViewModel.mentionedParticipants.observe(viewLifecycleOwner, Observer {
             //            Log.d(TAG, "Mentioned participants")
 //            Log.d(TAG, "${it.size} ${it}")
-            it?.let {
-                mentionViewAdapter.setData(it)
-            }
+
+            mentionViewAdapter.setData(it)
         })
         // Observer, Update Message
         // message:published
@@ -678,20 +681,18 @@ class MessageScreen : Fragment(),
 
         // Observer, Conversation
         messageViewModel.conversation.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "New convo ${it}")
+            Log.d(TAG, "Conversation changed ${it}")
             conversation = it
-            (activity as MessengerActivity).setCurrentConversation(it)
-//            conversationId = conversation!!.conversationId
-//            toolbarTitle.text = getTitleByParticipants(conversation!!.participants)
-//            Id = conversation!!.conversationId
-//            (activity as MainActivity).supportActionBar?.title = getTitleByParticipants(conversation!!.participants)
-            (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()
 
-            // Pubnub
-//            if(pubNub == null) initPubNub()
-            // Subscribe to channel
-//            val channel = "${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()
-            val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
+            // Populate participants list for Mentions
+            messageViewModel.participants.value = getParticipantsList(it)
+
+//            (activity as MessengerActivity).setCurrentConversation(it)    // TODO UI Screens
+
+//            (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()  // TODO UI Screens
+
+            // Subscribe to channel as needed
+//            val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()    // TODO UI Screens
 //            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
 //            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
