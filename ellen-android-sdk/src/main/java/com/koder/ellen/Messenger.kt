@@ -48,6 +48,9 @@ class Messenger {
         @JvmStatic var screenBackgroundColor = "#FFFFFF"
         @JvmStatic var screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 
+        // Cache
+        var conversations = mutableListOf<Conversation>()
+
         // Application context
         @JvmStatic fun init(appId: String, context: Context?) {
             context?.let {

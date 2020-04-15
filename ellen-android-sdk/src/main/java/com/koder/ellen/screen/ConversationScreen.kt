@@ -222,6 +222,11 @@ class ConversationScreen : Fragment() {
 
                 // Subscribe to channels
                 subscribeToConversations(it)
+
+                // Add conversations to Messenger cache
+                Messenger.conversations.clear()
+                Messenger.conversations.addAll(conversations)
+//                Log.d(TAG, "Messenger.conversations ${Messenger.conversations}")
             })
 
             // Observer, deleteConversation
