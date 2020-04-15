@@ -15,18 +15,18 @@
 <!--       />-->
 
     <!-- Message screen -->
-<!--    <FrameLayout-->
-<!--        android:id="@+id/screenFrame"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        />-->
-
-    <!-- User search screen -->
-    <fragment
-        android:id="@+id/user_search_screen"
+    <FrameLayout
+        android:id="@+id/screenFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.koder.ellen.screen.UserSearchScreen"
-       />
+        />
+
+    <!-- User search screen -->
+<!--    <fragment-->
+<!--        android:id="@+id/user_search_screen"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        class="com.koder.ellen.screen.UserSearchScreen"-->
+<!--       />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
