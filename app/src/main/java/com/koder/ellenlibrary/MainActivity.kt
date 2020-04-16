@@ -98,6 +98,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
+            override fun onClickAddParticipant() {
+                Log.d(TAG, "onClickAddParticipant")
+            }
+        })
+
         // Customize UI, background color and rounded corners
 //        val conversationScreen = supportFragmentManager.findFragmentById(R.id.conversation_screen) as ConversationScreen
 //        conversationScreen.setBackgroundColor("#00CCCC")

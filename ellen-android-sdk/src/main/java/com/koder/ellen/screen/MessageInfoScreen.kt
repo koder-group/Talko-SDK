@@ -44,6 +44,17 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     companion object {
         fun newInstance() = MessageInfoScreen()
         private const val TAG = "MessageInfoScreen"
+
+        var mClickListener: OnItemClickListener? = null
+        @JvmStatic fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+            mClickListener = onItemClickListener
+        }
+    }
+
+    abstract class OnItemClickListener: ClickInterface {}
+    interface ClickInterface {
+//        fun OnItemClickListener() {}
+        fun onClickAddParticipant()
     }
 
     private lateinit var viewModel: MainViewModel
@@ -326,6 +337,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
                 // Show AddUserFragment
 //                (activity as MessengerActivity).showFindUserFragment(participants)    // TODO UI Screens
+                mClickListener?.onClickAddParticipant()
                 true
             }
             R.id.close_conversation_layout -> {
