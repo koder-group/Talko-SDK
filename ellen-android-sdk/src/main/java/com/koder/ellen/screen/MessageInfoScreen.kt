@@ -43,7 +43,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
     companion object {
         fun newInstance() = MessageInfoScreen()
-        private const val TAG = "MessageInfoFragment"
+        private const val TAG = "MessageInfoScreen"
     }
 
     private lateinit var viewModel: MainViewModel
@@ -490,8 +490,24 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
             override fun onConversationModified(
                 initiatingUser: User,
                 title: String?,
+                description: String?,
                 conversationId: String
             ) {
+                Log.d(TAG, "title ${title}")
+                Log.d(TAG, "description ${description}")
+
+                activity?.runOnUiThread {
+                    title?.let {
+                        // Update title
+                        titleView.text = title
+                    }
+                    description?.let {
+                        // Update description
+                        var desc = description
+                        if(description.isBlank()) desc = resources.getString(R.string.add_conversation_description)
+                        descriptionView.text = desc
+                    }
+                }
             }
 
             override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
