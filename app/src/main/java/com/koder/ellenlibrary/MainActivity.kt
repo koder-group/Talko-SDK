@@ -10,6 +10,7 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.User
 import com.koder.ellen.screen.ConversationScreen
+import com.koder.ellen.screen.MessageInfoScreen
 import com.koder.ellen.screen.MessageScreen
 import com.koder.ellen.screen.UserSearchScreen
 
@@ -60,35 +61,42 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()?.setElevation(0f)
 
         if (savedInstanceState == null) {
-//            val conversationScreen = ConversationScreen()
-//            getSupportFragmentManager().beginTransaction().replace(
-//                R.id.screenFrame,
-//                conversationScreen,
-//                resources.getString(R.string.conversations)
-//            ).commit()
-
-            val parentFragment = ParentFragment()
+            val conversationScreen = ConversationScreen()
             getSupportFragmentManager().beginTransaction().replace(
                 R.id.screenFrame,
-                parentFragment
+                conversationScreen,
+                resources.getString(R.string.conversations)
             ).commit()
+
+//            val parentFragment = ParentFragment()
+//            getSupportFragmentManager().beginTransaction().replace(
+//                R.id.screenFrame,
+//                parentFragment
+//            ).commit()
         }
 
         // Conversation Screen click listener
-//        ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
-//            override fun OnItemClickListener(conversation: Conversation, position: Int) {
-//                Log.d(TAG, "OnItemClickListener")
-//                Log.d(TAG, "Conversation ${conversation}")
-//                Log.d(TAG, "Position ${position}")
-//
-//                // Show Message Screens
-////                val bundle = Bundle()
-////                val messageScreen = MessageScreen()
-////                bundle.putString("CONVERSATION_ID", conversation.conversationId)
-////                messageScreen.setArguments(bundle)
-////                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
-//            }
-//        })
+        ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
+            override fun OnItemClickListener(conversation: Conversation, position: Int) {
+                Log.d(TAG, "OnItemClickListener")
+                Log.d(TAG, "Conversation ${conversation}")
+                Log.d(TAG, "Position ${position}")
+
+                // Show Message Screen
+//                val bundle = Bundle()
+//                val messageScreen = MessageScreen()
+//                bundle.putString("CONVERSATION_ID", conversation.conversationId)
+//                messageScreen.setArguments(bundle)
+//                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
+
+                // Show Message Info Screen
+                val bundle = Bundle()
+                val messageInfoScreen = MessageInfoScreen()
+                bundle.putString("CONVERSATION_ID", conversation.conversationId)
+                messageInfoScreen.setArguments(bundle)
+                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageInfoScreen, resources.getString(R.string.info)).addToBackStack(resources.getString(R.string.message)).commit()
+            }
+        })
 
         // Customize UI, background color and rounded corners
 //        val conversationScreen = supportFragmentManager.findFragmentById(R.id.conversation_screen) as ConversationScreen

@@ -1,25 +1,21 @@
 package com.koder.ellen.ui.message
 
 import android.content.Context
-import android.content.Intent
 import android.os.Handler
 import android.util.Log
-import android.util.TypedValue
 import android.view.*
-import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.koder.ellen.Messenger.Companion.prefs
-import com.squareup.picasso.Picasso
-import java.util.*
 import com.koder.ellen.R
 import com.koder.ellen.model.User
+import com.koder.ellen.screen.MessageInfoScreen
 
 
-internal class MessageInfoAdapter(private val context: Context, private val currentUser: User? = null, private val dataset: MutableList<User>, private val fragment: MessageInfoFragment? = null) :
+internal class MessageInfoAdapter(private val context: Context, private val currentUser: User? = null, private val dataset: MutableList<User>, private val fragment: Fragment? = null) :
     RecyclerView.Adapter<MessageInfoAdapter.MyViewHolder>() {
 
     val TAG = "MessageInfoAdapter"
@@ -124,14 +120,16 @@ internal class MessageInfoAdapter(private val context: Context, private val curr
 //                (context as MessageInfoActivity).promoteToModerator(user) // TODO
 
                 Handler().postDelayed({
-                    fragment?.addModerator(user)
+                    if(fragment is MessageInfoFragment) fragment?.addModerator(user)
+                    if(fragment is MessageInfoScreen) fragment?.addModerator(user)
                     dialog.dismiss()
                 }, 200)
             }
 
             removeModeratorView!!.setOnClickListener {
                 Handler().postDelayed({
-                    fragment?.removeModerator(user)
+                    if(fragment is MessageInfoFragment) fragment?.removeModerator(user)
+                    if(fragment is MessageInfoScreen) fragment?.removeModerator(user)
                     dialog.dismiss()
                 }, 200)
             }
@@ -140,7 +138,8 @@ internal class MessageInfoAdapter(private val context: Context, private val curr
 //                (context as MessageInfoActivity).removeFromConversation(user) // TODO
 
                 Handler().postDelayed({
-                    fragment?.removeFromConversation(user)
+                    if(fragment is MessageInfoFragment) fragment?.removeFromConversation(user)
+                    if(fragment is MessageInfoScreen) fragment?.removeFromConversation(user)
                     dialog.dismiss()
                 }, 200)
             }
