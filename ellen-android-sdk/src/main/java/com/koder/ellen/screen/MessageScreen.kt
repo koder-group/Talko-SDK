@@ -178,7 +178,6 @@ class MessageScreen : Fragment(),
     override fun onAttach(context: Context) {
         super.onAttach(context)
         setEventHandler()
-        Log.d(TAG, "onAttach")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

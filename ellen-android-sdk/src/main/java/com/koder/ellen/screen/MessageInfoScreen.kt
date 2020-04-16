@@ -4,11 +4,13 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -18,14 +20,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
 import com.koder.ellen.core.AppConstants
+import com.koder.ellen.core.Utils.Companion.getShape
 import com.koder.ellen.data.MessageDataSource
 import com.koder.ellen.data.MessageRepository
 import com.koder.ellen.model.Conversation
+import com.koder.ellen.model.Message
+import com.koder.ellen.model.Participant
 import com.koder.ellen.model.User
 import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.main.MainViewModel
@@ -63,9 +69,17 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     private lateinit var addParticipantLayout: ConstraintLayout
     private lateinit var closeConversationLayout: ConstraintLayout
 
-    private var title: String = ""
+    private var titleText: String = ""
     private var description: String = ""
     private val statusMessageList: MutableList<String> = mutableListOf()
+
+    private lateinit var containerView: LinearLayout
+    private lateinit var listFrame: LinearLayout
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        setEventHandler()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +104,13 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
         // Hide AppBarLayout for Screens
         val appBar = rootView.findViewById<AppBarLayout>(R.id.appbar_layout)
         appBar.visibility = View.GONE
+
+        // Customizable UI options
+        containerView = rootView.findViewById(R.id.main)
+        listFrame = rootView.findViewById(R.id.content_layout)
+
+        setBackgroundColor(Messenger.screenBackgroundColor)
+        setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
 
         return rootView
     }
@@ -137,8 +158,8 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
             // Title
             titleView = findViewById(R.id.title_text)
-            title = if(conversation.title.isNullOrBlank()) getTitleByParticipants(participants) else conversation.title
-            titleView.text = title
+            titleText = if(conversation.title.isNullOrBlank()) getTitleByParticipants(participants) else conversation.title
+            titleView.text = titleText
             val titleLayout = findViewById<ConstraintLayout>(R.id.title_layout)
             titleLayout.setOnClickListener {
                 val input = EditText(activity)
@@ -367,7 +388,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
     // Return participants in format Participant1, Participant2, ...
     private fun getTitleByParticipants(participants: MutableList<User>): String {
-        var title = ""
+        var titleText = ""
 
         // If the only participant is the sender (myself)
         if(participants.size == 1 && participants.first().userId.equals(prefs?.externalUserId, ignoreCase = true))
@@ -375,13 +396,13 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
         for (participant in participants) {
             if (participant.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
-            if (title.isEmpty()) {
-                title += participant.displayName
+            if (titleText.isEmpty()) {
+                titleText += participant.displayName
                 continue
             }
-            title += ", ${participant.displayName}"
+            titleText += ", ${participant.displayName}"
         }
-        return title
+        return titleText
     }
 
     // Extensions for dp-px conversion
@@ -409,7 +430,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     fun updateTitle(newTitle: String) {
         Log.d(TAG, "${newTitle}")
         titleView.text = newTitle
-        title = newTitle
+        titleText = newTitle
     }
 
     fun updateDescription(newDescription: String) {
@@ -456,5 +477,68 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
     fun addStatusMessage(statusMessage: String) {
         statusMessageList.add(statusMessage)
+    }
+
+    private fun setEventHandler() {
+        Messenger.addEventHandler(object: EventCallback() {
+            override fun onConversationCreated(conversation: Conversation) {
+            }
+
+            override fun onConversationClosed(conversation: Conversation) {
+            }
+
+            override fun onConversationModified(
+                initiatingUser: User,
+                title: String?,
+                conversationId: String
+            ) {
+            }
+
+            override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
+            }
+
+            override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
+            }
+
+            override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
+            }
+
+            override fun onMessageReceived(message: Message) {
+            }
+
+            override fun onMessageRejected(message: Message, errorMessage: String) {
+            }
+
+            override fun onMessageDeleted(message: Message) {
+            }
+
+            override fun onMessageUserReaction(message: Message) {
+            }
+
+            override fun onUserTypingStart(initiatingUserId: String) {
+            }
+
+            override fun onUserTypingStop(initiatingUserId: String) {
+            }
+
+            override fun onModeratorAdded(userId: String) {
+                Log.d(TAG, "Moderator added ${userId}")
+            }
+
+            override fun onModeratorRemoved(userId: String) {
+                Log.d(TAG, "Moderator removed ${userId}")
+            }
+        })
+    }
+
+    // UI Screens
+    fun setBackgroundColor(color: String) {
+        Log.d(TAG, "setBackgroundColor ${color}")
+        containerView.setBackgroundColor(Color.parseColor(color))
+    }
+
+    fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
+        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
+        listFrame.background = shape
     }
 }
