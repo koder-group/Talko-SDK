@@ -1863,6 +1863,7 @@ class MessageScreen : Fragment(),
             override fun onConversationModified(
                 initiatingUser: User,
                 title: String?,
+                description: String?,
                 conversationId: String
             ) {
                 activity?.runOnUiThread {

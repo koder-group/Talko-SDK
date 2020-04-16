@@ -456,6 +456,7 @@ class ConversationScreen : Fragment() {
             override fun onConversationModified(
                 initiatingUser: User,
                 title: String?,
+                description: String?,
                 conversationId: String
             ) {
                 loadConversations()

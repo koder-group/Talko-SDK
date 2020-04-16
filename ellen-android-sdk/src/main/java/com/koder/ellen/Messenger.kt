@@ -201,11 +201,16 @@ class Messenger {
                             val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
                             val initiatingUser = gson.fromJson(pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("initiatingUser"), User::class.java)
                             var titleEl: JsonElement? = pnMessageResult.message.asJsonObject.get("title")
+                            val descriptionEl = pnMessageResult.message.asJsonObject.get("description")
                             var title: String? = null
+                            var description: String? = null
                             if(!titleEl!!.isJsonNull) {
                                 title = titleEl.asString
                             }
-                            eventCallback.onConversationModified(initiatingUser, title, conversationId)
+                            if(!descriptionEl!!.isJsonNull) {
+                                description = descriptionEl.asString
+                            }
+                            eventCallback.onConversationModified(initiatingUser, title, description, conversationId)
                         }
                         EventName.participantAdded.value -> {
                             // Participant added
@@ -369,7 +374,7 @@ class Messenger {
 interface EventInterface {
     fun onConversationCreated(conversation: Conversation)
     fun onConversationClosed(conversation: Conversation)
-    fun onConversationModified(initiatingUser: User, title: String?, conversationId: String)
+    fun onConversationModified(initiatingUser: User, title: String?, description: String?, conversationId: String)
     fun onParticipantStateChanged(participant: Participant, conversationId: String)
     fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String)
     fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String)
