@@ -92,7 +92,18 @@ class Messenger {
                 val clientConfigResult = clientConfig.await()
 
                 if(clientConfigResult is Result.Success) {
-                    completion?.onCompletion(Result.Success(true))
+//                    completion?.onCompletion(Result.Success(true))
+
+                    // Populate initial conversations for fetchConversationById
+                    val client = Client()
+                    client.getConversationsForLoggedInUser(object: CompletionCallback() {
+                        override fun onCompletion(result: Result<Any>) {
+                            if(result is Result.Success) {
+                                conversations = result.data as MutableList<Conversation>
+                                completion?.onCompletion(Result.Success(true))
+                            }
+                        }
+                    })
                 } else {
                     completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
                 }
