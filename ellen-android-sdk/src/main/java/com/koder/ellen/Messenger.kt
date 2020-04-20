@@ -186,9 +186,9 @@ class Messenger {
 
                 override fun message(pubnub: PubNub, pnMessageResult: PNMessageResult) {
                     val gson = Gson()
-                    Log.d(TAG, "${pnMessageResult}")
+//                    Log.d(TAG, "${pnMessageResult}")
                     val eventName = pnMessageResult.message.asJsonObject.get("eventName").asString
-                    Log.d(TAG, "eventName ${eventName}")
+//                    Log.d(TAG, "eventName ${eventName}")
                     when(eventName) {
                         EventName.messagePublished.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
@@ -205,7 +205,7 @@ class Messenger {
                             // Conversation closed
                             val conversation = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Conversation::class.java)
                             eventCallback.onConversationClosed(conversation)
-                            // TODO Unsubscribe from channel -- needed?
+                            removeConversation(conversation)
                         }
                         EventName.conversationModified.value -> {
                             // Conversation modified
@@ -298,6 +298,13 @@ class Messenger {
             pubNub.addListener(subscribeCallback)
         }
 
+        private fun removeConversation(conversation: Conversation?) {
+            val found = conversations.find { c -> c.conversationId.equals(conversation?.conversationId, ignoreCase = true) }
+            found?.let {
+                conversations.remove(found)
+            }
+        }
+
         // Get and store client configuration
         private fun initClientConfiguration(): Result<ClientConfiguration> {
 //            GlobalScope.launch {
@@ -373,6 +380,10 @@ class Messenger {
                 }
             }
             return null
+        }
+
+        @JvmStatic fun getUserId(): String {
+            return prefs?.userId!!
         }
     }
 
