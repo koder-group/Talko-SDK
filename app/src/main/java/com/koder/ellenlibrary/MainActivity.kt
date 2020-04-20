@@ -6,7 +6,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import com.koder.ellen.Client
 import com.koder.ellen.Messenger
+import com.koder.ellen.Messenger.Companion.getUserId
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.User
 import com.koder.ellen.screen.ConversationScreen
@@ -110,6 +112,8 @@ class MainActivity : AppCompatActivity() {
 //        conversationScreen.setListCornerRadius(20, 20, 0, 0)
 
         // Message Screen
+
+        // Show Conversation
 //        val bundle = Bundle()
 //        val messageScreen = MessageScreen.newInstance()
 //        bundle.putString("CONVERSATION_ID", "63faa400-6a83-44b2-9664-6f98d133203e")
@@ -138,11 +142,36 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "OnItemClickListener")
                 Log.d(TAG, "User ${user}")
                 Log.d(TAG, "Position ${position}")
-                val bundle = Bundle()
-                val messageScreen = MessageScreen()
-                bundle.putString("ADD_USER_ID", user.userId)
-                messageScreen.setArguments(bundle)
-                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
+
+                // Create a new Conversation
+//                val bundle = Bundle()
+//                val messageScreen = MessageScreen()
+//                bundle.putString("ADD_USER_ID", user.userId)
+//                messageScreen.setArguments(bundle)
+//                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
+
+                // Find conversation
+                val conversationId = Messenger.fetchConversationId(getUserId(), user.userId)
+                Log.d(TAG, "conversationFound ${conversationId}")
+
+                // If conversation found, show
+                // bundle.putString("CONVERSATION_ID", conversationId)
+
+                // If conversation not found, then create
+                // bundle.putString("ADD_USER_ID", user.userId)
+
+                if(conversationId == null) {
+                    // Create new conversation
+                    val client = Client()
+                    client.createConversation(user.userId)
+                } else {
+                    // Show conversation found
+                    val bundle = Bundle()
+                    val messageScreen = MessageScreen.newInstance()
+                    bundle.putString("CONVERSATION_ID", conversationId)
+                    messageScreen.setArguments(bundle)
+                    getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).commit()
+                }
             }
         })
 
