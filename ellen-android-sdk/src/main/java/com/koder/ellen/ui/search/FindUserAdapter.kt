@@ -11,14 +11,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.koder.ellen.MessengerActivity
 import com.squareup.picasso.Picasso
 import com.koder.ellen.R
 import com.koder.ellen.model.User
+import com.koder.ellen.screen.AddParticipantScreen
 
 
-internal class FindUserAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: FindUserFragment? = null) :
+internal class FindUserAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: Fragment? = null) :
     RecyclerView.Adapter<FindUserAdapter.MyViewHolder>() {
 
     val TAG = "FindUserAdapter"
@@ -78,7 +80,11 @@ internal class FindUserAdapter(private val context: Context, private val dataset
 //            (context as MainActivity).showMessageFragment(dataset.get(position))
 
 //            // Add Participant
+            if(fragment is FindUserFragment)
                 fragment?.messageViewModel?.addParticipant(user.userId, (context as MessengerActivity).getCurrentConversation()?.conversationId!!)
+
+            if(fragment is AddParticipantScreen)
+                fragment?.sendClick(user.userId, position)
 //            fragment?.finishFragment()
         }
     }

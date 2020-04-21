@@ -7,14 +7,13 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import com.koder.ellen.Client
+import com.koder.ellen.CompletionCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.getUserId
+import com.koder.ellen.data.Result
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.User
-import com.koder.ellen.screen.ConversationScreen
-import com.koder.ellen.screen.MessageInfoScreen
-import com.koder.ellen.screen.MessageScreen
-import com.koder.ellen.screen.UserSearchScreen
+import com.koder.ellen.screen.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -101,8 +100,34 @@ class MainActivity : AppCompatActivity() {
         })
 
         MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
-            override fun onClickAddParticipant() {
-                Log.d(TAG, "onClickAddParticipant")
+            override fun onClickAddParticipant(conversationId: String) {
+                Log.d(TAG, "onClickAddParticipant ${conversationId}")
+                val bundle = Bundle()
+                val addParticipantScreen = AddParticipantScreen()
+                bundle.putString("CONVERSATION_ID", conversationId)
+                addParticipantScreen.setArguments(bundle)
+                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, addParticipantScreen).addToBackStack(resources.getString(R.string.message)).commit()
+            }
+        })
+
+        AddParticipantScreen.setItemClickListener(object: AddParticipantScreen.OnItemClickListener() {
+            override fun OnItemClickListener(
+                userId: String,
+                conversationId: String,
+                position: Int
+            ) {
+                Log.d(TAG, "Add Participant")
+                Log.d(TAG, "User Id ${userId}")
+                Log.d(TAG, "Conversation Id ${conversationId}")
+
+                val client = Client()
+                client.addParticipant(userId, conversationId, object: CompletionCallback() {
+                    override fun onCompletion(result: Result<Any>) {
+                        if(result is Result.Success) {
+                            Log.d(TAG, "addParticipant ${result.data}")
+                        }
+                    }
+                })
             }
         })
 

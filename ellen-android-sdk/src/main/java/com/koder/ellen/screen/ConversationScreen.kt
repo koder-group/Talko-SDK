@@ -344,7 +344,9 @@ class ConversationScreen : Fragment() {
 
     fun loadConversations() {
         Log.d(TAG, "Load conversations")
-        swipeRefreshLayout.isRefreshing = true
+        activity?.runOnUiThread {
+            swipeRefreshLayout.isRefreshing = true
+        }
         conversationViewModel.loadConversations()
     }
 

@@ -54,7 +54,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     abstract class OnItemClickListener: ClickInterface {}
     interface ClickInterface {
 //        fun OnItemClickListener() {}
-        fun onClickAddParticipant()
+        fun onClickAddParticipant(conversationId: String)
     }
 
     private lateinit var viewModel: MainViewModel
@@ -324,20 +324,10 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.add_participant_layout -> {
-                Log.d(TAG, "Add Participant")
-                //  TODO
-//                val integrator = IntentIntegrator.forSupportFragment(this)
-//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-//                integrator.setOrientationLocked(false)
-//                integrator.setPrompt("")
-//                integrator.setBeepEnabled(false)
-//                integrator.setCaptureActivity(CustomScannerActivity::class.java)
-//                integrator.initiateScan()
-                //  TODO
 
                 // Show AddUserFragment
 //                (activity as MessengerActivity).showFindUserFragment(participants)    // TODO UI Screens
-                mClickListener?.onClickAddParticipant()
+                mClickListener?.onClickAddParticipant(conversation.conversationId)
                 true
             }
             R.id.close_conversation_layout -> {
@@ -526,9 +516,15 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
             }
 
             override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
+                activity?.runOnUiThread {
+                    addParticipant(addedUserId)
+                }
             }
 
             override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
+                activity?.runOnUiThread {
+                    removeParticipant(removedUserId)
+                }
             }
 
             override fun onMessageReceived(message: Message) {
@@ -568,5 +564,13 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
         val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
         listFrame.background = shape
+    }
+
+    fun getUserIds(participants: MutableList<User>): ArrayList<String> {
+        val userIds = ArrayList<String>()
+        for(participant in participants) {
+            userIds.add(participant.userId)
+        }
+        return userIds
     }
 }
