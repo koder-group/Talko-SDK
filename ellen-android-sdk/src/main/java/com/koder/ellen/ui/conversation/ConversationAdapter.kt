@@ -204,16 +204,21 @@ internal class ConversationAdapter(private val context: Context, private val dat
             // Hide new message dot
 //            Log.d(TAG, "timeCreated ${dataset.get(position).timeCreated}")
 //            Log.d(TAG, "currentTimeMillis ${System.currentTimeMillis()}")
+            prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())
+            cardView.strokeWidth = 0
+            newMessageDot.visibility = View.GONE
+
             if(fragment == null) {
-                prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())
-                cardView.strokeWidth = 0
-                newMessageDot.visibility = View.GONE
+//                prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())  // TODO UI Screens
+//                cardView.strokeWidth = 0
+//                newMessageDot.visibility = View.GONE
 
                 // Communicate with host Activity to show MessageFragment
                 (context as MessengerActivity).showMessageFragment(dataset.get(position))
             } else if(fragment is com.koder.ellen.screen.ConversationScreen) {
                 fragment.sendClick(dataset.get(position), position)
             }
+
 
         }
     }
