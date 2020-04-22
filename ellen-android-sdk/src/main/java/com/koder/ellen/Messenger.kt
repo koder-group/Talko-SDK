@@ -399,6 +399,36 @@ class Messenger {
             }
             return unreadCount
         }
+
+        // Return participants in format Participant1, Participant2, ...
+        @JvmStatic fun fetchConversationTitle(conversationId: String): String {
+            val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+            val participants = conversation?.participants
+
+            // Return conversation title if exists // TODO needed?
+//            if(!conversation?.title.isNullOrBlank()) return conversation!!.title
+
+            var title = ""
+
+            // If the only participant is the sender (myself)
+            if(participants?.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId, ignoreCase = true))
+                return "Me"
+
+            participants?.let {
+                for (participant in participants) {
+                    if(participant.user.displayName != null) {
+                        if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
+                        if (title.isEmpty()) {
+                            title += participant.user.displayName
+                            continue
+                        }
+                        title += ", ${participant.user.displayName}"
+                    }
+                }
+            }
+
+            return title
+        }
     }
 
     enum class EventName(val value: String) {
