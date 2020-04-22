@@ -386,6 +386,17 @@ class Messenger {
         @JvmStatic fun getUserId(): String {
             return prefs?.userId!!
         }
+
+        @JvmStatic fun getUnreadCount(): Int {
+            var unreadCount = 0
+            for(conversation in conversations) {
+                val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
+                val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
+
+                if(latestMessageCreated > lastRead) unreadCount = unreadCount + 1
+            }
+            return unreadCount
+        }
     }
 
     enum class EventName(val value: String) {
