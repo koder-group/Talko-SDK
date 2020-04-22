@@ -15,6 +15,29 @@ internal class Utils {
             return filteredList.toMutableList()
         }
 
+        fun sortConversationsByLatestMessage(conversations: MutableList<Conversation>): MutableList<Conversation> {
+
+            val latestMessageMap: MutableMap<Conversation, Long> = mutableMapOf()
+            val noMessageMap: MutableMap<Conversation, Long> = mutableMapOf()
+            val sortedConversationList = mutableListOf<Conversation>()
+
+            for (conversation in conversations) {
+                if(conversation.messages.isEmpty()) {
+                    noMessageMap.put(conversation, conversation.timeCreated.toLong())
+                    continue
+                }
+                latestMessageMap.put(conversation, conversation.messages.first().timeCreated!!.toLong()) // First message should be latest, from sort: -1
+            }
+
+            val sortedMessageMap = sortByDescending(latestMessageMap)
+            val sortedNoMessageMap = sortByDescending(noMessageMap)
+
+            addConversationsToList(sortedNoMessageMap, sortedConversationList)
+            addConversationsToList(sortedMessageMap, sortedConversationList)
+
+            return sortedConversationList
+        }
+
         // Return shape drawable with corner radius and background color
         // radius in pixels
         // color in hex string #FFFFFF
@@ -22,6 +45,16 @@ internal class Utils {
             val shape = ShapeDrawable(RoundRectShape(floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft), null, null))
             shape.getPaint().setColor(Color.parseColor(color))
             return shape
+        }
+
+        private fun sortByDescending(messageMap: MutableMap<Conversation, Long>): Map<Conversation, Long> {
+            return messageMap.toList().sortedByDescending { (_, value) -> value }.toMap()
+        }
+
+        private fun addConversationsToList(map: Map<Conversation, Long>, list: MutableList<Conversation>) {
+            for (entry in map) {
+                list.add(entry.key)
+            }
         }
     }
 }
