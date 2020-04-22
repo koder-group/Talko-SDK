@@ -390,10 +390,12 @@ class Messenger {
         @JvmStatic fun getUnreadCount(): Int {
             var unreadCount = 0
             for(conversation in conversations) {
-                val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
-                val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
+                conversation.messages.firstOrNull()?.let {
+                    val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
+                    val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
 
-                if(latestMessageCreated > lastRead) unreadCount = unreadCount + 1
+                    if (latestMessageCreated > lastRead) unreadCount = unreadCount + 1
+                }
             }
             return unreadCount
         }
