@@ -1911,6 +1911,7 @@ class MessageScreen : Fragment(),
 //                        Log.d(TAG, "${message.timeCreated.toString()}")
 //                        val timeCreated = convertDateToLong(message.timeCreated.toString())
                         prefs?.setConversationLastRead(message.conversationId, message.timeCreated.toLong())
+                        Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
                     }
                 }
             }

@@ -10,6 +10,7 @@ import com.koder.ellen.Client
 import com.koder.ellen.CompletionCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.getUserId
+import com.koder.ellen.UnreadCallback
 import com.koder.ellen.data.Result
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.User
@@ -91,14 +92,15 @@ class MainActivity : AppCompatActivity() {
 //                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
 
                 // Show Message Info Screen
-                val bundle = Bundle()
-                val messageInfoScreen = MessageInfoScreen()
-                bundle.putString("CONVERSATION_ID", conversation.conversationId)
-                messageInfoScreen.setArguments(bundle)
-                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageInfoScreen, resources.getString(R.string.info)).addToBackStack(resources.getString(R.string.message)).commit()
+//                val bundle = Bundle()
+//                val messageInfoScreen = MessageInfoScreen()
+//                bundle.putString("CONVERSATION_ID", conversation.conversationId)
+//                messageInfoScreen.setArguments(bundle)
+//                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageInfoScreen, resources.getString(R.string.info)).addToBackStack(resources.getString(R.string.message)).commit()
             }
         })
 
+        // Show Add Participant Screen from Message Info Screen
         MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
             override fun onClickAddParticipant(conversationId: String) {
                 Log.d(TAG, "onClickAddParticipant ${conversationId}")
@@ -110,6 +112,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        // Add Participant from Add Participant Screen
         AddParticipantScreen.setItemClickListener(object: AddParticipantScreen.OnItemClickListener() {
             override fun OnItemClickListener(
                 userId: String,
@@ -124,10 +127,20 @@ class MainActivity : AppCompatActivity() {
                 client.addParticipant(userId, conversationId, object: CompletionCallback() {
                     override fun onCompletion(result: Result<Any>) {
                         if(result is Result.Success) {
-                            Log.d(TAG, "addParticipant ${result.data}")
+                            Log.d(TAG, "addParticipant ${result.data}") // Boolean
                         }
                     }
                 })
+            }
+        })
+
+        // Unread count
+        Log.d(TAG, "Unread count ${Messenger.getUnreadCount()}")
+
+        Messenger.setUnreadListener(object: UnreadCallback() {
+            override fun onNewUnread(unreadCount: Int) {
+                Log.d(TAG, "onNewUnread")
+                Log.d(TAG, "unreadCount ${unreadCount}")
             }
         })
 
@@ -176,8 +189,8 @@ class MainActivity : AppCompatActivity() {
 //                getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
 
                 // Find conversation
-                val conversationId = Messenger.fetchConversationId(getUserId(), user.userId)
-                Log.d(TAG, "conversationFound ${conversationId}")
+                val conversation = Messenger.fetchConversation(getUserId(), user.userId)
+                Log.d(TAG, "conversationFound ${conversation}")
 
                 // If conversation found, show
                 // bundle.putString("CONVERSATION_ID", conversationId)
@@ -185,20 +198,26 @@ class MainActivity : AppCompatActivity() {
                 // If conversation not found, then create
                 // bundle.putString("ADD_USER_ID", user.userId)
 
-                if(conversationId == null) {
-                    // Create new conversation
-                    val client = Client()
-                    client.createConversation(user.userId)
-                } else {
-                    // Show conversation found
-                    val bundle = Bundle()
-                    val messageScreen = MessageScreen.newInstance()
-                    bundle.putString("CONVERSATION_ID", conversationId)
-                    messageScreen.setArguments(bundle)
-                    getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).commit()
-                }
+//                if(conversation == null) {
+//                    // Create new conversation
+//                    val client = Client()
+//                    client.createConversation(user.userId)
+//                } else {
+//                    // Show conversation found
+//                    val bundle = Bundle()
+//                    val messageScreen = MessageScreen.newInstance()
+//                    bundle.putString("CONVERSATION_ID", conversation.conversationId)
+//                    messageScreen.setArguments(bundle)
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.screenFrame, messageScreen, resources.getString(R.string.message)).commit()
+//                }
             }
         })
+
+//        UserSearchScreen.setItemClickListener(object: UserSearchScreen.OnItemClickListener() {
+//            override fun OnItemClickListener(user: User, position: Int) {
+//                // Do something
+//            }
+//        })
 
 //        val userToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IjE3YzRhYmQ4YTE3MjQ0OTdiZmViMjBiMWM0ZDhmYjU0IiwidHlwIjoiSldUIn0.eyJ0ZW5hbnRfaWQiOiJFRkI5NEM3RS03MUU5LTQwNkItOTA1OS02MUFDMDUyMjdGMUIiLCJ1c2VyX2lkIjoiNEVFRDg2Q0UtNDZCNi00NjNGLUJBMjgtQzgzN0IzNDVBRUIzIiwidXNlcl9uYW1lIjoiamVmZmF0a29kZXIiLCJwcm9maWxlX2ltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9lbGxlbi1maXJlYmFzZS1leGFtcGxlLmFwcHNwb3QuY29tL28vQXZhdGFycyUyRnVzZXItMjEucG5nP2FsdD1tZWRpYSZ0b2tlbj1lZjhhYmI1MC0wNjJkLTQ1ZDItOTcwYS1mNDIxNjRmYzA0OWYiLCJleHAiOjE1ODY0MDkyNTgsImlzcyI6Imh0dHBzOi8vZWxsZW4ua29kZXIuY29tL2FwaS9tYW5hZ2VtZW50IiwiYXVkIjoiaHR0cHM6Ly9lbGxlbi5rb2Rlci5jb20vYXBpL21lc3NhZ2luZyJ9.bYBdNZ6BDtpX4TUjDZZ_vOUP8Of87PHnd1Sb9EHtFwA"
 

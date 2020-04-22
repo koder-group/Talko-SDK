@@ -533,6 +533,7 @@ class ConversationScreen : Fragment() {
 
     fun sendClick(conversation: Conversation, position: Int) {
         mClickListener?.OnItemClickListener(conversation, position)
+        Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
     }
 
     // UI Screens

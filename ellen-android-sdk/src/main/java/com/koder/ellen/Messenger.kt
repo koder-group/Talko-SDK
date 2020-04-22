@@ -36,6 +36,7 @@ class Messenger {
         const val TAG = "Messenger"
         lateinit var pubNub: PubNub
         lateinit var requestHandler: RequestHandler
+        lateinit var unreadCallback: UnreadCallback
 
         internal var prefs: Prefs? = null
         internal val subscribedChannels: MutableSet<String> = mutableSetOf()
@@ -194,6 +195,7 @@ class Messenger {
                         EventName.messagePublished.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
                             eventCallback.onMessageReceived(message)
+                            unreadCallback.onNewUnread(getUnreadCount())
                         }
                         EventName.conversationCreated.value -> {
                             // Conversation created
@@ -389,7 +391,8 @@ class Messenger {
 
         @JvmStatic fun getUnreadCount(): Int {
             var unreadCount = 0
-            for(conversation in conversations) {
+            val list = conversations.toList()
+            for(conversation in list) {
                 conversation.messages.firstOrNull()?.let {
                     val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
                     val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
@@ -429,6 +432,10 @@ class Messenger {
 
             return title
         }
+
+        @JvmStatic fun setUnreadListener(callback: UnreadCallback) {
+            unreadCallback = callback
+        }
     }
 
     enum class EventName(val value: String) {
@@ -449,6 +456,12 @@ class Messenger {
         moderatorRemoved("conversation:moderator:removed")
     }
 }
+
+// Interface for unread messages
+interface UnreadInterface {
+    fun onNewUnread(unreadCount: Int)
+}
+abstract class UnreadCallback: UnreadInterface {}
 
 // Interface for PubNub Subscribe callback
 interface EventInterface {
