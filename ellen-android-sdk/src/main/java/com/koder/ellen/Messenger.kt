@@ -370,14 +370,14 @@ class Messenger {
         }
 
         // Get Conversation Id between 2 participants. Returns the first Conversation Id found.
-        @JvmStatic fun fetchConversationId(participantId1: String, participantId2: String): String? {
+        @JvmStatic fun fetchConversation(participantId1: String, participantId2: String): Conversation? {
             for(conversation in conversations) {
                 val p1found = conversation.participants.find { p -> p.user.userId.equals(participantId1, ignoreCase = true) }
                 val p2found = conversation.participants.find { p -> p.user.userId.equals(participantId2, ignoreCase = true) }
 
                 if(p1found != null && p2found != null && conversation.participants.size == 2) {
                     // Conversation between 2 participants
-                    return conversation.conversationId
+                    return conversation
                 }
             }
             return null
