@@ -94,12 +94,13 @@ class Messenger {
                 if(clientConfigResult is Result.Success) {
 //                    completion?.onCompletion(Result.Success(true))
 
-                    // Populate initial conversations for fetchConversationById
+                    // Populate initial conversations with messages
                     val client = Client()
-                    client.getConversationsForLoggedInUser(object: CompletionCallback() {
+                    client.getConversationMessages(object: CompletionCallback() {
                         override fun onCompletion(result: Result<Any>) {
                             if(result is Result.Success) {
                                 conversations = result.data as MutableList<Conversation>
+
                                 completion?.onCompletion(Result.Success(true))
                             }
                         }
