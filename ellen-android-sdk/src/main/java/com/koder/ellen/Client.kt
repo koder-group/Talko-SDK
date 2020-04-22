@@ -117,6 +117,46 @@ class Client {
         }
     }
 
+    fun getConversationMessages(completion: CompletionCallback? = null) {
+        GlobalScope.launch {
+            try {
+                val postBody = JSONObject()
+                postBody.put("pageSize", 10000)
+                val response = RetrofitClient.ellen.getConversations(
+                    body = postBody.toString().toRequestBody(MEDIA_TYPE_JSON)
+                ).execute()
+                Log.d(TAG, "${response}")
+                if (response.isSuccessful) {
+                    val filtered = Utils.filterConversationsByState(
+                        response.body()!!,
+                        ConversationState.active.value
+                    )
+
+                    for(conversation in filtered) {
+                        val postBody = JSONObject()
+                        postBody.put("sort", -1)    //  Sort by timeCreated
+                        postBody.put("pageSize", 100)
+                        val response = RetrofitClient.ellen.getMessagesForConversation(
+                            conversationId = conversation.conversationId,
+                            body = postBody.toString().toRequestBody()
+                        ).execute()
+                        if(response.isSuccessful) {
+                            val body: MutableList<Message> =
+                                response.body()!!  //  Ordered by timeCreated DESC
+//                            body.reverse()  //  Order by timeCreated ASC
+                            conversation.messages = body
+                        }
+                    }
+                    val sortedConversations = Utils.sortConversationsByLatestMessage(filtered)
+                    completion?.onCompletion(Result.Success(sortedConversations))
+                }
+            } catch (e: Exception) {
+                completion?.onCompletion(Result.Error(IOException("Error getting conversations and messages")))
+                Log.d(TAG, "${e}")
+            }
+        }
+    }
+
     // Get a list of messages for a conversation
     fun getMessagesForConversation(conversationId: String, completion: CompletionCallback? = null) {
         GlobalScope.launch {
