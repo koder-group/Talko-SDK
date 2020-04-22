@@ -363,26 +363,110 @@ public class MyApplication extends Application {
 
 <h5 class="mume-header" id="5a-ui-unified">5a. UI Unified</h5>
 
+<p>UI Unified is an Activity that includes the entire chat application.</p>
 <pre data-role="codeBlock" data-info class="language-"><code>startActivity(new Intent(YourActivity.this, MessengerActivity.class));
 </code></pre><h5 class="mume-header" id="5b-ui-screens">5b. UI Screens</h5>
 
-<p>In your layout.xml, add the following snippet to use the Conversation list screen</p>
-<pre data-role="codeBlock" data-info class="language-"><code>&lt;fragment
-  android:id=&quot;@+id/conversation_screen&quot;
-  android:layout_width=&quot;match_parent&quot;
-  android:layout_height=&quot;match_parent&quot;
-  class=&quot;com.koder.ellen.screen.ConversationScreen&quot;
-  /&gt;
-</code></pre><p>To get the click event of the list you must use setItemClickListener</p>
+<p>UI Screens are Fragments that make up each part of a chat application.</p>
+<ul>
+<li>ConversationScreen</li>
+<li>UserSearchScreen</li>
+<li>MessageScreen</li>
+<li>MessageInfoScreen</li>
+<li>AddParticipantScreen</li>
+</ul>
+<p><strong>Conversation Screen</strong></p>
+<pre data-role="codeBlock" data-info class="language-"><code>val conversationScreen = ConversationScreen()
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout,
+  conversationScreen
+).commit()
+</code></pre><p><strong>UserSearchScreen</strong></p>
+<ul>
+<li>Does not require any arguments.</li>
+</ul>
+<p><strong>Message Screen</strong></p>
+<ul>
+<li>Pass in a Conversation ID to show a Conversation</li>
+<li>Pass in a User ID to create a new Conversation</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>// Show a Conversation by passing in CONVERSATION_ID
+val bundle = Bundle()
+val messageScreen = MessageScreen()
+bundle.putString(&quot;CONVERSATION_ID&quot;, conversationId)
+messageScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout, 
+  messageScreen
+).commit()
+
+// Create a Conversation by passing in ADD_USER_ID
+val bundle = Bundle()
+val messageScreen = MessageScreen()
+bundle.putString(&quot;ADD_USER_ID&quot;, userId)
+messageScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout, 
+  messageScreen
+).commit()
+</code></pre><p><strong>Message Info Screen</strong></p>
+<ul>
+<li>Pass in a Conversation ID to show the Info screen</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>val bundle = Bundle()
+val messageInfoScreen = MessageInfoScreen()
+bundle.putString(&quot;CONVERSATION_ID&quot;, conversationId)
+messageInfoScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout, 
+  messageInfoScreen
+).commit()
+</code></pre><p><strong>Add Participant Screen</strong></p>
+<ul>
+<li>Pass in a Conversation ID</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>val bundle = Bundle()
+val addParticipantScreen = AddParticipantScreen()
+bundle.putString(&quot;CONVERSATION_ID&quot;, conversationId)
+addParticipantScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.screenFrame, 
+  addParticipantScreen
+).commit()
+</code></pre><p><strong>Click Events</strong></p>
+<p>To get the click event in a screen, you must use the provided click listeners</p>
 <pre data-role="codeBlock" data-info class="language-"><code>ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
   override fun OnItemClickListener(conversation: Conversation, position: Int) {
-
+    // Show the selected conversation
   }
 })
-</code></pre><p>Setting background color and corner radius</p>
-<pre data-role="codeBlock" data-info class="language-"><code>val conversationScreen = supportFragmentManager.findFragmentById(R.id.conversation_screen) as ConversationScreen
-conversationScreen.setBackgroundColor(&quot;#00CCCC&quot;)
-conversationScreen.setListCornerRadius(20, 20, 0, 0)  // dp
+</code></pre><pre data-role="codeBlock" data-info class="language-"><code>UserSearchScreen.setItemClickListener(object: UserSearchScreen.OnItemClickListener() {
+  override fun OnItemClickListener(user: User, position: Int) {
+    // Show conversation with the selected user 
+    // or create a new conversation with the selected user
+  }
+})
+</code></pre><pre data-role="codeBlock" data-info class="language-"><code>MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
+  override fun onClickAddParticipant(conversationId: String) {
+    // Show the Add Partcipant Screen
+  }
+})
+</code></pre><pre data-role="codeBlock" data-info class="language-"><code>AddParticipantScreen.setItemClickListener(object: AddParticipantScreen.OnItemClickListener() {
+    override fun OnItemClickListener(
+        userId: String,
+        conversationId: String,
+        position: Int
+    ) {
+      // Add the selected user to the conversation
+    }
+})
+</code></pre><p><strong>Customizable UI Options</strong></p>
+<pre data-role="codeBlock" data-info class="language-"><code>Messenger.senderMessageRadius = 18 // dp
+Messenger.selfMessageRadius = 18
+Messenger.senderBackgroundColor = &quot;#88000000&quot;  // gray
+Messenger.selfBackgroundColor = &quot;#1A73E9&quot;  // blue
+Messenger.screenBackgroundColor = &quot;#FFFFFF&quot;
+Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 </code></pre>
       </div>
       

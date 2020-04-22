@@ -112,33 +112,129 @@ public class MyApplication extends Application {
 #### 5. UI Kit
 
 ##### 5a. UI Unified
+UI Unified is an Activity that includes the entire chat application.
 ```
 startActivity(new Intent(YourActivity.this, MessengerActivity.class));
 ```
 ##### 5b. UI Screens
 
-In your layout.xml, add the following snippet to use the Conversation list screen
+UI Screens are Fragments that make up each part of a chat application.
+
+- ConversationScreen
+- UserSearchScreen
+- MessageScreen
+- MessageInfoScreen
+- AddParticipantScreen
+
+**Conversation Screen**
 ```
-<fragment
-  android:id="@+id/conversation_screen"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  class="com.koder.ellen.screen.ConversationScreen"
-  />
+val conversationScreen = ConversationScreen()
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout,
+  conversationScreen
+).commit()
 ```
 
-To get the click event of the list you must use setItemClickListener
+**UserSearchScreen**
+- Does not require any arguments.
+
+**Message Screen**
+- Pass in a Conversation ID to show a Conversation 
+- Pass in a User ID to create a new Conversation
+```
+// Show a Conversation by passing in CONVERSATION_ID
+val bundle = Bundle()
+val messageScreen = MessageScreen()
+bundle.putString("CONVERSATION_ID", conversationId)
+messageScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout, 
+  messageScreen
+).commit()
+
+// Create a Conversation by passing in ADD_USER_ID
+val bundle = Bundle()
+val messageScreen = MessageScreen()
+bundle.putString("ADD_USER_ID", userId)
+messageScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout, 
+  messageScreen
+).commit()
+```
+
+**Message Info Screen**
+- Pass in a Conversation ID to show the Info screen
+```
+val bundle = Bundle()
+val messageInfoScreen = MessageInfoScreen()
+bundle.putString("CONVERSATION_ID", conversationId)
+messageInfoScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.frame_layout, 
+  messageInfoScreen
+).commit()
+```
+
+**Add Participant Screen**
+- Pass in a Conversation ID
+```
+val bundle = Bundle()
+val addParticipantScreen = AddParticipantScreen()
+bundle.putString("CONVERSATION_ID", conversationId)
+addParticipantScreen.setArguments(bundle)
+getSupportFragmentManager().beginTransaction().replace(
+  R.id.screenFrame, 
+  addParticipantScreen
+).commit()
+```
+
+**Click Events**
+
+To get the click event in a screen, you must use the provided click listeners
 ```
 ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
   override fun OnItemClickListener(conversation: Conversation, position: Int) {
-
+    // Show the selected conversation
   }
 })
 ```
 
-Setting background color and corner radius
 ```
-val conversationScreen = supportFragmentManager.findFragmentById(R.id.conversation_screen) as ConversationScreen
-conversationScreen.setBackgroundColor("#00CCCC")
-conversationScreen.setListCornerRadius(20, 20, 0, 0)  // dp
+UserSearchScreen.setItemClickListener(object: UserSearchScreen.OnItemClickListener() {
+  override fun OnItemClickListener(user: User, position: Int) {
+    // Show conversation with the selected user 
+    // or create a new conversation with the selected user
+  }
+})
+```
+
+```
+MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
+  override fun onClickAddParticipant(conversationId: String) {
+    // Show the Add Partcipant Screen
+  }
+})
+```
+
+```
+AddParticipantScreen.setItemClickListener(object: AddParticipantScreen.OnItemClickListener() {
+    override fun OnItemClickListener(
+        userId: String,
+        conversationId: String,
+        position: Int
+    ) {
+      // Add the selected user to the conversation
+    }
+})
+```
+
+**Customizable UI Options**
+```
+Messenger.senderMessageRadius = 18 // dp
+Messenger.selfMessageRadius = 18
+Messenger.senderBackgroundColor = "#88000000"  // gray
+Messenger.selfBackgroundColor = "#1A73E9"  // blue
+Messenger.screenBackgroundColor = "#FFFFFF"
+Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 ```
