@@ -129,20 +129,6 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.run {
-//            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)    // TODO UI Screens
-//            viewModel.updateActionBarTitle(getResources().getString(R.string.info))   // TODO UI Screens
-            // Toolbar
-//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
-//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            supportActionBar?.setDisplayShowHomeEnabled(true)
-//            supportActionBar?.title = resources.getString(R.string.info)  // TODO UI Screens
-            // Set current conversation
-//            if((this as MessengerActivity).getCurrentConversation() == null ) {   // TODO UI Screens
-//                Log.d(TAG, "currentConversation null, go back to previous fragment")
-//                activity?.supportFragmentManager?.popBackStack()
-//                return
-//            } // TODO UI Screens
-//            conversation = (this as MessengerActivity).getCurrentConversation()!! // TODO UI Screens
             conversation = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }!!
             if(participants.isEmpty()) participants.addAll(getParticipantsList(conversation))
             Log.d(TAG, "${conversation}")

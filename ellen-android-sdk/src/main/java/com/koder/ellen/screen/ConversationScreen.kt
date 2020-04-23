@@ -223,10 +223,9 @@ class ConversationScreen : Fragment() {
                 // Subscribe to channels
                 subscribeToConversations(it)
 
-                // Add conversations to Messenger cache
                 Messenger.conversations.clear()
-                Messenger.conversations.addAll(conversations)
-//                Log.d(TAG, "Messenger.conversations ${Messenger.conversations}")
+                Messenger.conversations.addAll(it)
+                Log.d(TAG, "${Messenger.conversations}")
             })
 
             // Observer, deleteConversation
@@ -245,87 +244,6 @@ class ConversationScreen : Fragment() {
                 }
             })
         } ?: throw Throwable("invalid activity")
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-//        menu.clear()  // TODO UI Screens
-//        inflater.inflate(R.menu.conversation_menu, menu)  // TODO UI Screens
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
-        return when (item.itemId) {
-//            android.R.id.home -> {
-//                // Open host Activity's Navigation Drawer
-////                Log.d(TAG, "Open drawer")
-////                mDrawer.openDrawer(GravityCompat.START)
-//
-//                // Finish activity
-//                (context as MessengerActivity).finishActivity()
-//                true
-//            }
-//            R.id.action_message -> {
-////                val integrator = IntentIntegrator.forSupportFragment(this)
-////                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-////                integrator.setOrientationLocked(false)
-////                integrator.setPrompt("")
-////                integrator.setBeepEnabled(false)
-////                integrator.setCaptureActivity(CustomScannerActivity::class.java)
-////                integrator.initiateScan()
-////                Log.d(TAG, "action_message")
-//
-//                // Show user search fragment
-//                (context as MessengerActivity).showSearchFragment()
-//                true
-//            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-//        val result =
-//            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-//        if (result != null) {
-//            if (result.contents == null) {
-////                Toast.makeText(activity, "Cancelled", Toast.LENGTH_LONG).show()
-//            } else {
-//                Toast.makeText(activity, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
-//                Log.d(TAG, result.contents)
-//                val intent = Intent(this, MessageActivity::class.java).apply {
-//                    putExtra("CONVERSATION_ID", "")
-//                    putExtra("CONVERSATION_TITLE", "")
-//                    putExtra("CONVERSATION_DESCRIPTION", "")
-//                    putExtra("PARTICIPANT_URL", result.contents)
-//                    putExtra("CONVERSATION_PARTICIPANTS", ArrayList<User>())
-//                }
-//                startActivity(intent)
-//
-//                // Start Fragment
-//                // TODO Move existing functionality over
-//                // Reset current conversation
-//                (activity as MessengerActivity).resetCurrentConversation()
-//
-//                // Show MessageFragment and add to backstack
-//                // Send user's publicId over
-//                val publicId = result.contents.split("/").last()
-//                val bundle = Bundle()
-//                bundle.putString("public_id", publicId)
-//
-//                val fragmentManager = activity?.supportFragmentManager
-//                val fragmentTransaction = fragmentManager?.beginTransaction()
-//                val fragment = MessageFragment()
-//                fragment.arguments = bundle
-//                fragmentTransaction?.replace(R.id.container, fragment, resources.getString(R.string.message))
-//                fragmentTransaction?.addToBackStack(null)
-//                fragmentTransaction?.commit()
-//            }
-//        } else {
-//            super.onActivityResult(requestCode, resultCode, data)
-//        }
     }
 
     // Update RececyclerView based on the dataset

@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!-- Conversation Screen -->
-<!--    <fragment-->
-<!--        android:id="@+id/conversation_screen"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        class="com.koder.ellen.screen.ConversationScreen"-->
-<!--       />-->
-
-    <!-- Message screen -->
     <FrameLayout
-        android:id="@+id/screenFrame"
+        android:id="@+id/frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
 
-    <!-- User search screen -->
-<!--    <fragment-->
-<!--        android:id="@+id/user_search_screen"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        class="com.koder.ellen.screen.UserSearchScreen"-->
-<!--       />-->
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

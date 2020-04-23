@@ -45,6 +45,7 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
+import com.koder.ellen.core.Utils
 import com.koder.ellen.data.ConversationDataSource
 import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.*
@@ -205,6 +206,7 @@ class MessageScreen : Fragment(),
         val found = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
         found?.let {
             conversation = it
+            Messenger.currentConversationId = it.conversationId
         }
 
         // Subscribe to conversation channel
@@ -703,6 +705,8 @@ class MessageScreen : Fragment(),
 //            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
 //            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
+            Messenger.currentConversationId = it.conversationId
+
             swipeRefreshLayout.setRefreshing(false)
         })
 
@@ -723,36 +727,6 @@ class MessageScreen : Fragment(),
             (activity as MessengerActivity).setCurrentConversation(it)
             (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()
         })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-//        menu.clear()  // TODO UI Screens
-//        inflater.inflate(R.menu.message_menu, menu)   // TODO UI Screens
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
-        return when (item.itemId) {
-//            android.R.id.home -> {
-//                Log.d(TAG, "popBackStack")
-//                activity?.supportFragmentManager?.popBackStack()
-//                true
-//            }
-//            R.id.action_info -> {
-//                // Hide keyboard
-//                hideKeyboard(activity)
-//                // Show MessageInfoFragment and add to backstack
-////                (activity as MessengerActivity).showInfoFragment()    // TODO UI Screens
-//                true
-//            }
-//            R.id.action_video -> {
-//                hideKeyboard(activity)
-//                // Start VideoFragment
-//                (activity as MessengerActivity).showVideoFragment()
-//                true
-//            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onClick(v: View) {
@@ -1013,6 +987,9 @@ class MessageScreen : Fragment(),
                 swipeRefreshLayout.isRefreshing = true
                 messageViewModel.getMessages(conversation.conversationId)
             }
+        } else {
+            swipeRefreshLayout.isRefreshing = true
+            messageViewModel.getMessages(Messenger.currentConversationId)
         }
     }
 
