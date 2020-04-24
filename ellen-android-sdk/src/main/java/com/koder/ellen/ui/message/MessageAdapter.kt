@@ -117,7 +117,8 @@ internal class MessageAdapter(private val context: Context, private val dataset:
                 getTodayYestDateFromMilli(message.timeCreated.toLong()),
                 FROM_HTML_MODE_COMPACT
             )
-            timestamp.visibility = View.VISIBLE
+            // Prevent from showing if user is typing
+            if(!message.sender.profileImageUrl.isNullOrBlank()) timestamp.visibility = View.VISIBLE
         }
 
         val selfLayout = holder.layout.findViewById<ConstraintLayout>(R.id.self_layout)

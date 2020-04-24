@@ -185,26 +185,16 @@ class MessageScreen : Fragment(),
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
         setHasOptionsMenu(true)
-
-//        val bundle = arguments
-//        bundle?.let {
-//            conversationId = bundle.getString("CONVERSATION_ID")!!
-//            Log.d(TAG, "conversationId ${conversationId}")
-//        }
         conversationId = arguments?.getString("CONVERSATION_ID")
         qrPublicId = arguments?.getString("ADD_USER_ID")
-//        Log.d(TAG, "qrPublicId ${qrPublicId}")
 
         backgroundColor = arguments?.getString("BACKGROUND_COLOR")
         cornerRadius = arguments?.getIntArray("CORNER_RADIUS")
 
-//        Log.d(TAG, "conversationId ${conversationId}")
-//        Log.d(TAG, "backgroundColor ${backgroundColor}")
-//        Log.d(TAG, "cornerRadius ${Arrays.toString(cornerRadius)}")
-
         // Set fragment conversation
         val found = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
         found?.let {
+            Log.d(TAG, "found ${it}")
             conversation = it
             Messenger.currentConversationId = it.conversationId
         }
@@ -212,7 +202,6 @@ class MessageScreen : Fragment(),
         // Subscribe to conversation channel
         conversationId?.let {
             val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
-//            if(!Messenger.subscribedChannels.contains(channel))
             Messenger.subscribeToChannelList(mutableListOf(channel))
         }
     }
@@ -259,7 +248,7 @@ class MessageScreen : Fragment(),
                 if(System.currentTimeMillis() > (lastTextEdit + delay - 500) && userTyping) {
                     // User stopped typing
                     // Do stuff
-                    Log.d(TAG, "User stop typing")
+//                    Log.d(TAG, "User stop typing")
                     userTyping = false
                     prefs?.externalUserId?.let {
                         messageViewModel.typingStopped(it, conversation.conversationId)
@@ -313,9 +302,6 @@ class MessageScreen : Fragment(),
         // Retrieve and cache the system's default "short" animation time.
         shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime)
 
-        // QR code scanned or user searched
-//        qrPublicId = arguments?.getString("public_id")
-
         // Prevent recreating when going back from Message Info
         if(!created) {
             qrPublicId?.let {
@@ -336,13 +322,6 @@ class MessageScreen : Fragment(),
         // UI Screens
         listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
 
-//        backgroundColor?.let { color ->
-//            setBackgroundColor(color)
-//        }
-//        cornerRadius?.let {arr ->
-//            setListCornerRadius(arr[0],arr[1],arr[2],arr[3])
-//        }
-
         // Customizable UI options
         setBackgroundColor(Messenger.screenBackgroundColor)
         setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
@@ -350,53 +329,9 @@ class MessageScreen : Fragment(),
         return rootView
     }
 
-    override fun onStart() {
-        super.onStart()
-        // Get conversation
-
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.run {
-            Log.d(TAG, "onActivityCreated")
-//            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)    // TODO UI Screens
-
-            // QR code scanned
-//            qrPublicId = arguments?.getString("public_id")
-//
-//            qrPublicId?.let {
-//                // Message created by QR code
-//                Log.d(TAG, "Message created by QR code")
-//                // Create a new conversation
-//                messageViewModel.createConversation(it)
-//                swipeRefreshLayout.setRefreshing(true)
-//            }
-
-            // Set current conversation
-//            Log.d(TAG, "getCurrentConversation ${(this as MessengerActivity).getCurrentConversation()}")  // TODO UI Screens
-//            if((this as MessengerActivity).getCurrentConversation() == null && qrPublicId == null) { // TODO UI Screens
-//                Log.d(TAG, "currentConversation null, go back to Conversation fragment")
-//                activity?.supportFragmentManager?.popBackStack()
-//                return
-//            } else if ((this as MessengerActivity).getCurrentConversation() != null) {
-//                conversation = (this as MessengerActivity).getCurrentConversation()!!
-//            } // TODO UI Screens
-//            Log.d(TAG, "onActivityCreated ${conversation}")
-            // Set toolbar title
-//            val title = getConversationTitle()    // TODO UI Screens
-            Log.d(TAG, "getConversationTitle ${title}")
-//            viewModel.updateActionBarTitle(title)
-            // Toolbar
-//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
-//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            supportActionBar?.setDisplayShowHomeEnabled(true)
-//            supportActionBar?.title = title
-//            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
-            // Set AppBar for expanded images
-//            appBar = (this).getAppBar()   // TODO UI Screens
-            // RecyclerView for Messages
-//            val viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             viewAdapter = MessageAdapter(this, messages, this@MessageScreen)
 
@@ -421,58 +356,6 @@ class MessageScreen : Fragment(),
             var draggingHorizontally = false
             val timestampWidth = 200.px
 //            Log.d(TAG, "timestampWidth ${timestampWidth}")
-
-            recyclerView.setOnTouchListener { v, event ->
-//                if (event.action == MotionEvent.ACTION_DOWN) {
-//                    downX = event.getX()
-////                    Log.d(TAG, "downX ${downX}")
-//                }
-//                if (event.action == MotionEvent.ACTION_MOVE) {
-//                    moveX = event.getX()
-//                    Log.d(TAG, "moveX ${moveX}")
-//
-//                    val deltaX = Math.abs(downX - moveX)
-////                    val deltaX = downX - moveX
-////                    Log.d(TAG, "deltaX ${deltaX}")
-//
-//
-//                    if(!dragging) {
-//                        // Not dragging
-//                        if(downX > moveX) {
-//                            // Swiping left
-//
-//                            // Disable RecyclerView scrolling
-////                            recyclerView.setLayoutFrozen(true)
-//                            (recyclerView.layoutManager as MyLinearLayoutManager).setScrollEnabled(false)
-//
-//                            // Animate all messages
-//                            for (position in 0..messages.size) {
-//                                val view = recyclerView.getChildAt(position)
-//                                view?.let { v ->
-//                                    if(deltaX <= timestampWidth) {
-//                                        v.animate().translationX(-deltaX).setDuration(0)
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                if (event.action == MotionEvent.ACTION_UP) {
-//                    // Enable RecyclerView scrolling
-////                    recyclerView.setLayoutFrozen(false)
-//                    (recyclerView.layoutManager as MyLinearLayoutManager).setScrollEnabled(true)
-//
-//                    // Animate all messages
-//                    for(position in 0..messages.size) {
-//                        val view = recyclerView.getChildAt(position)
-//                        view?.let {v ->
-//                            v.animate().translationX(0f).setDuration(100)
-//                        }
-//                    }
-//                }
-                false
-
-            }
 
             recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -692,6 +575,7 @@ class MessageScreen : Fragment(),
         messageViewModel.conversation.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "Conversation created ${it}")
             conversation = it
+            conversationId = conversation.conversationId
 
             // Populate participants list for Mentions
             messageViewModel.participants.value = getParticipantsList(it)
@@ -988,9 +872,9 @@ class MessageScreen : Fragment(),
                 swipeRefreshLayout.isRefreshing = true
                 messageViewModel.getMessages(conversation.conversationId)
             }
-        } else {
+        } else if (!conversationId.isNullOrBlank()) {
             swipeRefreshLayout.isRefreshing = true
-            messageViewModel.getMessages(Messenger.currentConversationId)
+            messageViewModel.getMessages(conversationId!!)
         }
     }
 
@@ -1136,7 +1020,7 @@ class MessageScreen : Fragment(),
 
     private fun autoColorMentions(text: String): String {
         val words = text.split(" ").toMutableList()
-        Log.d(TAG, "words ${words}")
+//        Log.d(TAG, "words ${words}")
         // Set color for mentioned names
         words.forEachIndexed {
                 index, word ->
@@ -1735,7 +1619,7 @@ class MessageScreen : Fragment(),
         Log.d(TAG, "userStartTyping ${initiatingUserId}")
 
         val displayName = getDisplayName(initiatingUserId) + " is typing..."    // TODO UI Screens
-//        val profileImageUrl = getProfileImageUrl(initiatingUserId)
+        val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
         val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")
         val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
@@ -1753,7 +1637,7 @@ class MessageScreen : Fragment(),
     }
 
     fun userStopTyping(initiatingUserId: String) {
-        Log.d(TAG, "userStopTyping ${initiatingUserId}")
+//        Log.d(TAG, "userStopTyping ${initiatingUserId}")
 
         if(userTypingMap.containsKey(initiatingUserId)) {
             // Find message
@@ -1773,7 +1657,7 @@ class MessageScreen : Fragment(),
     }
 
     fun getDisplayName(userId: String): String {
-        val conversation: Conversation? = null  // TODO UI Screens
+//        val conversation: Conversation? = null  // TODO UI Screens
 //        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
         conversation?.let {
             val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
@@ -1785,7 +1669,7 @@ class MessageScreen : Fragment(),
     }
 
     fun getProfileImageUrl(userId: String): String {
-        val conversation = (activity as MessengerActivity).getCurrentConversation()
+//        val conversation = (activity as MessengerActivity).getCurrentConversation()
         conversation?.let {
             val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
             found?.let {
@@ -1833,7 +1717,7 @@ class MessageScreen : Fragment(),
             }
 
             override fun onConversationClosed(conversation: Conversation) {
-                if(Messenger.currentConversationId.equals(conversation.conversationId, ignoreCase = true)) {
+                if(conversationId.equals(conversation.conversationId, ignoreCase = true)) {
                     // Close conversation
                 }
             }
@@ -1856,7 +1740,7 @@ class MessageScreen : Fragment(),
 
             override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
                 activity?.runOnUiThread {
-                    if (Messenger.currentConversationId.equals(
+                    if (this@MessageScreen.conversationId.equals(
                             conversationId,
                             ignoreCase = true
                         )
@@ -1868,7 +1752,7 @@ class MessageScreen : Fragment(),
 
             override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
                 activity?.runOnUiThread {
-                    if (Messenger.currentConversationId.equals(
+                    if (this@MessageScreen.conversationId.equals(
                             conversationId,
                             ignoreCase = true
                         )
@@ -1884,7 +1768,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageReceived(message: Message) {
                 activity?.runOnUiThread {
-                    if (Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true)) {
                         addMessage(message)
 //                        Log.d(TAG, "${message.timeCreated.toString()}")
 //                        val timeCreated = convertDateToLong(message.timeCreated.toString())
@@ -1896,7 +1780,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageRejected(message: Message, errorMessage: String) {
                 activity?.runOnUiThread {
-                    if (Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true) &&
+                    if (conversationId.equals(message.conversationId, ignoreCase = true) &&
                         message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)
                     ) {
                         showMessageError(message.metadata.localReferenceId, errorMessage)
@@ -1906,7 +1790,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageDeleted(message: Message) {
                 activity?.runOnUiThread {
-                    if(Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
                         deleteMessageFromList(message)
                     }
                 }
@@ -1914,7 +1798,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageUserReaction(message: Message) {
                 activity?.runOnUiThread {
-                    if(Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
                         updateMessage(message)
                     }
                 }
@@ -1922,13 +1806,13 @@ class MessageScreen : Fragment(),
 
             override fun onUserTypingStart(initiatingUserId: String) {
                 activity?.runOnUiThread {
-//                    userStartTyping(initiatingUserId)
+                    if (!prefs?.userId.equals(initiatingUserId, ignoreCase = true)) userStartTyping(initiatingUserId)
                 }
             }
 
             override fun onUserTypingStop(initiatingUserId: String) {
                 activity?.runOnUiThread {
-//                    userStopTyping(initiatingUserId)
+                    userStopTyping(initiatingUserId)
                 }
             }
 
@@ -1944,10 +1828,7 @@ class MessageScreen : Fragment(),
 
     // UI Screens
     fun setBackgroundColor(color: String) {
-        Log.d(TAG, "setBackgroundColor ${color}")
         containerView.setBackgroundColor(Color.parseColor(color))
-//        val container = rootView.findViewById<RelativeLayout>(R.id.container)
-//        container.setBackgroundColor(Color.parseColor(color))
     }
 
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {

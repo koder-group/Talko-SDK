@@ -125,18 +125,6 @@ class ConversationScreen : Fragment() {
         super.onActivityCreated(savedInstanceState)
         // App Bar title
         activity?.run {
-            // Communicate with host Activity
-//            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)    // TODO UI Screens
-
-            // Toolbar, DrawerLayout
-//            TODO This Activity already has an action bar supplied by the window decor. Do not request Window.FEATURE_SUPPORT_ACTION_BAR and set windowActionBar to false in your theme to use a Toolbar instead.
-
-//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))
-//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            supportActionBar?.setDisplayShowHomeEnabled(true)
-//            supportActionBar?.title = resources.getString(R.string.conversations)
-
-//            (activity as AppCompatActivity).setSupportActionBar(findViewById(R.id.toolbar))
 
             // Setup RecyclerView
             viewManager = LinearLayoutManager(this)
@@ -155,16 +143,9 @@ class ConversationScreen : Fragment() {
             recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
             emptyView = findViewById(R.id.empty_conversations_view)
 
-//            if(prefs?.clientConfiguration?.subscribeKey.isNullOrBlank()) {
-//                Log.d(TAG, "Load Client Config")
-////                conversationViewModel.loadClientConfig()
-////                viewModel?.loadClientConfig()             // TODO UI Screens
-////                viewModel?.registerNotificationToken()    // TODO UI Screens
-//            } else {
-                Log.d(TAG, "Load Conversations")
-                swipeRefreshLayout.setRefreshing(true)
-                conversationViewModel.loadConversations()
-//            }
+            // Load conversations
+            swipeRefreshLayout.setRefreshing(true)
+            conversationViewModel.loadConversations()
 
             // Swipe-to-delete Conversation
             val deleteDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_delete_24)
@@ -175,13 +156,7 @@ class ConversationScreen : Fragment() {
 //                adapter.removeAt(viewHolder.adapterPosition)
                     Log.d(TAG, "Remove ${viewHolder.adapterPosition}")
                     Log.d(TAG, "Remove ${conversations.get(viewHolder.adapterPosition)}")
-//                val position = viewHolder.adapterPosition
-                    // TODO
-//                    swipeRefreshLayout.setRefreshing(true)
-//                    conversationViewModel.deleteConversation(conversations.get(viewHolder.adapterPosition))
-//                    conversations.removeAt(viewHolder.adapterPosition)
-//                    recyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
-                    // TODO
+
                     // Show confirmation to delete
                     Log.d(TAG, "swipeCallback show confirmation to delete")
                     MaterialAlertDialogBuilder(context)
@@ -231,7 +206,7 @@ class ConversationScreen : Fragment() {
 
             // Observer, deleteConversation
             conversationViewModel.delete.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "Delete conversation ${it.conversation.conversationId}")
+//                Log.d(TAG, "Delete conversation ${it.conversation.conversationId}")
                 if(!it.deleted) {
                     Toast.makeText(this, R.string.conversation_retry, Toast.LENGTH_LONG).show()
                     // Add conversation back to list
@@ -250,13 +225,13 @@ class ConversationScreen : Fragment() {
     // Update RececyclerView based on the dataset
     private fun updateRV(list: MutableList<Conversation>) {
         if (list.isEmpty()) {
-            Log.d(TAG, "Dataset empty")
+//            Log.d(TAG, "Dataset empty")
             emptyView.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
             return
         }
 
-        Log.d(TAG, "Dataset not empty")
+//        Log.d(TAG, "Dataset not empty")
         emptyView.visibility = View.GONE
         recyclerView.visibility = View.VISIBLE
     }
@@ -264,7 +239,7 @@ class ConversationScreen : Fragment() {
     fun loadConversations() {
         Log.d(TAG, "Load conversations")
         activity?.runOnUiThread {
-            swipeRefreshLayout.isRefreshing = true
+            swipeRefreshLayout?.isRefreshing = true
         }
         conversationViewModel.loadConversations()
     }
@@ -283,10 +258,6 @@ class ConversationScreen : Fragment() {
 //            conversationViewModel.conversations.value = ConversationDataSource().sortConversationsByLatestMessage(conversations)
             conversationViewModel.conversations.postValue(ConversationDataSource().sortConversationsByLatestMessage(conversations))
 
-//            activity.pubNub?.subscribe()?.channels(mutableListOf("${prefs.tenantId()}-${conversation.conversationId}".toUpperCase()))?.execute()
-            // Communicate with host Activity to subscribe to this channel
-
-//            viewModel.subscribeChannelList.value = mutableListOf("${prefs?.externalUserId}-${conversation.conversationId}".toUpperCase())     // TODO UI Screens
             Messenger.subscribeToChannelList(mutableListOf("${prefs?.tenantId}-${conversation.conversationId}".toUpperCase()) )
         }
     }
@@ -457,7 +428,7 @@ class ConversationScreen : Fragment() {
 
     // UI Screens
     fun setBackgroundColor(color: String) {
-        Log.d(TAG, "setBackgroundColor ${color}")
+//        Log.d(TAG, "setBackgroundColor ${color}")
         rootView.setBackgroundColor(Color.parseColor(color))
     }
 

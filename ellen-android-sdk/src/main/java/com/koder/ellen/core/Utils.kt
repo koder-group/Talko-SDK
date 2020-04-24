@@ -1,12 +1,16 @@
 package com.koder.ellen.core
 
+import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.koder.ellen.model.Conversation
 import okhttp3.MediaType.Companion.toMediaType
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 internal class Utils {
     companion object {

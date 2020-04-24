@@ -1,10 +1,13 @@
 package com.koder.ellenlibrary
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.koder.ellen.Client
 import com.koder.ellen.CompletionCallback
 import com.koder.ellen.Messenger
@@ -84,6 +87,8 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.popBackStack()
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
                 }
+
+                hideKeyboard(this@MainActivity)
             }
         })
 
@@ -114,6 +119,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "Conversation Id ${conversationId}")
 
                 getSupportFragmentManager().popBackStack()
+                hideKeyboard(this@MainActivity)
 
                 // Add the selected participant to the conversation
                 val client = Client()
@@ -190,8 +196,21 @@ class MainActivity : AppCompatActivity() {
 //        super.onBackPressed()
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack()
+            hideKeyboard(this@MainActivity)
         } else {
             super.onBackPressed();
         }
+    }
+
+    private fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view: View? = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
     }
 }

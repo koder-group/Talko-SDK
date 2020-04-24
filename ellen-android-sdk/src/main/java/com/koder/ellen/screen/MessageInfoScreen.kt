@@ -256,6 +256,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
                 viewAdapter.notifyItemRemoved(index)
 
 //                (activity as MessengerActivity).removeParticipantFromCurrentConversation(conversation.conversationId, it)
+//                Messenger.removePartcipant(conversation.conversationId, it.userId)
                 titleView.text = getConversationTitle()
             }
         })

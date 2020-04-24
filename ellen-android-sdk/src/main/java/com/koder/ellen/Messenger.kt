@@ -238,7 +238,7 @@ class Messenger {
                                 // Current user, subscribe to channel
                                 subscribeToChannelList(mutableListOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
                             }
-                            addParticipantToConversation(conversationId, addedUserId)
+                            addParticipant(conversationId, addedUserId)
                         }
                         EventName.participantRemoved.value -> {
                             // Participant removed
@@ -250,6 +250,7 @@ class Messenger {
                                 // Current user, unsubscribe to channel
                                 unsubscribeFromChannelList(listOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
                             }
+                            removeParticipant(conversationId, removedUser.userId)
                         }
                         EventName.participantStateChange.value -> {
                             // Participant state changed
@@ -326,16 +327,12 @@ class Messenger {
             }
         }
 
-        private fun addParticipantToConversation(conversationId: String, addedUserId: String) {
+        private fun addParticipant(conversationId: String, addedUserId: String) {
             val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
             conversation?.let { c ->
-                var found: Participant? = null
-                for(participant in c.participants) {
-                    if(participant.user.userId == addedUserId) {
-                        found = participant
-                    }
-                }
-                found?.let {
+                val found = c.participants?.find { p -> p.user.userId.equals(addedUserId, ignoreCase = true) }
+                Log.d(TAG, "${addedUserId} ${found}")
+                if(found == null) {
                     // Get user
                     val client = Client()
                     client.getUser(addedUserId, object: CompletionCallback() {
@@ -344,19 +341,22 @@ class Messenger {
                                 val ellenUser = result.data as EllenUser
                                 val conversationUser = User(tenantId = ellenUser.tenantId, userId = ellenUser.userId, displayName = ellenUser.profile.displayName, profileImageUrl = ellenUser.profile.profileImageUrl)
                                 val newParticipant = Participant(user = conversationUser)
-                                c.participants.add(newParticipant)
+                                conversation.participants.add(newParticipant)
                             }
                         }
                     })
                 }
             }
-//            if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
-//                val newParticipant = Participant(user = conversationUser)
-//                val found = currentConversation?.participants?.find { p -> p.user.userId.equals(conversationUser.userId, ignoreCase = true) }
-//                if(found == null) {
-//                    currentConversation?.participants?.add(newParticipant)
-//                }
-//            }
+        }
+
+        private fun removeParticipant(conversationId: String, userId: String) {
+            val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+            conversation?.let { c ->
+                val found = c?.participants?.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
+                found?.let {
+                    conversation.participants?.remove(found)
+                }
+            }
         }
 
         // Get and store client configuration
