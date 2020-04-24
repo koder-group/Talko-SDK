@@ -39,7 +39,14 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             // Conversation Screen
             // Show the list of conversations
+
+            // To filter by user IDs
+//            val bundle = Bundle()
+//            val userIds = arrayListOf("ed4b93a3-3501-4a8b-bf4b-d755629ec493")
+//            bundle.putStringArrayList("userIds", userIds)
+
             val conversationScreen = ConversationScreen()
+//            conversationScreen.arguments = bundle
             getSupportFragmentManager().beginTransaction().replace(
                 R.id.frame_layout,
                 conversationScreen,

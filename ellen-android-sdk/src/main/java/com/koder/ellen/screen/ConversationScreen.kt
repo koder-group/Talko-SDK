@@ -83,6 +83,8 @@ class ConversationScreen : Fragment() {
         }).get(ConversationViewModel::class.java)
     }
 
+    private var filterUserIds: ArrayList<String>? = null
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         setEventHandler()
@@ -98,6 +100,13 @@ class ConversationScreen : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if(savedInstanceState != null) {
+            filterUserIds = savedInstanceState.getStringArrayList("userIds") ?: null
+        } else {
+            filterUserIds = getArguments()?.getStringArrayList("userIds") ?: null
+        }
+        Log.d(TAG, "filterUserIds ${filterUserIds}")
+
         // Inflate Fragment's view
         rootView = inflater.inflate(R.layout.fragment_conversation, container, false)
 
@@ -187,14 +196,14 @@ class ConversationScreen : Fragment() {
             // Observer, getConversations
             conversationViewModel.conversations.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "Conversations changed")
+
+                val filtered = filterConversations(it)
+
                 conversations.clear()
-                conversations.addAll(it)
+                conversations.addAll(filtered)
                 viewAdapter.notifyDataSetChanged()
-                updateRV(it)
-//                if(pubNub == null) initPubNub()
+                updateRV(filtered)
                 swipeRefreshLayout.setRefreshing(false)
-                // Communicate to host activity to subscribe to Conversation channels, one time only
-//                viewModel?.conversations.value = it   // TODO UI Screens
 
                 // Subscribe to channels
                 subscribeToConversations(it)
@@ -451,4 +460,20 @@ class ConversationScreen : Fragment() {
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    private fun filterConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
+        val filtered = mutableListOf<Conversation>()
+        if(filterUserIds != null) {
+            for(userId in filterUserIds!!) {
+                for(conversation in conversations) {
+                    val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
+                    found?.let {
+                        filtered.add(conversation)
+                    }
+                }
+            }
+            return filtered
+        }
+        return conversations
+    }
 }
