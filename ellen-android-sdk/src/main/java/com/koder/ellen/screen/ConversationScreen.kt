@@ -462,7 +462,7 @@ class ConversationScreen : Fragment() {
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
     private fun filterConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
-        val filtered = mutableListOf<Conversation>()
+        val filtered = mutableSetOf<Conversation>()
         if(filterUserIds != null) {
             for(userId in filterUserIds!!) {
                 for(conversation in conversations) {
@@ -472,7 +472,7 @@ class ConversationScreen : Fragment() {
                     }
                 }
             }
-            return filtered
+            return filtered.toMutableList()
         }
         return conversations
     }
