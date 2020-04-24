@@ -25,7 +25,7 @@ class Client {
         val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
     }
 
-    private fun getUser(publicId: String, completion: CompletionCallback? = null): Result<EllenUser> {
+    fun getUser(publicId: String, completion: CompletionCallback? = null): Result<EllenUser> {
         try {
             val response = RetrofitClient.ellen.getUser(
                 publicId = publicId

@@ -197,6 +197,7 @@ class ConversationScreen : Fragment() {
                         .setPositiveButton("Confirm") { dialog, which ->
                             // Delete confirmed
                             swipeRefreshLayout.setRefreshing(true)
+                            Messenger.removeConversation(conversations.get(viewHolder.adapterPosition).conversationId)
                             conversationViewModel.deleteConversation(conversations.get(viewHolder.adapterPosition))
                             conversations.removeAt(viewHolder.adapterPosition)
                             recyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
@@ -225,7 +226,7 @@ class ConversationScreen : Fragment() {
 
                 Messenger.conversations.clear()
                 Messenger.conversations.addAll(it)
-                Log.d(TAG, "${Messenger.conversations}")
+//                Log.d(TAG, "${Messenger.conversations}")
             })
 
             // Observer, deleteConversation

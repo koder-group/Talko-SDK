@@ -196,6 +196,7 @@ class Messenger {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
                             eventCallback.onMessageReceived(message)
                             unreadCallback.onNewUnread(getUnreadCount())
+                            Log.d(TAG, "messagePublished ${message}")
                         }
                         EventName.conversationCreated.value -> {
                             // Conversation created
@@ -203,12 +204,13 @@ class Messenger {
                             eventCallback.onConversationCreated(conversation)
                             // Subscribe to PubNub channel
                             subscribeToChannel(conversation.conversationId)
+                            addConversation(conversation)
                         }
                         EventName.conversationClosed.value -> {
                             // Conversation closed
                             val conversation = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Conversation::class.java)
                             eventCallback.onConversationClosed(conversation)
-                            removeConversation(conversation)
+                            removeConversation(conversation.conversationId)
                         }
                         EventName.conversationModified.value -> {
                             // Conversation modified
@@ -236,6 +238,7 @@ class Messenger {
                                 // Current user, subscribe to channel
                                 subscribeToChannelList(mutableListOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
                             }
+                            addParticipantToConversation(conversationId, addedUserId)
                         }
                         EventName.participantRemoved.value -> {
                             // Participant removed
@@ -301,11 +304,59 @@ class Messenger {
             pubNub.addListener(subscribeCallback)
         }
 
-        private fun removeConversation(conversation: Conversation?) {
-            val found = conversations.find { c -> c.conversationId.equals(conversation?.conversationId, ignoreCase = true) }
+        fun addConversation(conversation: Conversation) {
+            val found = conversations.find { it.conversationId.equals(conversation.conversationId, ignoreCase = true) }
+            if(found == null) {
+                if(conversation.timeCreated.toString().contains("-")) {
+                    conversation.timeCreated = Utils.convertDateToLong(conversation.timeCreated.toString())
+                }
+                conversation.messages = mutableListOf()
+                conversations.add(conversation)
+                val sorted = Utils.sortConversationsByLatestMessage(conversations)
+                conversations.clear()
+                conversations.addAll(sorted)
+            }
+        }
+
+        fun removeConversation(conversationId: String) {
+            val found = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
             found?.let {
+                Log.d(TAG, "Remove ${it}")
                 conversations.remove(found)
             }
+        }
+
+        private fun addParticipantToConversation(conversationId: String, addedUserId: String) {
+            val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+            conversation?.let { c ->
+                var found: Participant? = null
+                for(participant in c.participants) {
+                    if(participant.user.userId == addedUserId) {
+                        found = participant
+                    }
+                }
+                found?.let {
+                    // Get user
+                    val client = Client()
+                    client.getUser(addedUserId, object: CompletionCallback() {
+                        override fun onCompletion(result: Result<Any>) {
+                            if(result is Result.Success) {
+                                val ellenUser = result.data as EllenUser
+                                val conversationUser = User(tenantId = ellenUser.tenantId, userId = ellenUser.userId, displayName = ellenUser.profile.displayName, profileImageUrl = ellenUser.profile.profileImageUrl)
+                                val newParticipant = Participant(user = conversationUser)
+                                c.participants.add(newParticipant)
+                            }
+                        }
+                    })
+                }
+            }
+//            if(currentConversation?.conversationId.equals(conversationId, ignoreCase = true)) {
+//                val newParticipant = Participant(user = conversationUser)
+//                val found = currentConversation?.participants?.find { p -> p.user.userId.equals(conversationUser.userId, ignoreCase = true) }
+//                if(found == null) {
+//                    currentConversation?.participants?.add(newParticipant)
+//                }
+//            }
         }
 
         // Get and store client configuration

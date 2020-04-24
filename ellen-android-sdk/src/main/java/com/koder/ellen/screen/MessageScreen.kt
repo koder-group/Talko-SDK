@@ -212,7 +212,8 @@ class MessageScreen : Fragment(),
         // Subscribe to conversation channel
         conversationId?.let {
             val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
-            if(!Messenger.subscribedChannels.contains(channel)) Messenger.subscribeToChannelList(mutableListOf(channel))
+//            if(!Messenger.subscribedChannels.contains(channel))
+            Messenger.subscribeToChannelList(mutableListOf(channel))
         }
     }
 
@@ -1832,7 +1833,7 @@ class MessageScreen : Fragment(),
             }
 
             override fun onConversationClosed(conversation: Conversation) {
-                if(conversationId.equals(conversation.conversationId, ignoreCase = true)) {
+                if(Messenger.currentConversationId.equals(conversation.conversationId, ignoreCase = true)) {
                     // Close conversation
                 }
             }
@@ -1855,8 +1856,8 @@ class MessageScreen : Fragment(),
 
             override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
                 activity?.runOnUiThread {
-                    if (conversationId.equals(
-                            this@MessageScreen.conversationId,
+                    if (Messenger.currentConversationId.equals(
+                            conversationId,
                             ignoreCase = true
                         )
                     ) {
@@ -1867,8 +1868,8 @@ class MessageScreen : Fragment(),
 
             override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
                 activity?.runOnUiThread {
-                    if (conversationId.equals(
-                            this@MessageScreen.conversationId,
+                    if (Messenger.currentConversationId.equals(
+                            conversationId,
                             ignoreCase = true
                         )
                     ) {
@@ -1883,7 +1884,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageReceived(message: Message) {
                 activity?.runOnUiThread {
-                    if (conversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if (Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true)) {
                         addMessage(message)
 //                        Log.d(TAG, "${message.timeCreated.toString()}")
 //                        val timeCreated = convertDateToLong(message.timeCreated.toString())
@@ -1895,7 +1896,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageRejected(message: Message, errorMessage: String) {
                 activity?.runOnUiThread {
-                    if (conversationId.equals(message.conversationId, ignoreCase = true) &&
+                    if (Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true) &&
                         message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)
                     ) {
                         showMessageError(message.metadata.localReferenceId, errorMessage)
@@ -1905,7 +1906,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageDeleted(message: Message) {
                 activity?.runOnUiThread {
-                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if(Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true)) {
                         deleteMessageFromList(message)
                     }
                 }
@@ -1913,7 +1914,7 @@ class MessageScreen : Fragment(),
 
             override fun onMessageUserReaction(message: Message) {
                 activity?.runOnUiThread {
-                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if(Messenger.currentConversationId.equals(message.conversationId, ignoreCase = true)) {
                         updateMessage(message)
                     }
                 }
@@ -1962,18 +1963,6 @@ class MessageScreen : Fragment(),
         shape.getPaint().setColor(Color.parseColor(color))
         return shape
     }
-
-    // OnLayoutComplete listener
-//    interface CompleteInterface {
-//        fun onComplete()
-//    }
-//
-//    // On completion callback for
-//    abstract class OnLayoutCompleteListener: CompleteInterface {}
-//
-//    fun addLayoutCompleteListener(listener: OnLayoutCompleteListener) {
-//        mCompleteListener = listener
-//    }
 }
 
 // Override LayoutManager to disable scroll

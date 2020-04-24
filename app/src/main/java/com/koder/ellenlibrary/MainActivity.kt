@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-        // Add Participant Screen item click listener
+        // Message Info, Add Participant item click listener
         MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
             override fun onClickAddParticipant(conversationId: String) {
                 // Show the Add Participant Screen for the current conversation
@@ -112,6 +112,8 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "Add Participant")
                 Log.d(TAG, "User Id ${userId}")
                 Log.d(TAG, "Conversation Id ${conversationId}")
+
+                getSupportFragmentManager().popBackStack()
 
                 // Add the selected participant to the conversation
                 val client = Client()

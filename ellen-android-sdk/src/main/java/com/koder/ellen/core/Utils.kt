@@ -5,6 +5,8 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import com.koder.ellen.model.Conversation
 import okhttp3.MediaType.Companion.toMediaType
+import java.text.SimpleDateFormat
+import java.util.*
 
 internal class Utils {
     companion object {
@@ -45,6 +47,12 @@ internal class Utils {
             val shape = ShapeDrawable(RoundRectShape(floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft), null, null))
             shape.getPaint().setColor(Color.parseColor(color))
             return shape
+        }
+
+        fun convertDateToLong(date: String): Long {
+            val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            df.setTimeZone(TimeZone.getTimeZone("UTC"))
+            return df.parse(date).time
         }
 
         private fun sortByDescending(messageMap: MutableMap<Conversation, Long>): Map<Conversation, Long> {

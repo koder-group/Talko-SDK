@@ -240,7 +240,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
                 viewAdapter.notifyItemInserted(index)
 
                 // Update currentConversation in MainActivty
-                (activity as MessengerActivity).addParticipantToCurrentConversation(conversation.conversationId, it)
+//                (activity as MessengerActivity).addParticipantToCurrentConversation(conversation.conversationId, it)
                 titleView.text = getConversationTitle()
             }
         })
@@ -255,7 +255,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
                 Log.d(TAG, "Participants size ${participants.size}")
                 viewAdapter.notifyItemRemoved(index)
 
-                (activity as MessengerActivity).removeParticipantFromCurrentConversation(conversation.conversationId, it)
+//                (activity as MessengerActivity).removeParticipantFromCurrentConversation(conversation.conversationId, it)
                 titleView.text = getConversationTitle()
             }
         })
@@ -447,17 +447,18 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     }
 
     private fun getConversationTitle(): String {
-        val currentConversation = (activity as MessengerActivity).getCurrentConversation()
-        if(currentConversation != null && !currentConversation.title.isNullOrBlank()) {
-            return currentConversation.title
+//        val currentConversation = (activity as MessengerActivity).getCurrentConversation()
+//        val currentConversation = conversation
+        if(conversation != null && !conversation.title.isNullOrBlank()) {
+            return conversation.title
         }
 
         if(!::conversation.isInitialized) {
             return ""
         }
 
-        if(currentConversation?.title.isNullOrBlank()) {
-            return getTitleByParticipants(getParticipantsList(currentConversation!!))
+        if(conversation?.title.isNullOrBlank()) {
+            return getTitleByParticipants(getParticipantsList(conversation!!))
         }
 
         return conversation.title
