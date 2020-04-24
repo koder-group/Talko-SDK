@@ -46,7 +46,6 @@
                 android:id="@+id/title_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
                 android:text="Conversation title"
                 android:textColor="@color/darkGray"
 
@@ -82,7 +81,6 @@
                 android:id="@+id/description_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
                 android:text="@string/add_conversation_description"
                 android:textColor="@color/darkGray"
 
@@ -149,7 +147,6 @@
                 android:id="@+id/add_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
                 android:text="@string/add_participant"
                 android:textColor="@color/darkGray"
 
@@ -187,7 +184,6 @@
                 android:id="@+id/close_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
                 android:text="@string/close_conversation"
                 android:gravity="center_horizontal"
                 android:textColor="@color/red"

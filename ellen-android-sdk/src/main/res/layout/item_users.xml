@@ -5,15 +5,15 @@
     android:layout_width="match_parent"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:paddingTop="15dp"
-    android:paddingBottom="15dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true" >
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/user_profile_image_layout"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:cardCornerRadius="24dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:cardCornerRadius="21dp"
         app:strokeWidth="0dp"
 
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Title"
-        android:textSize="16sp"
         android:textColor="@color/darkGray"
 
         app:layout_constraintStart_toEndOf="@id/user_profile_image_layout"
