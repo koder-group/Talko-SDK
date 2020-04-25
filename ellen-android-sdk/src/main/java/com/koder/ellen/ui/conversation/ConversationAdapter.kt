@@ -25,6 +25,7 @@ import com.koder.ellen.R
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.Participant
 import com.koder.ellen.model.User
+import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -126,48 +127,30 @@ internal class ConversationAdapter(private val context: Context, private val dat
             getFirstParticipantImageUrl(dataset.get(position).participants)
         // Load profile image
         val iconView = holder.layout.findViewById<ImageView>(R.id.conversation_icon)
-//        Picasso.get().load(icon).into(holder.layout.findViewById<ImageView>(R.id.conversation_icon))
 
-        // MultiImageView
-        var count = 0;
-        val bitmapList = mutableListOf<Bitmap>()
-        for(participant in dataset.get(position).participants) {
-            participant.user.profileImageUrl?.let {
-                if(!participant.user.userId.equals(prefs?.externalUserId, ignoreCase = true) && count < 4) {
-                    count++
+        if(dataset.get(position).participants.size == 2) Picasso.get().load(icon).into(holder.layout.findViewById<ImageView>(R.id.conversation_icon))
 
-//                    Log.d(TAG, "participant ${participant.user.displayName}")
+        if(dataset.get(position).participants.size > 2) {
+            // MultiImageView
+            var count = 0;
+            val bitmapList = mutableListOf<Bitmap>()
+            for (participant in dataset.get(position).participants) {
+                participant.user.profileImageUrl?.let {
+                    if (!participant.user.userId.equals(
+                            prefs?.externalUserId,
+                            ignoreCase = true
+                        ) && count < 4
+                    ) {
+                        count++
 
-//                Bitmap mBitmap = Picasso.get().load(link).get();
-//                val bitmap = Picasso.get().load(participant.user.profileImageUrl).get()
-//                multiImageView.addImage(bitmap)
-
-//                    Picasso.get().load(participant.user.profileImageUrl).into(object: Target {    // TODO To Glide
-//                        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-//                        }
-//
-//                        override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-//                        }
-//
-//                        override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-//                            try {
-//                                bitmap?.let {
-////                                val scaled = createScaledBitmap(bitmap, 100, 100, false)
-////                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
-////                                Log.d(TAG, "scaled ${scaled.width} x ${scaled.height}")
-//                                    bitmapList.add(bitmap)
-//                                    val bitmapGrid = bitmapsToGrid(bitmapList)
-//                                    iconView.setImageBitmap(bitmapGrid)
-//                                }
-//                            } catch (e: Exception) {
-//                            }
-//                        }
-//                    })    // TODO To Glide
-                    Glide.with(context)
+                        Glide.with(context)
                             .asBitmap()
                             .load(participant.user.profileImageUrl)
-                            .into(object : CustomTarget<Bitmap>(){
-                                override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                            .into(object : CustomTarget<Bitmap>() {
+                                override fun onResourceReady(
+                                    bitmap: Bitmap,
+                                    transition: Transition<in Bitmap>?
+                                ) {
 //                    imageView.setImageBitmap(resource)
 //                                    val scaled = createScaledBitmap(bitmap, 100, 100, false)
 //                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
@@ -176,6 +159,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
                                     val bitmapGrid = bitmapsToGrid(bitmapList)
                                     iconView.setImageBitmap(bitmapGrid)
                                 }
+
                                 override fun onLoadCleared(placeholder: Drawable?) {
                                     // this is called when imageView is cleared on lifecycle call or for
                                     // some other reason.
@@ -183,6 +167,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
                                     // clear it here as you can no longer have the bitmap
                                 }
                             })
+                    }
                 }
             }
         }
