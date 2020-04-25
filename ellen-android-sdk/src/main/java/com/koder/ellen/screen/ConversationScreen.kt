@@ -28,6 +28,7 @@ import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
+import com.koder.ellen.core.Utils
 import com.koder.ellen.data.ConversationDataSource
 import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.Conversation
@@ -461,18 +462,28 @@ class ConversationScreen : Fragment() {
     val Int.px: Int
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
+//    private fun filterConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
+//        val filtered = mutableSetOf<Conversation>()
+//        if(filterUserIds != null) {
+//            for(userId in filterUserIds!!) {
+//                for(conversation in conversations) {
+//                    val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
+//                    found?.let {
+//                        filtered.add(conversation)
+//                    }
+//                }
+//            }
+//            return filtered.toMutableList()
+//        }
+//        return conversations
+//    }
     private fun filterConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
-        val filtered = mutableSetOf<Conversation>()
-        if(filterUserIds != null) {
-            for(userId in filterUserIds!!) {
-                for(conversation in conversations) {
-                    val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
-                    found?.let {
-                        filtered.add(conversation)
-                    }
-                }
-            }
-            return filtered.toMutableList()
+        filterUserIds?.let { f -> // if filterUserIds won't be null
+            return conversations.filter { c -> // filter the conversations
+                c.participants.map { p -> // iterate and list all the userids on the conversation
+                    p.user.userId
+                }.toList().intersect(f.toList()).isNotEmpty() // check if any of the userids intersect with the filterUserIds if non-empty, then it means yes
+            }.toMutableList() // return the all filtered conversations
         }
         return conversations
     }
