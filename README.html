@@ -3,7 +3,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-      <link rel="stylesheet" href="file:///c:\Users\jeff\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.5.2\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
       
       
 
@@ -461,12 +461,22 @@ getSupportFragmentManager().beginTransaction().replace(
     }
 })
 </code></pre><p><strong>Customizable UI Options</strong></p>
-<pre data-role="codeBlock" data-info class="language-"><code>Messenger.senderMessageRadius = 18 // dp
+<pre data-role="codeBlock" data-info class="language-"><code>// All Screens
+Messenger.screenBackgroundColor = &quot;#FFFFFF&quot;
+Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
+
+// Conversation Screen
+Messenger.conversationItemTopPadding = 10 // dp
+Messenger.conversationItemBottomPadding = 10 // dp
+Messenger.conversationIconRadius = 21 // dp
+Messenger.conversationTitleSize = 14f // sp, float
+Messenger.conversationSubtitleSize = 14f // sp, float
+
+// Message Screen
+Messenger.senderMessageRadius = 18 // dp
 Messenger.selfMessageRadius = 18
 Messenger.senderBackgroundColor = &quot;#88000000&quot;  // gray
 Messenger.selfBackgroundColor = &quot;#1A73E9&quot;  // blue
-Messenger.screenBackgroundColor = &quot;#FFFFFF&quot;
-Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 </code></pre>
       </div>
       

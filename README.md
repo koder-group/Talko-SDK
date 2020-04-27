@@ -231,10 +231,20 @@ AddParticipantScreen.setItemClickListener(object: AddParticipantScreen.OnItemCli
 
 **Customizable UI Options**
 ```
+// All Screens
+Messenger.screenBackgroundColor = "#FFFFFF"
+Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
+
+// Conversation Screen
+Messenger.conversationItemTopPadding = 10 // dp
+Messenger.conversationItemBottomPadding = 10 // dp
+Messenger.conversationIconRadius = 21 // dp
+Messenger.conversationTitleSize = 14f // sp, float
+Messenger.conversationSubtitleSize = 14f // sp, float
+
+// Message Screen
 Messenger.senderMessageRadius = 18 // dp
 Messenger.selfMessageRadius = 18
 Messenger.senderBackgroundColor = "#88000000"  // gray
 Messenger.selfBackgroundColor = "#1A73E9"  // blue
-Messenger.screenBackgroundColor = "#FFFFFF"
-Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 ```
