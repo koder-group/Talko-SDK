@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.card.MaterialCardView
+import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
@@ -54,6 +55,21 @@ internal class ConversationAdapter(private val context: Context, private val dat
             .inflate(R.layout.item_conversations, parent, false) as ConstraintLayout
         // set the view's size, margins, paddings and layout parameters
         // ...
+        // Top and bottom padding
+        layout.setPadding(layout.paddingLeft, Messenger.conversationItemTopPadding.px, layout.paddingRight, Messenger.conversationItemBottomPadding.px)
+
+        // Title and subtitle text size
+        val title = layout.findViewById<TextView>(R.id.conversation_title)
+        val subtitle = layout.findViewById<TextView>(R.id.conversation_subtitle)
+        title.textSize = Messenger.conversationTitleSize
+        subtitle.textSize = Messenger.conversationSubtitleSize
+
+        // Icon
+        val icon = layout.findViewById<MaterialCardView>(R.id.conversation_icon_layout)
+        icon.radius = Messenger.conversationIconRadius.px.toFloat()
+        icon.layoutParams.height = Messenger.conversationIconRadius.px * 2
+        icon.layoutParams.width = Messenger.conversationIconRadius.px * 2
+
         return MyViewHolder(layout)
     }
 

@@ -42,12 +42,20 @@ class Messenger {
         internal val subscribedChannels: MutableSet<String> = mutableSetOf()
 
         // Message options
+        // All Screens
+        @JvmStatic var screenBackgroundColor = "#FFFFFF"
+        @JvmStatic var screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
+        // Conversation Screen
+        @JvmStatic var conversationItemTopPadding = 10 // dp
+        @JvmStatic var conversationItemBottomPadding = 10 // dp
+        @JvmStatic var conversationIconRadius = 21 // dp
+        @JvmStatic var conversationTitleSize = 14f // sp, float
+        @JvmStatic var conversationSubtitleSize = 14f // sp, float
+        // Message Screen
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18
         @JvmStatic var senderBackgroundColor = "#88000000"  // gray
         @JvmStatic var selfBackgroundColor = "#1A73E9"  // blue
-        @JvmStatic var screenBackgroundColor = "#FFFFFF"
-        @JvmStatic var screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
 
         var conversations = mutableListOf<Conversation>()
         var currentConversationId = ""
