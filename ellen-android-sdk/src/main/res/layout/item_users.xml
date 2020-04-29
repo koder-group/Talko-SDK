@@ -39,6 +39,7 @@
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"/>
     <ImageView
+        android:id="@+id/check"
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:src="@drawable/ic_check_24"

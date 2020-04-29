@@ -29,7 +29,8 @@ import com.koder.ellen.ui.message.MessageFragment
 internal class SearchAdapter(private val context: Context, private val dataset: MutableList<User>, private val fragment: Fragment? = null) :
     RecyclerView.Adapter<SearchAdapter.MyViewHolder>() {
 
-    val TAG = "SearchAdapter"
+    private val TAG = "SearchAdapter"
+    private var checkedPosition = -1
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -69,6 +70,18 @@ internal class SearchAdapter(private val context: Context, private val dataset: 
         Picasso.get().load(user.profileImageUrl).into(userProfileImage)
         userName.text = user.displayName
 
+        // Single item selection
+        val check = holder.layout.findViewById<ImageView>(R.id.check)
+        if (checkedPosition == -1) {
+            check.visibility = View.GONE
+        } else {
+            if (checkedPosition == position) {
+                check.visibility = View.VISIBLE
+            } else {
+                check.visibility = View.GONE
+            }
+        }
+
         holder.layout.setOnClickListener { view -> {}
 //            Toast.makeText(holder.layout.context, "${position}", Toast.LENGTH_SHORT).show()
 //            Log.d(TAG, "${view.isSelected}")
@@ -82,7 +95,14 @@ internal class SearchAdapter(private val context: Context, private val dataset: 
             if(fragment == null) {
                 (context as MessengerActivity).createConversationFromSearch(user.userId)
             } else if (fragment is UserSearchScreen) {
-                fragment.sendClick(dataset.get(position), position)
+//                fragment.sendClick(dataset.get(position), position)
+
+                // Single item selection
+                check.visibility = View.VISIBLE
+                if(checkedPosition != position) {
+                    notifyItemChanged(checkedPosition)
+                    checkedPosition = position
+                }
             }
 
             // Communicate with host Activity to show MessageFragment
