@@ -11,6 +11,14 @@
             android:icon="@drawable/ic_edit_light_24"
             />
     </group>
+    <group
+        android:id="@+id/search_menu">
+        <item
+            android:id="@+id/action_search"
+            android:title="Chat"
+            app:showAsAction="always"
+        />
+    </group>
     <group android:id="@+id/message_menu">
         <item
             android:id="@+id/action_info"

@@ -70,6 +70,8 @@ class UserSearchScreen : Fragment() {
     private val users: MutableList<User> = mutableListOf()
     private lateinit var mProgressBar: ProgressBar
 
+    private lateinit var selectedUser: User
+
     private val messageViewModel: MessageViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             MessageViewModel(
@@ -266,6 +268,15 @@ class UserSearchScreen : Fragment() {
 
     fun sendClick(user: User, position: Int) {
         mClickListener?.OnItemClickListener(user, position)
+    }
+
+    fun setSelectedUser(user: User) {
+        selectedUser = user
+    }
+
+    fun getSelectedUser(): User? {
+        if(!::selectedUser.isInitialized) return null
+        return selectedUser
     }
 
     // Extensions for dp-px conversion

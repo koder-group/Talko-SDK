@@ -98,6 +98,7 @@ internal class SearchAdapter(private val context: Context, private val dataset: 
 //                fragment.sendClick(dataset.get(position), position)
 
                 // Single item selection
+                fragment.setSelectedUser(user)
                 check.visibility = View.VISIBLE
                 if(checkedPosition != position) {
                     notifyItemChanged(checkedPosition)
