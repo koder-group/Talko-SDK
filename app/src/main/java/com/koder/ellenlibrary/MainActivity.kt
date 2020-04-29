@@ -28,9 +28,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Customizable UI options
+        // Options
         Messenger.screenBackgroundColor = "#5d4298"
         Messenger.screenCornerRadius = intArrayOf(20, 20, 0, 0)
+        Messenger.conversationSwipeToDelete = true
+        Messenger.conversationLongClickToDelete = false
 
         setContentView(R.layout.activity_main)
 

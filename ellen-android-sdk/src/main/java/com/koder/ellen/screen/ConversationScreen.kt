@@ -155,42 +155,45 @@ class ConversationScreen : Fragment() {
         swipeRefreshLayout.setRefreshing(true)
         conversationViewModel.loadConversations()
 
-        // Swipe-to-delete Conversation
-        val deleteDrawable = AppCompatResources.getDrawable(view.context, R.drawable.ic_delete_24)
+        if(Messenger.conversationSwipeToDelete) {
+            // Swipe-to-delete Conversation
+            val deleteDrawable =
+                AppCompatResources.getDrawable(view.context, R.drawable.ic_delete_24)
 
-        lateinit var itemTouchHelper: ItemTouchHelper
-        val swipeCallback = object : SwipeToDeleteCallback(view.context, deleteDrawable!!) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            lateinit var itemTouchHelper: ItemTouchHelper
+            val swipeCallback = object : SwipeToDeleteCallback(view.context, deleteDrawable!!) {
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 //                adapter.removeAt(viewHolder.adapterPosition)
-                Log.d(TAG, "Remove ${viewHolder.adapterPosition}")
-                Log.d(TAG, "Remove ${conversations.get(viewHolder.adapterPosition)}")
+                    Log.d(TAG, "Remove ${viewHolder.adapterPosition}")
+                    Log.d(TAG, "Remove ${conversations.get(viewHolder.adapterPosition)}")
 
-                // Show confirmation to delete
-                Log.d(TAG, "swipeCallback show confirmation to delete")
-                MaterialAlertDialogBuilder(context)
-                    .setTitle("Close Conversation")
-                    .setMessage("Are you sure you would like to close this conversation? This will close the conversation for all participants.")
-                    .setNegativeButton("Cancel") { dialog, which ->
-                        // Delete cancelled, reset swiped item
+                    // Show confirmation to delete
+                    Log.d(TAG, "swipeCallback show confirmation to delete")
+                    MaterialAlertDialogBuilder(context)
+                        .setTitle("Close Conversation")
+                        .setMessage("Are you sure you would like to close this conversation? This will close the conversation for all participants.")
+                        .setNegativeButton("Cancel") { dialog, which ->
+                            // Delete cancelled, reset swiped item
 //                            viewAdapter.notifyItemChanged(viewHolder.adapterPosition)
 
-                        itemTouchHelper?.attachToRecyclerView(null)
-                        itemTouchHelper?.attachToRecyclerView(recyclerView)
-                    }
-                    .setPositiveButton("Confirm") { dialog, which ->
-                        // Delete confirmed
-                        swipeRefreshLayout.setRefreshing(true)
-                        Messenger.removeConversation(conversations.get(viewHolder.adapterPosition).conversationId)
-                        conversationViewModel.deleteConversation(conversations.get(viewHolder.adapterPosition))
-                        conversations.removeAt(viewHolder.adapterPosition)
-                        recyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
-                    }
-                    .show()
+                            itemTouchHelper?.attachToRecyclerView(null)
+                            itemTouchHelper?.attachToRecyclerView(recyclerView)
+                        }
+                        .setPositiveButton("Confirm") { dialog, which ->
+                            // Delete confirmed
+                            swipeRefreshLayout.setRefreshing(true)
+                            Messenger.removeConversation(conversations.get(viewHolder.adapterPosition).conversationId)
+                            conversationViewModel.deleteConversation(conversations.get(viewHolder.adapterPosition))
+                            conversations.removeAt(viewHolder.adapterPosition)
+                            recyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
+                        }
+                        .show()
+                }
             }
-        }
 //            val itemTouchHelper = ItemTouchHelper(swipeCallback)
-        itemTouchHelper = ItemTouchHelper(swipeCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+            itemTouchHelper = ItemTouchHelper(swipeCallback)
+            itemTouchHelper.attachToRecyclerView(recyclerView)
+        }
 
         // Observer, getConversations
         conversationViewModel.conversations.observe(viewLifecycleOwner, Observer {
@@ -437,6 +440,24 @@ class ConversationScreen : Fragment() {
     fun sendClick(conversation: Conversation, position: Int) {
         mClickListener?.OnItemClickListener(conversation, position)
         Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
+    }
+
+    fun onLongClick(conversation: Conversation, position: Int) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle("Close Conversation")
+            .setMessage("Are you sure you would like to close this conversation? This will close the conversation for all participants.")
+            .setNegativeButton("Cancel") { dialog, which ->
+                // Delete cancelled
+            }
+            .setPositiveButton("Confirm") { dialog, which ->
+                // Delete confirmed
+                swipeRefreshLayout.setRefreshing(true)
+                Messenger.removeConversation(conversation.conversationId)
+                conversationViewModel.deleteConversation(conversation)
+                conversations.removeAt(position)
+                recyclerView.adapter!!.notifyItemRemoved(position)
+            }
+            .show()
     }
 
     // UI Screens

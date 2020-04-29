@@ -7,6 +7,7 @@ import android.graphics.Bitmap.createScaledBitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -190,18 +191,6 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
 
         holder.layout.setOnClickListener { view ->
-//            Toast.makeText(holder.layout.context, "${position}", Toast.LENGTH_SHORT).show()
-//            // TODO
-//            val intent = Intent(context, MessageActivity::class.java).apply {
-//                Log.d(TAG, "${dataset.get(position)}")
-//                putExtra("CONVERSATION_ID", dataset.get(position).conversationId)
-//                putExtra("CONVERSATION_TITLE", title)
-//                putExtra("CONVERSATION_DESCRIPTION", "")
-//                putExtra("PARTICIPANT_ID", "")
-//                putExtra("CONVERSATION_PARTICIPANTS", getParticipantsList(dataset.get(position)))
-//            }
-//            context.startActivity(intent) // TODO
-
             // Hide new message dot
 //            Log.d(TAG, "timeCreated ${dataset.get(position).timeCreated}")
 //            Log.d(TAG, "currentTimeMillis ${System.currentTimeMillis()}")
@@ -210,17 +199,18 @@ internal class ConversationAdapter(private val context: Context, private val dat
             newMessageDot.visibility = View.GONE
 
             if(fragment == null) {
-//                prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())  // TODO UI Screens
-//                cardView.strokeWidth = 0
-//                newMessageDot.visibility = View.GONE
-
                 // Communicate with host Activity to show MessageFragment
                 (context as MessengerActivity).showMessageFragment(dataset.get(position))
             } else if(fragment is com.koder.ellen.screen.ConversationScreen) {
                 fragment.sendClick(dataset.get(position), position)
             }
+        }
 
-
+        if(fragment is com.koder.ellen.screen.ConversationScreen && Messenger.conversationLongClickToDelete) {
+            holder.layout.setOnLongClickListener { view ->
+                fragment.onLongClick(dataset.get(position), position)
+                true
+            }
         }
     }
 

@@ -41,7 +41,7 @@ class Messenger {
         internal var prefs: Prefs? = null
         internal val subscribedChannels: MutableSet<String> = mutableSetOf()
 
-        // Message options
+        // Options
         // All Screens
         @JvmStatic var screenBackgroundColor = "#FFFFFF"
         @JvmStatic var screenCornerRadius = intArrayOf(0, 0, 0, 0) // top left, top right, bottom right, bottom left
@@ -51,6 +51,8 @@ class Messenger {
         @JvmStatic var conversationIconRadius = 21 // dp
         @JvmStatic var conversationTitleSize = 14f // sp, float
         @JvmStatic var conversationSubtitleSize = 14f // sp, float
+        @JvmStatic var conversationSwipeToDelete = true // true = enabled, false = disabled
+        @JvmStatic var conversationLongClickToDelete = false // true = enabled, false = disabled
         // Message Screen
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18
