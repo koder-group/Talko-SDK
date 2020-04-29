@@ -197,6 +197,9 @@ class MessageScreen : Fragment(),
             Log.d(TAG, "found ${it}")
             conversation = it
             Messenger.currentConversationId = it.conversationId
+            // Update unread count
+            prefs?.setConversationLastRead(it.conversationId, System.currentTimeMillis())
+            Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
         }
 
         // Subscribe to conversation channel
