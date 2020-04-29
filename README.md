@@ -189,9 +189,11 @@ getSupportFragmentManager().beginTransaction().replace(
 ).commit()
 ```
 
-**Click Events**
+#####Click Events
 
 To get the click event in a screen, you must use the provided click listeners
+
+######Conversation Screen
 ```
 ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
   override fun OnItemClickListener(conversation: Conversation, position: Int) {
@@ -199,16 +201,18 @@ ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickLi
   }
 })
 ```
-
+######User Search Screen
+To get the selected user:
 ```
-UserSearchScreen.setItemClickListener(object: UserSearchScreen.OnItemClickListener() {
-  override fun OnItemClickListener(user: User, position: Int) {
-    // Show conversation with the selected user 
-    // or create a new conversation with the selected user
-  }
-})
+val userSearchScreen = supportFragmentManager.findFragmentByTag(resources.getString(R.string.search)) as UserSearchScreen
+val user = userSearchScreen.getSelectedUser()
+user?.let {
+  findOrCreateConversation(user)
+  hideKeyboard(this@MainActivity)
+}
 ```
 
+######Message Info Screen
 ```
 MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickListener() {
   override fun onClickAddParticipant(conversationId: String) {
@@ -217,6 +221,7 @@ MessageInfoScreen.setItemClickListener(object: MessageInfoScreen.OnItemClickList
 })
 ```
 
+######Add Participant Screen
 ```
 AddParticipantScreen.setItemClickListener(object: AddParticipantScreen.OnItemClickListener() {
     override fun OnItemClickListener(

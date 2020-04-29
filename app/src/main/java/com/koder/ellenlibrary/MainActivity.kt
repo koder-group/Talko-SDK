@@ -175,7 +175,6 @@ class MainActivity : AppCompatActivity() {
                 // Get selected user
                 val userSearchScreen = supportFragmentManager.findFragmentByTag(resources.getString(R.string.search)) as UserSearchScreen
                 val user = userSearchScreen.getSelectedUser()
-                Log.d(TAG, "selectedUser ${user}")
                 user?.let {
                     findOrCreateConversation(user)
                     hideKeyboard(this@MainActivity)
