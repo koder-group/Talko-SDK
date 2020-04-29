@@ -71,30 +71,7 @@ class MainActivity : AppCompatActivity() {
         // User search screen item click listener
         UserSearchScreen.setItemClickListener(object: UserSearchScreen.OnItemClickListener() {
             override fun OnItemClickListener(user: User, position: Int) {
-
-                // Find an existing conversation
-                val conversation = Messenger.fetchConversation(getUserId(), user.userId)
-                Log.d(TAG, "conversationFound ${conversation}")
-
-                if(conversation == null) {
-                    // Create a new conversation
-                    val bundle = Bundle()
-                    val messageScreen = MessageScreen()
-                    bundle.putString("ADD_USER_ID", user.userId)
-                    messageScreen.setArguments(bundle)
-                    supportFragmentManager.popBackStack()
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
-                } else {
-                    // Show the conversation with the selected user
-                    val bundle = Bundle()
-                    val messageScreen = MessageScreen.newInstance()
-                    Messenger.currentConversationId = conversation.conversationId
-                    bundle.putString("CONVERSATION_ID", conversation.conversationId)
-                    messageScreen.setArguments(bundle)
-                    supportFragmentManager.popBackStack()
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
-                }
-
+                findOrCreateConversation(user)
                 hideKeyboard(this@MainActivity)
             }
         })
@@ -157,21 +134,29 @@ class MainActivity : AppCompatActivity() {
         mMenu = menu!!
         menuInflater.inflate(R.menu.main_menu, menu)
         mMenu.setGroupVisible(R.id.conversation_menu, false)
+        mMenu.setGroupVisible(R.id.search_menu, false)
         mMenu.setGroupVisible(R.id.message_menu, false)
         return true
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val conversationScreen = supportFragmentManager.findFragmentByTag(resources.getString(R.string.conversations))
+        val userSearchScreen = supportFragmentManager.findFragmentByTag(resources.getString(R.string.search))
         val messageScreen = supportFragmentManager.findFragmentByTag(resources.getString(R.string.message))
 
         if (conversationScreen != null && conversationScreen.isVisible) {
             mMenu.setGroupVisible(R.id.conversation_menu, true)
+            mMenu.setGroupVisible(R.id.search_menu, false)
             mMenu.setGroupVisible(R.id.message_menu, false)
         }
-
+        if (userSearchScreen != null && userSearchScreen.isVisible) {
+            mMenu.setGroupVisible(R.id.conversation_menu, false)
+            mMenu.setGroupVisible(R.id.search_menu, true)
+            mMenu.setGroupVisible(R.id.message_menu, false)
+        }
         if (messageScreen != null && messageScreen.isVisible) {
             mMenu.setGroupVisible(R.id.conversation_menu, false)
+            mMenu.setGroupVisible(R.id.search_menu, false)
             mMenu.setGroupVisible(R.id.message_menu, true)
         }
 
@@ -184,6 +169,17 @@ class MainActivity : AppCompatActivity() {
                 // Show User Search Screen
                 val userSearchScreen = UserSearchScreen()
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, userSearchScreen, resources.getString(R.string.search)).addToBackStack(resources.getString(R.string.search)).commit()
+                true
+            }
+            R.id.action_search -> {
+                // Get selected user
+                val userSearchScreen = supportFragmentManager.findFragmentByTag(resources.getString(R.string.search)) as UserSearchScreen
+                val user = userSearchScreen.getSelectedUser()
+                Log.d(TAG, "selectedUser ${user}")
+                user?.let {
+                    findOrCreateConversation(user)
+                    hideKeyboard(this@MainActivity)
+                }
                 true
             }
             R.id.action_info -> {
@@ -206,6 +202,29 @@ class MainActivity : AppCompatActivity() {
             hideKeyboard(this@MainActivity)
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private fun findOrCreateConversation(user: User) {
+        // Find an existing conversation
+        val conversation = Messenger.fetchConversation(getUserId(), user.userId)
+        if(conversation == null) {
+            // Create a new conversation
+            val bundle = Bundle()
+            val messageScreen = MessageScreen()
+            bundle.putString("ADD_USER_ID", user.userId)
+            messageScreen.setArguments(bundle)
+            supportFragmentManager.popBackStack()
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
+        } else {
+            // Show the conversation with the selected user
+            val bundle = Bundle()
+            val messageScreen = MessageScreen.newInstance()
+            Messenger.currentConversationId = conversation.conversationId
+            bundle.putString("CONVERSATION_ID", conversation.conversationId)
+            messageScreen.setArguments(bundle)
+            supportFragmentManager.popBackStack()
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
         }
     }
 
