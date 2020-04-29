@@ -167,16 +167,6 @@ class UserSearchScreen : Fragment() {
         super.onActivityCreated(savedInstanceState)
         // App Bar title
         activity?.run {
-            // Communicate with host Activity
-//            viewModel = ViewModelProvider(this).get(MainViewModel::class.java)    // TODO UI Screens
-//            viewModel.updateActionBarTitle(getResources().getString(R.string.conversations))
-
-            // Toolbar, DrawerLayout
-//            (this as MessengerActivity).setSupportActionBar(findViewById(R.id.toolbar))   // TODO UI Screens
-//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//            supportActionBar?.setDisplayShowHomeEnabled(true)
-//            supportActionBar?.title = resources.getString(R.string.new_message)   // TODO UI Screens
-
             // Setup RecyclerView
             viewManager = LinearLayoutManager(this)
             viewAdapter = SearchAdapter(this, users, this@UserSearchScreen)
