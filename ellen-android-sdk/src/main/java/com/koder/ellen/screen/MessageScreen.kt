@@ -520,6 +520,7 @@ class MessageScreen : Fragment(),
 //            addImageButton.visibility = if(messageState.isDataValid) View.GONE else View.VISIBLE
             addImageButton.visibility = if(messageEditText.text.isBlank()) View.VISIBLE else View.GONE
         })
+
         // Observer, Messages
         messageViewModel.messages.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "Messages changed")
@@ -527,23 +528,15 @@ class MessageScreen : Fragment(),
             messages.clear()
             messages.addAll(it)
             viewAdapter.notifyDataSetChanged()
-//            recyclerView.smoothScrollToPosition(messages.size-1)
             recyclerView.scrollToPosition(messages.size-1)
             swipeRefreshLayout.setRefreshing(false)
-
-//            if(!(activity as MessengerActivity).isCurrentStatusMessagesEmpty()) { // TODO UI Screens
-//                currentStatusMessages.clear()
-//                currentStatusMessages.addAll((activity as MessengerActivity).getAndClearCurrentStatusMessages())
-//                showAllCurrentStatusMessages()
-//            } // TODO UI Screens
         })
+
         // Mentioned Participants
         messageViewModel.mentionedParticipants.observe(viewLifecycleOwner, Observer {
-            //            Log.d(TAG, "Mentioned participants")
-//            Log.d(TAG, "${it.size} ${it}")
-
             mentionViewAdapter.setData(it)
         })
+
         // Observer, Update Message
         // message:published
         // message:userReaction
@@ -555,6 +548,7 @@ class MessageScreen : Fragment(),
             viewAdapter.notifyItemChanged(index)
 //            viewAdapter.notifyDataSetChanged()
         })
+
         // Observer, Reported Message
         messageViewModel.reportedMessage.observe(viewLifecycleOwner, Observer {
             Toast.makeText(
@@ -583,15 +577,9 @@ class MessageScreen : Fragment(),
             // Populate participants list for Mentions
             messageViewModel.participants.value = getParticipantsList(it)
 
-//            (activity as MessengerActivity).setCurrentConversation(it)    // TODO UI Screens
-
-//            (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()  // TODO UI Screens
-
             // Subscribe to channel as needed
             val channel = "${prefs?.tenantId}-${it.conversationId}".toUpperCase()
             Messenger.subscribeToChannelList(mutableListOf(channel))
-//            (activity as MainActivity).subscribeToChannel(channel)    // TODO No work
-//            viewModel.subscribeChannelList.value = mutableListOf(channel) // TODO UI Screens
 
             Messenger.currentConversationId = it.conversationId
 
@@ -599,21 +587,7 @@ class MessageScreen : Fragment(),
         })
 
         messageViewModel.updateConversation.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "getConversation.observe")
-//            Log.d(TAG, "current conversation ${conversation.participants.toSet()}")
-//            Log.d(TAG, "updated conversation ${it.participants.toSet()}")
-//            val diff = conversation.participants.toSet().minus(it.participants.toSet())
-//
-//            Log.d(TAG, "diff ${diff}")
-//            if(diff.size > 0) {
-//                // Participant was removed
-//            }
-
             conversation = it
-//            Log.d(TAG, "conversation ${conversation}")
-//            Log.d(TAG, "getConversation.observe ${conversation}")
-            (activity as MessengerActivity).setCurrentConversation(it)
-            (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()
         })
     }
 
@@ -648,7 +622,7 @@ class MessageScreen : Fragment(),
 //                        val convoId = if (conversation.conversationId.isNotBlank()) conversation.conversationId else conversation!!.conversationId
 
                         val text: String = messageEditText.text.toString()
-//                Log.d(TAG, "${text}")
+
                         messageEditText.setText("")
 
                         // Add Message to UI
@@ -709,29 +683,6 @@ class MessageScreen : Fragment(),
             Log.d(TAG, "Image selected")
             val imageUri = data.getData()
             Log.d(TAG, "${imageUri}")
-
-//            // Upload temp file
-//            imageUri?.let {   // TODO Move to on-message-send
-//                // Create new message with media
-//                // Build Message
-//                val contentType = activity?.contentResolver?.getType(imageUri)
-//                val sender = User(tenantId = prefs.tenantId()!!, userId = prefs.userId()!!, displayName = prefs.displayName(), profileImageUrl = prefs.profileImageUrl())
-//                val conversationMedia = ConversationMedia(
-//                        content = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString()),
-//                        thumbnail = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString())
-//                )
-//                val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
-//
-//                // Validate if allowed to send client-side
-//                if(!allowedToSend()) {
-//                    message.metadata.error = true
-//                }
-//
-//                if(allowedToSend()) messageViewModel.addImage(message, imageUri)
-//
-//                // Add media message as self-message
-//                addMessageToMessages(message)
-//            } // TODO
 
             imageUri?.let {
                 // Add image to media input layout
@@ -1335,61 +1286,13 @@ class MessageScreen : Fragment(),
 
     fun saveMedia(message: Message, view: View) {
         val url = message.media?.content?.source
+
         Log.d(TAG, "Save ${url}")
-
-//        val target = Target() {
-//            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-//            }
-//
-//            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-//            }
-//
-//            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-//                try {
-//                    Log.d(TAG, "onBitmapLoaded")
-//                    bitmap?.let {
-//                        saveImageToFile(bitmap, url.toString())
-//                        Toast.makeText(
-//                            activity,
-//                            "Photo saved",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    }
-//                } catch (e: Exception) {
-//                }
-//            }
-//        }
-
-        // TODO Try Glide. Target gets GC'd for large images
-//        Picasso.get().setLoggingEnabled(true)
-//        Picasso.get().load(url).into(object: Target {
-//            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-//            }
-//
-//            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-//            }
-//
-//            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-//                try {
-//                    Log.d(TAG, "onBitmapLoaded")
-//                    bitmap?.let {
-//                        saveImageToFile(bitmap, url.toString())
-//                        Toast.makeText(
-//                            activity,
-//                            "Photo saved",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    }
-//                } catch (e: Exception) {
-//                }
-//            }
-//        })
 
         requestPermissionUrl = url!!
 
         // Check permissions
         // Here, thisActivity is the current activity
-//        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
         if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
@@ -1484,7 +1387,6 @@ class MessageScreen : Fragment(),
     fun saveImageToFile(bitmap: Bitmap, url: String) {
         val uri = Uri.parse(url)
         val file = File(uri.toString())
-//        val mimeType = (activity as MessengerActivity).getContentResolver().getType(uri)
         val mimeType = (activity as AppCompatActivity).getContentResolver().getType(uri)
 
         var fos: OutputStream? = null
@@ -1500,10 +1402,6 @@ class MessageScreen : Fragment(),
             fos = resolver.openOutputStream(Objects.requireNonNull(imageUri!!))
         } else {
             Log.d(TAG, "< Build Q")
-//            val imagesDir = Environment.getExternalStoragePublicDirectory(File.separator + "Ellen").toString()
-////            (activity as MainActivity).getExternalFilesDir()
-//            val image = File(imagesDir, file.name)
-//            fos = FileOutputStream(image)
             createDirectoryAndSaveFile(bitmap, url)
             return
         }
@@ -1517,14 +1415,9 @@ class MessageScreen : Fragment(),
     ) {
         val uri = Uri.parse(url)
         val f = File(uri.toString())
-//        val direct = File(
-//            Environment.getExternalStorageDirectory().toString() + "/Ellen"
-//        )
         val direct = File(
-//            (activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
             (activity as AppCompatActivity).getExternalFilesDir(null)?.absolutePath + "/Pictures/Ellen"
         )
-//        Log.d(TAG, "${(activity as MessengerActivity).getExternalFilesDir(null)?.absolutePath} + \"/Pictures/Ellen\"")
         if (!direct.exists()) {
             val wallpaperDirectory = File("/sdcard/Pictures/Ellen/")
             wallpaperDirectory.mkdirs()
@@ -1539,37 +1432,10 @@ class MessageScreen : Fragment(),
             out.flush()
             out.close()
 
-//            MediaScannerConnection.scanFile(activity as MessengerActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
             MediaScannerConnection.scanFile(activity as AppCompatActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-        }
-    }
-
-    private fun hideKeyboard(activity: Activity) {
-        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = activity.getCurrentFocus()
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
-    }
-
-    fun updateTitle(newTitle: String) {
-        if(this@MessageScreen.isVisible) {
-            Log.d(TAG, "${newTitle}")
-            if(newTitle.isBlank()) {
-                //            supportActionBar?.title = title
-                //            val title = getTitleByParticipants(participantsList)
-                Log.d(TAG, "")
-                (activity as MessengerActivity).supportActionBar?.title = getConversationTitle()
-                return
-            }
-
-            (activity as MessengerActivity).supportActionBar?.title = newTitle
         }
     }
 
@@ -1613,15 +1479,13 @@ class MessageScreen : Fragment(),
         slidingDisplayName.text = user.displayName
         slidingProfileImage.setImageResource(R.drawable.ic_account_circle_24dp)
         Picasso.get().load(user.profileImageUrl).into(slidingProfileImage)
-//        slidingLayout.setAnchorPoint(0.3f)
-//        slidingLayout.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
         slidingLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
     }
 
     fun userStartTyping(initiatingUserId: String) {
         Log.d(TAG, "userStartTyping ${initiatingUserId}")
 
-        val displayName = getDisplayName(initiatingUserId) + " is typing..."    // TODO UI Screens
+        val displayName = getDisplayName(initiatingUserId) + " is typing..."
         val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
         val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")

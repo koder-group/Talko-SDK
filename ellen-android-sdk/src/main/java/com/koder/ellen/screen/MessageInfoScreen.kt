@@ -330,24 +330,6 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
         resultCode: Int,
         data: Intent?
     ) {
-//        val result =
-//            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-//        if (result != null) {
-//            if (result.contents == null) {
-////                Toast.makeText(activity, "Cancelled", Toast.LENGTH_LONG).show()
-//            } else {
-////                Toast.makeText(activity, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
-//                Log.d(TAG, result.contents)
-//
-//                val participantId = result.contents.split("/").last()
-//
-//                // Add Participant
-//                messageViewModel.addParticipant(participantId, conversation.conversationId)
-//            }
-//        } else {
-//            super.onActivityResult(requestCode, resultCode, data)
-//        }
-
         if (resultCode == RESULT_OK) {
             if (requestCode== AppConstants.FRAGMENT_CODE){
                 val userId = data?.getStringExtra("userId")
@@ -448,8 +430,6 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     }
 
     private fun getConversationTitle(): String {
-//        val currentConversation = (activity as MessengerActivity).getCurrentConversation()
-//        val currentConversation = conversation
         if(conversation != null && !conversation.title.isNullOrBlank()) {
             return conversation.title
         }
@@ -463,10 +443,6 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
         }
 
         return conversation.title
-    }
-
-    fun addStatusMessage(statusMessage: String) {
-        statusMessageList.add(statusMessage)
     }
 
     private fun setEventHandler() {
@@ -552,13 +528,5 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
         val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
         listFrame.background = shape
-    }
-
-    fun getUserIds(participants: MutableList<User>): ArrayList<String> {
-        val userIds = ArrayList<String>()
-        for(participant in participants) {
-            userIds.add(participant.userId)
-        }
-        return userIds
     }
 }

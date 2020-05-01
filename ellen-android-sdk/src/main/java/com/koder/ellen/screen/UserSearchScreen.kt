@@ -105,22 +105,7 @@ class UserSearchScreen : Fragment() {
 
             }
             override fun afterTextChanged(s: Editable?) {
-
-//                messageViewModel.messageDataChanged(
-//                    messageEditText.text.toString()
-//                )
-//
-//                // Prevent infinite loop by unregistering and registering listener
-//                messageEditText.removeTextChangedListener(this)
-//                // Autocolor mentions
-//                val autocolored = autoColorMentions(s.toString())
-////                messageEditText.setText(HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT))
-//                s?.replace(0, s.length, HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT))
-//                // Set cursor to the end of input
-//                messageEditText.setSelection(messageEditText.length())
-//                messageEditText.addTextChangedListener(this)
-
-                Log.d(TAG, "${s}")
+//                Log.d(TAG, "${s}")
 
                 if(s.toString().isBlank()) {
                     users.clear()
@@ -130,10 +115,6 @@ class UserSearchScreen : Fragment() {
 
                     return
                 }
-
-//                messageViewModel.userSearchChanged(
-//                    s.toString()
-//                )
             }
         })
 
@@ -201,38 +182,6 @@ class UserSearchScreen : Fragment() {
 
             mProgressBar.visibility = View.GONE
         })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-//        menu.clear()
-//        inflater.inflate(R.menu.search_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
-        return when (item.itemId) {
-//            android.R.id.home -> {
-//                Log.d(TAG, "popBackStack")
-//                hideKeyboard(activity as Activity)
-//                activity?.supportFragmentManager?.popBackStack()
-//                true
-//            }
-//            R.id.action_message -> {
-////                val integrator = IntentIntegrator.forSupportFragment(this)
-////                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-////                integrator.setOrientationLocked(false)
-////                integrator.setPrompt("")
-////                integrator.setBeepEnabled(false)
-////                integrator.setCaptureActivity(CustomScannerActivity::class.java)
-////                integrator.initiateScan()
-////                Log.d(TAG, "action_message")
-//
-//                // Show user search fragment
-////                (context as MainActivity).showSearchFragment()
-//                true
-//            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     private fun hideKeyboard(activity: Activity) {

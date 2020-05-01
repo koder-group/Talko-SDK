@@ -106,40 +106,12 @@ class AddParticipantScreen : Fragment() {
 
             }
             override fun afterTextChanged(s: Editable?) {
-
-//                messageViewModel.messageDataChanged(
-//                    messageEditText.text.toString()
-//                )
-//
-//                // Prevent infinite loop by unregistering and registering listener
-//                messageEditText.removeTextChangedListener(this)
-//                // Autocolor mentions
-//                val autocolored = autoColorMentions(s.toString())
-////                messageEditText.setText(HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT))
-//                s?.replace(0, s.length, HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT))
-//                // Set cursor to the end of input
-//                messageEditText.setSelection(messageEditText.length())
-//                messageEditText.addTextChangedListener(this)
-
-                Log.d(TAG, "${s}")
-
                 if(s.toString().isBlank()) {
                     users.clear()
                     viewAdapter.notifyDataSetChanged()
                     mProgressBar.visibility = View.GONE
                     return
                 }
-
-//                val timer = Timer()
-//                timer.schedule(object: TimerTask() {
-//                    override fun run() {
-//                        // do your actual work here
-//                        messageViewModel.userSearchChanged(
-//                            s.toString()
-//                        )
-//                    }
-//                }, 2000); // 600ms delay before the timer executes the „run“ method from TimerTask
-
             }
         })
 
@@ -231,38 +203,6 @@ class AddParticipantScreen : Fragment() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
-        inflater.inflate(R.menu.find_user_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
-        return when (item.itemId) {
-            android.R.id.home -> {
-                Log.d(TAG, "popBackStack")
-                hideKeyboard(activity as Activity)
-                activity?.supportFragmentManager?.popBackStack()
-                true
-            }
-            R.id.action_message -> {
-//                val integrator = IntentIntegrator.forSupportFragment(this)
-//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-//                integrator.setOrientationLocked(false)
-//                integrator.setPrompt("")
-//                integrator.setBeepEnabled(false)
-//                integrator.setCaptureActivity(CustomScannerActivity::class.java)
-//                integrator.initiateScan()
-//                Log.d(TAG, "action_message")
-
-                // Show user search fragment
-//                (context as MainActivity).showSearchFragment()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun hideKeyboard(activity: Activity) {
         val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -272,11 +212,6 @@ class AddParticipantScreen : Fragment() {
             view = View(activity)
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
-    }
-
-    fun finishFragment() {
-        hideKeyboard(activity as Activity)
-        activity?.supportFragmentManager?.popBackStack()
     }
 
     fun TextView.afterTextChangedDelayed(afterTextChanged: (String) -> Unit) {
@@ -298,17 +233,6 @@ class AddParticipantScreen : Fragment() {
             }
         })
     }
-
-    // UI Screens
-//    fun setBackgroundColor(color: String) {
-//        Log.d(TAG, "setBackgroundColor ${color}")
-//        containerView.setBackgroundColor(Color.parseColor(color))
-//    }
-//
-//    fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
-//        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
-//        listFrame.background = shape
-//    }
 
     fun getUserIds(participants: MutableList<Participant>): ArrayList<String> {
         val userIds = ArrayList<String>()
