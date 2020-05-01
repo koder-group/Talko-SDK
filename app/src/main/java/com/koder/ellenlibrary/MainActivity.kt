@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.koder.ellen.Client
 import com.koder.ellen.CompletionCallback
 import com.koder.ellen.Messenger
@@ -36,7 +38,10 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        getSupportActionBar()?.setElevation(0f)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white))
+        setSupportActionBar(toolbar)
+        supportActionBar?.elevation = 0f
 
         if (savedInstanceState == null) {
             // Conversation Screen
