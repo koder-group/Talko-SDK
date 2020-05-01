@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
@@ -236,6 +237,19 @@ class ConversationScreen : Fragment() {
         super.onActivityCreated(savedInstanceState)
         activity?.run {
         } ?: throw Throwable("invalid activity")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Update new message indicators
+        updateIndicators()
+    }
+
+    // If onResume is not called
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        // Update new message indicators
+        if(isVisibleToUser) updateIndicators()
     }
 
     // Update RececyclerView based on the dataset
@@ -486,21 +500,6 @@ class ConversationScreen : Fragment() {
     val Int.px: Int
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-//    private fun filterConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
-//        val filtered = mutableSetOf<Conversation>()
-//        if(filterUserIds != null) {
-//            for(userId in filterUserIds!!) {
-//                for(conversation in conversations) {
-//                    val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
-//                    found?.let {
-//                        filtered.add(conversation)
-//                    }
-//                }
-//            }
-//            return filtered.toMutableList()
-//        }
-//        return conversations
-//    }
     private fun filterConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
         filterUserIds?.let { f -> // if filterUserIds won't be null
             return conversations.filter { c -> // filter the conversations
@@ -510,5 +509,20 @@ class ConversationScreen : Fragment() {
             }.toMutableList() // return the all filtered conversations
         }
         return conversations
+    }
+
+    private fun updateIndicators() {
+        conversations.forEachIndexed { index, conversation ->
+            val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
+            val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
+
+            if(latestMessageCreated <= lastRead) {
+                val layout = viewManager.findViewByPosition(index)
+                val newMessageDot = layout?.findViewById<ImageView>(R.id.new_message_dot)
+                if(newMessageDot?.visibility == View.VISIBLE) {
+                    viewAdapter.notifyItemChanged(index)
+                }
+            }
+        }
     }
 }
