@@ -513,14 +513,16 @@ class ConversationScreen : Fragment() {
 
     private fun updateIndicators() {
         conversations.forEachIndexed { index, conversation ->
-            val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
+            val latestMessageCreated = conversation.messages.firstOrNull()?.timeCreated?.toLong()
             val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
-
-            if(latestMessageCreated <= lastRead) {
-                val layout = viewManager.findViewByPosition(index)
-                val newMessageDot = layout?.findViewById<ImageView>(R.id.new_message_dot)
-                if(newMessageDot?.visibility == View.VISIBLE) {
-                    viewAdapter.notifyItemChanged(index)
+            
+            latestMessageCreated?.let {
+                if(latestMessageCreated <= lastRead) {
+                    val layout = viewManager.findViewByPosition(index)
+                    val newMessageDot = layout?.findViewById<ImageView>(R.id.new_message_dot)
+                    if(newMessageDot?.visibility == View.VISIBLE) {
+                        viewAdapter.notifyItemChanged(index)
+                    }
                 }
             }
         }
