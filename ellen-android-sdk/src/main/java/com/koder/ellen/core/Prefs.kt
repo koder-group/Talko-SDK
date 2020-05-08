@@ -33,7 +33,10 @@ internal class Prefs (context: Context) {
         prefs.edit().putString(APP_ID, "").apply()
         prefs.edit().putString(USER_TOKEN, "").apply()
         prefs.edit().putString(EXTERNAL_USER_ID, "").apply()
-        prefs.edit().putString(CURRENT_USER, "")
+        prefs.edit().putString(CLIENT_CONFIGURATION, "").apply()
+        prefs.edit().putString(CURRENT_USER, "").apply()
+        prefs.edit().putString(NOTIFICATION_TOKEN, "").apply()
+//        prefs.edit().putString(LAST_READ_MAP, "").apply()
     }
 
     var appId: String?
@@ -93,6 +96,9 @@ internal class Prefs (context: Context) {
     fun getConversationLastRead(conversationId: String): Long? {
         // Get map
         var jsonString: String = prefs.getString(LAST_READ_MAP, JSONObject().toString())!!
+        if(jsonString.isNullOrBlank()) {
+            return 0
+        }
         val listType = object : TypeToken<HashMap<String, Long>>() {}.type
         val map: HashMap<String, Long> = Gson().fromJson(jsonString, listType)
         // Read map

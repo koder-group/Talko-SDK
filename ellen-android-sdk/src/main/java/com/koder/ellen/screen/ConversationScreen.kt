@@ -111,7 +111,6 @@ class ConversationScreen : Fragment() {
 
         // Inflate Fragment's view
         rootView = inflater.inflate(R.layout.fragment_conversation, container, false)
-
         mToolbar = rootView.findViewById<Toolbar>(R.id.toolbar)
 
         // Set SwipeRefreshLayout listener and refresh Conversations
@@ -121,7 +120,7 @@ class ConversationScreen : Fragment() {
 //            swipeRefreshLayout.setRefreshing(false)
         }
 
-        listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
+        listFrame = rootView.findViewById(R.id.list_frame) as FrameLayout
         val appBar = rootView.findViewById(R.id.appbar_layout) as AppBarLayout
         appBar.visibility = View.GONE
 

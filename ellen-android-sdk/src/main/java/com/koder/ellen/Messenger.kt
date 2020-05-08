@@ -98,28 +98,42 @@ class Messenger {
                 val clientConfig = async(IO) { initClientConfiguration() }
 
                 // Initialize PubNub client
-                async(IO) { initPubNub() }
+                async(IO) { initPubNub() }.await()
 
-                val clientConfigResult = clientConfig.await()
 
-                if(clientConfigResult is Result.Success) {
-//                    completion?.onCompletion(Result.Success(true))
+                if(prefs?.clientConfiguration == null || prefs?.clientConfiguration.toString().isBlank()) {
+                    val clientConfigResult = clientConfig.await()
 
-                    // Populate initial conversations with messages
-                    val client = Client()
-                    client.getConversationMessages(object: CompletionCallback() {
-                        override fun onCompletion(result: Result<Any>) {
-                            if(result is Result.Success) {
-                                conversations = result.data as MutableList<Conversation>
+                    if(clientConfigResult is Result.Success) {
+    //                    completion?.onCompletion(Result.Success(true))
 
-                                completion?.onCompletion(Result.Success(true))
+                        // Populate initial conversations with messages
+                        val client = Client()
+                        client.getConversationMessages(object: CompletionCallback() {
+                            override fun onCompletion(result: Result<Any>) {
+                                if(result is Result.Success) {
+                                    conversations = result.data as MutableList<Conversation>
+
+                                    completion?.onCompletion(Result.Success(true))
+                                }
                             }
-                        }
-                    })
+                        })
+                    } else {
+                        completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
+                    }
                 } else {
-                    completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
+                    completion?.onCompletion(Result.Success(true))
                 }
             }
+        }
+
+        @JvmStatic fun signOut() {
+            prefs?.resetUser()
+            pubNub.unsubscribeAll()
+        }
+
+        @JvmStatic fun isClientConfigSet(): Boolean {
+            return (prefs?.clientConfiguration != null && !prefs?.clientConfiguration.toString().isBlank())
         }
 
         // Register Firebase Cloud Messaging notification token
@@ -232,6 +246,7 @@ class Messenger {
                             var description: String? = null
                             if(!titleEl!!.isJsonNull) {
                                 title = titleEl.asString
+                                updateTitle(conversationId, title)
                             }
                             if(!descriptionEl!!.isJsonNull) {
                                 description = descriptionEl.asString
@@ -334,6 +349,14 @@ class Messenger {
             found?.let {
                 Log.d(TAG, "Remove ${it}")
                 conversations.remove(found)
+            }
+        }
+
+        fun updateTitle(conversationId: String, title: String) {
+            val found = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+            found?.let {
+                Log.d(TAG, "Update title ${it}")
+                it.title = title
             }
         }
 
@@ -470,7 +493,7 @@ class Messenger {
             val participants = conversation?.participants
 
             // Return conversation title if exists // TODO needed?
-//            if(!conversation?.title.isNullOrBlank()) return conversation!!.title
+            if(!conversation?.title.isNullOrBlank()) return conversation!!.title
 
             var title = ""
 

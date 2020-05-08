@@ -591,6 +591,36 @@ class MessageScreen : Fragment(),
         })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+//        menu.clear()
+//        inflater.inflate(R.menu.message_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle presses on the action bar items
+        return when (item.itemId) {
+            android.R.id.home -> {
+                Log.d(TAG, "popBackStack")
+                activity?.supportFragmentManager?.popBackStack()
+                true
+            }
+//            R.id.action_info -> {
+//                // Hide keyboard
+//                hideKeyboard(activity)
+//                // Show MessageInfoFragment and add to backstack
+//                (activity as MessengerActivity).showInfoFragment()
+//                true
+//            }
+//            R.id.action_video -> {
+//                hideKeyboard(activity)
+//                // Start VideoFragment
+//                (activity as MessengerActivity).showVideoFragment()
+//                true
+//            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
             R.id.message_send_btn -> {
@@ -1636,10 +1666,15 @@ class MessageScreen : Fragment(),
             override fun onMessageReceived(message: Message) {
                 activity?.runOnUiThread {
                     if (conversationId.equals(message.conversationId, ignoreCase = true)) {
-                        addMessage(message)
+                        val found = messages.find { m -> m.messageId.equals(message.messageId, ignoreCase = true) }
+                        if(found == null) addMessage(message)
 //                        Log.d(TAG, "${message.timeCreated.toString()}")
-//                        val timeCreated = convertDateToLong(message.timeCreated.toString())
-                        prefs?.setConversationLastRead(message.conversationId, message.timeCreated.toLong())
+                        var timeCreated = message.timeCreated
+//                        prefs?.setConversationLastRead(message.conversationId, message.timeCreated.toLong())
+                        if(timeCreated.toString().contains("-")) {
+                            timeCreated = convertDateToLong(timeCreated.toString())
+                        }
+                        prefs?.setConversationLastRead(message.conversationId, timeCreated.toLong())
                         Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
                     }
                 }
