@@ -17,6 +17,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
@@ -468,8 +469,7 @@ class MessageScreen : Fragment(),
 
             // Auto populate message
             autoPopulateMessage?.let { msg ->
-                messageEditText.setText(msg)
-                if(sendAutoPopulateMessage) messageSendButton.performClick()
+                if(!sendAutoPopulateMessage) messageEditText.setText(msg)
             }
 
             // Load Messages
@@ -553,6 +553,14 @@ class MessageScreen : Fragment(),
             viewAdapter.notifyDataSetChanged()
             recyclerView.scrollToPosition(messages.size-1)
             swipeRefreshLayout.setRefreshing(false)
+
+            // Send auto populated message
+            autoPopulateMessage?.let {
+                if(sendAutoPopulateMessage) {
+                    messageEditText.setText(autoPopulateMessage)
+                    messageSendButton.performClick()
+                }
+            }
         })
 
         // Mentioned Participants
