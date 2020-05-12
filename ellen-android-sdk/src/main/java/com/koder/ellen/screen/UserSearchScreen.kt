@@ -14,6 +14,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.getSystemService
@@ -85,6 +86,9 @@ class UserSearchScreen : Fragment() {
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
         setHasOptionsMenu(true)
+
+        // Always use the day (light) theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
     override fun onCreateView(

@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -96,6 +97,9 @@ class ConversationScreen : Fragment() {
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
         setHasOptionsMenu(true)
+
+        // Always use the day (light) theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
     override fun onCreateView(

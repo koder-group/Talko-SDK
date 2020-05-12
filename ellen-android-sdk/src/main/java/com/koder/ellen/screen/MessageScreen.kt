@@ -25,6 +25,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -185,6 +186,10 @@ class MessageScreen : Fragment(),
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
         setHasOptionsMenu(true)
+
+        // Always use the day (light) theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
         conversationId = arguments?.getString("CONVERSATION_ID")
         qrPublicId = arguments?.getString("ADD_USER_ID")
 
