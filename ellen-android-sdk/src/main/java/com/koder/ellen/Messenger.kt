@@ -373,7 +373,7 @@ class Messenger {
             val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
             conversation?.let { c ->
                 val found = c.participants?.find { p -> p.user.userId.equals(addedUserId, ignoreCase = true) }
-                Log.d(TAG, "${addedUserId} ${found}")
+//                Log.d(TAG, "${addedUserId} ${found}")
                 if(found == null) {
                     // Get user
                     val client = Client()
@@ -391,7 +391,23 @@ class Messenger {
             }
         }
 
-        private fun removeParticipant(conversationId: String, userId: String) {
+        fun addParticipant(conversationId:String, user: User) {
+            val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+            conversation?.let { c ->
+                val found = c.participants?.find { p ->
+                    p.user.userId.equals(
+                        user.userId,
+                        ignoreCase = true
+                    )
+                }
+                if(found == null) {
+                    val newParticipant = Participant(user = user)
+                    c.participants.add(newParticipant)
+                }
+            }
+        }
+
+        fun removeParticipant(conversationId: String, userId: String) {
             val conversation = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
             conversation?.let { c ->
                 val found = c?.participants?.find { p -> p.user.userId.equals(userId, ignoreCase = true) }

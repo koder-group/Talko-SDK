@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -96,6 +97,9 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         // Enable App Bar menu
         setHasOptionsMenu(true)
+
+        // Always use the day (light) theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         conversationId = arguments?.getString("CONVERSATION_ID")
     }
@@ -241,6 +245,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
                 // Update currentConversation in MainActivty
 //                (activity as MessengerActivity).addParticipantToCurrentConversation(conversation.conversationId, it)
+                Messenger.addParticipant(conversation.conversationId, it)
                 titleView.text = getConversationTitle()
             }
         })
@@ -256,7 +261,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
                 viewAdapter.notifyItemRemoved(index)
 
 //                (activity as MessengerActivity).removeParticipantFromCurrentConversation(conversation.conversationId, it)
-//                Messenger.removePartcipant(conversation.conversationId, it.userId)
+                Messenger.removeParticipant(conversation.conversationId, it.userId)
                 titleView.text = getConversationTitle()
             }
         })
