@@ -250,6 +250,7 @@ class Messenger {
                             }
                             if(!descriptionEl!!.isJsonNull) {
                                 description = descriptionEl.asString
+                                updateDescription(conversationId, description)
                             }
                             eventCallback.onConversationModified(initiatingUser, title, description, conversationId)
                         }
@@ -355,8 +356,16 @@ class Messenger {
         fun updateTitle(conversationId: String, title: String) {
             val found = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
             found?.let {
-                Log.d(TAG, "Update title ${it}")
+//                Log.d(TAG, "Update title ${it}")
                 it.title = title
+            }
+        }
+
+        fun updateDescription(conversationId: String, description: String) {
+            val found = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+            found?.let {
+//                Log.d(TAG, "Update description ${it}")
+                it.description = description
             }
         }
 
