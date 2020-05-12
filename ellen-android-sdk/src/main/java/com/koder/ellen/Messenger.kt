@@ -383,7 +383,7 @@ class Messenger {
                                 val ellenUser = result.data as EllenUser
                                 val conversationUser = User(tenantId = ellenUser.tenantId, userId = ellenUser.userId, displayName = ellenUser.profile.displayName, profileImageUrl = ellenUser.profile.profileImageUrl)
                                 val newParticipant = Participant(user = conversationUser)
-                                conversation.participants.add(newParticipant)
+                                c.participants.add(newParticipant)
                             }
                         }
                     })

@@ -32,20 +32,22 @@ class Client {
             ).execute()
             Log.d(TAG, "${response}")
             if (response.isSuccessful) {
-                Log.d(TAG, "getUser ${response.body()}")
+//                Log.d(TAG, "getUser ${response.body()}")
                 val body: EllenUser = response.body()!!
-                Log.d(TAG, "getUser ${body}")
-                completion?.onCompletion(Result.Success(completion))
+//                Log.d(TAG, "getUser ${body}")
+                completion?.onCompletion(Result.Success(body))
                 return Result.Success(body)
-            } else {
-                completion?.onCompletion(Result.Error(IOException("Error getting user")))
             }
+//            else {
+//                completion?.onCompletion(Result.Error(IOException("Error getting user")))
+//                return Result.Error(IOException("Error getting user"))
+//            }
         } catch (e: Throwable) {
             completion?.onCompletion(Result.Error(IOException("Error getting user")))
             return Result.Error(IOException("Error getting user", e))
         }
 
-        return Result.Error(IOException())
+        return Result.Error(IOException("Error getting user"))
     }
 
     // Find users by display name
