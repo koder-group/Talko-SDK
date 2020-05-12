@@ -161,7 +161,8 @@
                         android:paddingLeft="15dp"
                         android:maxLines="3"
                         android:background="@android:color/transparent"
-                        android:textSize="16dp"
+                        android:inputType="text|textMultiLine"
+                        android:textSize="15sp"
 
                         android:layout_toStartOf="@id/message_send_btn"
                         android:layout_toLeftOf="@id/message_send_btn"

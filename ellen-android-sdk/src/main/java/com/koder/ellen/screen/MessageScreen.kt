@@ -85,6 +85,10 @@ class MessageScreen : Fragment(),
         private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 4
         lateinit var viewAdapter: RecyclerView.Adapter<*>
 //        lateinit var viewManager: RecyclerView.LayoutManager
+
+        // Auto populate message
+        const val AUTO_POPULATE_MSG = "AUTO_POPULATE_MSG"
+        const val SEND_AUTO_POPULATE_MSG = "SEND_AUTO_POPULATE_MSG"
     }
 
     private var conversationId: String? = null
@@ -177,6 +181,10 @@ class MessageScreen : Fragment(),
     private lateinit var mediaViewManager: RecyclerView.LayoutManager
     private val mediaList: MutableList<Message> = mutableListOf()
 
+    // Auto populate message
+    private var autoPopulateMessage: String? = null
+    private var sendAutoPopulateMessage: Boolean = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         setEventHandler()
@@ -212,6 +220,10 @@ class MessageScreen : Fragment(),
             val channel = "${prefs?.tenantId}-${conversationId}".toUpperCase()
             Messenger.subscribeToChannelList(mutableListOf(channel))
         }
+
+        // Auto populate message
+        autoPopulateMessage = getArguments()?.getString(AUTO_POPULATE_MSG) ?: null
+        sendAutoPopulateMessage = getArguments()?.getBoolean(SEND_AUTO_POPULATE_MSG) ?: false
     }
 
     override fun onCreateView(
@@ -453,6 +465,12 @@ class MessageScreen : Fragment(),
 //            if(!::conversation.isInitialized) {
 //                messageViewModel.getConversation(conversationId)
 //            }
+
+            // Auto populate message
+            autoPopulateMessage?.let { msg ->
+                messageEditText.setText(msg)
+                if(sendAutoPopulateMessage) messageSendButton.performClick()
+            }
 
             // Load Messages
             if(!messagesLoaded) {

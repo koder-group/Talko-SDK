@@ -69,6 +69,12 @@ class MainActivity : AppCompatActivity() {
                 val bundle = Bundle()
                 val messageScreen = MessageScreen()
                 bundle.putString("CONVERSATION_ID", conversation.conversationId)
+
+                // Auto populate message
+//                val message = "Did you know you can easily start accepting payments on BRAVO?\n\nhttps://www.trybravo.com/help"
+//                bundle.putString(MessageScreen.AUTO_POPULATE_MSG, message)
+//                bundle.putBoolean(MessageScreen.SEND_AUTO_POPULATE_MSG, true)
+
                 messageScreen.setArguments(bundle)
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
             }
