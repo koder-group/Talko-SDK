@@ -286,7 +286,7 @@ class MessageScreen : Fragment(),
                     Log.d(TAG, "User start typing")
                     userTyping = true
                     prefs?.externalUserId?.let {
-                        messageViewModel.typingStarted(it, conversation.conversationId)
+                        if(::conversation.isInitialized) messageViewModel.typingStarted(it, conversation.conversationId)
                     }
                 }
                 // Remove this to run only once
@@ -558,7 +558,7 @@ class MessageScreen : Fragment(),
             autoPopulateMessage?.let {
                 if(sendAutoPopulateMessage) {
                     messageEditText.setText(autoPopulateMessage)
-                    messageSendButton.performClick()
+                    if(::conversation.isInitialized) messageSendButton.performClick()
                 }
             }
         })
