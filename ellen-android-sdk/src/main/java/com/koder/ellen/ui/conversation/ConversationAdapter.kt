@@ -100,7 +100,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
         // Set date
         var date = ""
-        if (dataset.get(position).messages.isEmpty()) {
+        if (dataset.get(position).messages.isNullOrEmpty()) {
 //            holder.layout.findViewById<ImageView>(R.id.conversation_arrow).visibility =
 //                View.INVISIBLE
         } else {
