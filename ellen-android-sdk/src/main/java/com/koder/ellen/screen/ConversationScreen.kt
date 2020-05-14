@@ -370,12 +370,12 @@ class ConversationScreen : Fragment() {
         Messenger.addEventHandler(object:EventCallback() {
             override fun onConversationCreated(conversation: Conversation) {
 //                Log.d(TAG, "onConversationCreated ${conversation}")
-                addConversation(conversation)
+                activity?.runOnUiThread { addConversation(conversation) }
             }
 
             override fun onConversationClosed(conversation: Conversation) {
 //                Log.d(TAG, "onConversationClosed ${conversation}")
-                removeConversation(conversation)
+                activity?.runOnUiThread { removeConversation(conversation) }
             }
 
             override fun onConversationModified(
@@ -384,13 +384,15 @@ class ConversationScreen : Fragment() {
                 description: String?,
                 conversationId: String
             ) {
-                loadConversations()
+                activity?.runOnUiThread { loadConversations() }
             }
 
             override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
-                updateConversationParticipant(conversationId, participant)
-                if(participant.user.userId.equals(prefs?.userId, ignoreCase = true)) {
-                    if(participant.state != 20) loadConversations()
+                activity?.runOnUiThread {
+                    updateConversationParticipant(conversationId, participant)
+                    if (participant.user.userId.equals(prefs?.userId, ignoreCase = true)) {
+                        if (participant.state != 20) loadConversations()
+                    }
                 }
             }
 
@@ -399,7 +401,7 @@ class ConversationScreen : Fragment() {
                 userId: String,
                 conversationId: String
             ) {
-                loadConversations()
+                activity?.runOnUiThread { loadConversations() }
             }
 
             override fun onRemovedFromConversation(
@@ -409,12 +411,12 @@ class ConversationScreen : Fragment() {
             ) {
                 if(userId.equals(prefs?.userId, ignoreCase = true)) {
                     // Current user
-                    removeFromConversations(conversationId)
+                    activity?.runOnUiThread { removeFromConversations(conversationId) }
                 }
             }
 
             override fun onMessageReceived(message: Message) {
-                addMessageToConversations(message)
+                activity?.runOnUiThread { addMessageToConversations(message) }
             }
 
             override fun onMessageRejected(message: Message, errorMessage: String) {
