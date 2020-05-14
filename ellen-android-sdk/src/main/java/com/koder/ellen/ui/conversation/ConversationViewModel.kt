@@ -43,14 +43,14 @@ internal class ConversationViewModel(val conversationRepository: ConversationRep
         }
     }
 
-    fun loadConversations() {
+    fun loadConversations(forceLoad: Boolean = false) {
         launch {
             try {
                 // Get Conversations
-                var convos =  async(Dispatchers.IO) {conversationRepository.getConversations()}.await()
+                var convos =  async(Dispatchers.IO) {conversationRepository.getConversations(forceLoad)}.await()
 
                 // Get Conversation Messages
-                convos = async(Dispatchers.IO) {conversationRepository.getConversationMessages(convos)}.await()
+                convos = async(Dispatchers.IO) {conversationRepository.getConversationMessages(convos, forceLoad)}.await()
                 Log.d(TAG, "${convos}")
                 conversations.apply { value = convos }
             } catch (e: Exception) {

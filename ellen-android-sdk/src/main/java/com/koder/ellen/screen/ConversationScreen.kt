@@ -120,7 +120,7 @@ class ConversationScreen : Fragment() {
         // Set SwipeRefreshLayout listener and refresh Conversations
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout)
         swipeRefreshLayout.setOnRefreshListener {
-            conversationViewModel.loadConversations()
+            conversationViewModel.loadConversations(true)
 //            swipeRefreshLayout.setRefreshing(false)
         }
 

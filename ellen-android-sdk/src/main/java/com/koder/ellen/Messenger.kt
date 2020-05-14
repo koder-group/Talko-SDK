@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.CountDownTimer
 import android.util.Base64
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import com.facebook.stetho.Stetho
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.koder.ellen.api.RetrofitClient
@@ -11,6 +13,7 @@ import com.koder.ellen.core.Prefs
 import com.koder.ellen.core.Utils
 import com.koder.ellen.model.*
 import com.koder.ellen.data.Result
+import com.koder.ellen.persistence.TalkoDatabase
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -62,6 +65,8 @@ class Messenger {
         var conversations = mutableListOf<Conversation>()
         var currentConversationId = ""
 
+        var db: TalkoDatabase? = null
+
         // Application context
         @JvmStatic fun init(appId: String, context: Context?) {
             context?.let {
@@ -72,6 +77,8 @@ class Messenger {
 
 //        @JvmStatic fun set(userToken: String, externalUserId: String, completion: CompletionCallback? = null) {
         @JvmStatic fun set(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
+            Stetho.initializeWithDefaults(applicationContext)
+            db = TalkoDatabase.getInstance(applicationContext)
 
             // Decode user token for user info
             val parts = userToken.split('.')
@@ -220,7 +227,7 @@ class Messenger {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
                             eventCallback.onMessageReceived(message)
                             unreadCallback.onNewUnread(getUnreadCount())
-                            Log.d(TAG, "messagePublished ${message}")
+                            addMessage(message)
                         }
                         EventName.conversationCreated.value -> {
                             // Conversation created
@@ -299,6 +306,7 @@ class Messenger {
                         EventName.messageDeleted.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Message::class.java)
                             eventCallback.onMessageDeleted(message)
+                            deleteMessage(message)
                         }
                         EventName.messageRejected.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
@@ -343,6 +351,14 @@ class Messenger {
                 conversations.clear()
                 conversations.addAll(sorted)
             }
+
+            // Add to db
+            if(conversation.timeCreated.toString().contains("-")) {
+                conversation.timeCreated = Utils.convertDateToLong(conversation.timeCreated.toString())
+            }
+            val json = Gson().toJson(conversation)
+            val convo = com.koder.ellen.persistence.Conversation(conversation.conversationId, json.toString().toByteArray(Charsets.UTF_8))
+            db?.conversationDao()?.insert(convo)
         }
 
         fun removeConversation(conversationId: String) {
@@ -350,6 +366,34 @@ class Messenger {
             found?.let {
                 Log.d(TAG, "Remove ${it}")
                 conversations.remove(found)
+            }
+
+            // Remove from db
+            GlobalScope.launch {
+                async(IO) {
+                    db?.conversationDao()?.deleteConversation(conversationId)
+                    db?.messageDao()?.deleteMessages(conversationId)
+                }.await()
+            }
+        }
+
+        // Add to db
+        fun addMessage(message: Message) {
+            if(message.timeCreated.toString().contains("-")) {
+                message.timeCreated = Utils.convertDateToLong(message.timeCreated.toString())
+            }
+
+            val json = Gson().toJson(message)
+            val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+            db?.messageDao()?.insert(msg)
+        }
+
+        fun deleteMessage(message: Message) {
+            // Remove from db
+            GlobalScope.launch {
+                async(IO) {
+                    db?.messageDao()?.deleteMessage(message.messageId!!)
+                }.await()
             }
         }
 
@@ -359,6 +403,15 @@ class Messenger {
 //                Log.d(TAG, "Update title ${it}")
                 it.title = title
             }
+
+            // Update local db
+            var conversation = db?.conversationDao()?.getConversation(conversationId) as com.koder.ellen.persistence.Conversation
+            val str = String(conversation.payload)
+            val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+            convo.title = title
+            val json = Gson().toJson(convo)
+            conversation = com.koder.ellen.persistence.Conversation(conversation.conversationId, json.toString().toByteArray(Charsets.UTF_8))
+            db?.conversationDao()?.update(conversation)
         }
 
         fun updateDescription(conversationId: String, description: String) {
@@ -367,6 +420,15 @@ class Messenger {
 //                Log.d(TAG, "Update description ${it}")
                 it.description = description
             }
+
+            // Update local db
+            var conversation = db?.conversationDao()?.getConversation(conversationId) as com.koder.ellen.persistence.Conversation
+            val str = String(conversation.payload)
+            val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+            convo.description = description
+            val json = Gson().toJson(convo)
+            conversation = com.koder.ellen.persistence.Conversation(conversation.conversationId, json.toString().toByteArray(Charsets.UTF_8))
+            db?.conversationDao()?.update(conversation)
         }
 
         private fun addParticipant(conversationId: String, addedUserId: String) {
@@ -384,6 +446,20 @@ class Messenger {
                                 val conversationUser = User(tenantId = ellenUser.tenantId, userId = ellenUser.userId, displayName = ellenUser.profile.displayName, profileImageUrl = ellenUser.profile.profileImageUrl)
                                 val newParticipant = Participant(user = conversationUser)
                                 c.participants.add(newParticipant)
+
+                                // Update local db
+                                val localConvo = db?.conversationDao()?.getConversation(conversationId)
+                                if(localConvo != null) {
+                                    val str = String(localConvo.payload)
+                                    val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+
+                                    val newParticipant = Participant(user = conversationUser)
+                                    convo.participants.add(newParticipant)
+
+                                    val json = Gson().toJson(convo)
+                                    val conversation = com.koder.ellen.persistence.Conversation(conversationId, json.toString().toByteArray(Charsets.UTF_8))
+                                    db?.conversationDao()?.update(conversation)
+                                }
                             }
                         }
                     })
@@ -405,6 +481,22 @@ class Messenger {
                     c.participants.add(newParticipant)
                 }
             }
+
+            // Update local db
+            val localConvo = db?.conversationDao()?.getConversation(conversationId)
+//            Log.d(TAG, "conversation ${localConvo}")
+            if(localConvo != null) {
+                val str = String(localConvo.payload)
+                val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+
+                val newParticipant = Participant(user = user)
+                convo.participants.add(newParticipant)
+//                Log.d(TAG, "participants ${convo.participants}")
+
+                val json = Gson().toJson(convo)
+                val conversation = com.koder.ellen.persistence.Conversation(conversationId, json.toString().toByteArray(Charsets.UTF_8))
+                db?.conversationDao()?.update(conversation)
+            }
         }
 
         fun removeParticipant(conversationId: String, userId: String) {
@@ -414,6 +506,24 @@ class Messenger {
                 found?.let {
                     conversation.participants?.remove(found)
                 }
+            }
+
+            // Update local db
+            val localConvo = db?.conversationDao()?.getConversation(conversationId)
+//            Log.d(TAG, "conversation ${conversation}")
+            if(localConvo != null) {
+                val str = String(localConvo.payload)
+                val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+
+                val found = convo?.participants?.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
+                found?.let {
+                    convo.participants?.remove(found)
+//                    Log.d(TAG, "participants ${convo.participants}")
+                }
+
+                val json = Gson().toJson(convo)
+                val conversation = com.koder.ellen.persistence.Conversation(conversationId, json.toString().toByteArray(Charsets.UTF_8))
+                db?.conversationDao()?.update(conversation)
             }
         }
 

@@ -167,10 +167,10 @@ internal class MessageViewModel(private val messageRepository: MessageRepository
         }
     }
 
-    fun getMessages(conversationId: String) {
+    fun getMessages(conversationId: String, forceLoad: Boolean = false) {
         launch {
             try {
-                var result = async(IO) { messageRepository.getMessages(conversationId)}.await()
+                var result = async(IO) { messageRepository.getMessages(conversationId, forceLoad)}.await()
                 if(result is Result.Success) messages.value = result.data
             } catch (e: Exception) {
 

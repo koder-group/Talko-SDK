@@ -239,7 +239,7 @@ class MessageScreen : Fragment(),
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout)
         swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.setRefreshing(true)
-            loadMessages()
+            loadMessages(true)
         }
 
         slidingLayout = rootView.findViewById(R.id.sliding_layout)
@@ -879,17 +879,17 @@ class MessageScreen : Fragment(),
     }
 
     // Load Messages
-    private fun loadMessages() {
+    private fun loadMessages(forceLoad: Boolean = false) {
 //        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
         Log.d(TAG, "loadMessages")
         if(::conversation.isInitialized) {
             if (!conversation.conversationId.isNullOrBlank()) {
                 swipeRefreshLayout.isRefreshing = true
-                messageViewModel.getMessages(conversation.conversationId)
+                messageViewModel.getMessages(conversation.conversationId, forceLoad)
             }
         } else if (!conversationId.isNullOrBlank()) {
             swipeRefreshLayout.isRefreshing = true
-            messageViewModel.getMessages(conversationId!!)
+            messageViewModel.getMessages(conversationId!!, forceLoad)
         }
     }
 
