@@ -11,6 +11,7 @@ import com.koder.ellen.model.Message
 import com.koder.ellen.persistence.ConversationDao
 import com.koder.ellen.persistence.MessageDao
 import com.koder.ellen.persistence.TalkoDatabase
+import com.koder.ellen.persistence.UserProfileDao
 import org.json.JSONObject
 
 internal class ConversationRepository(val dataSource: ConversationDataSource) {
@@ -18,6 +19,7 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
 
     private var conversationDao: ConversationDao? = Messenger.db?.conversationDao()
     private var messageDao: MessageDao? = Messenger.db?.messageDao()
+    private var userProfileDao: UserProfileDao? = Messenger.db?.userProfileDao()
 
     fun getClientConfig(): Result<ClientConfiguration> {
         val result = dataSource.getClientConfig()
@@ -56,6 +58,14 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
                 val json = Gson().toJson(conversation)
                 val convo = com.koder.ellen.persistence.Conversation(conversation.conversationId, json.toString().toByteArray(Charsets.UTF_8))
                 conversationDao?.insert(convo)
+
+                // Add UserProfiles
+                for(participant in conversation.participants) {
+                    val user = participant.user
+                    val json = Gson().toJson(user)
+                    val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, System.currentTimeMillis(), json.toString().toByteArray(Charsets.UTF_8))
+                    userProfileDao?.insert(obj)
+                }
             }
 
             return remoteConversations

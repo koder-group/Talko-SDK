@@ -492,8 +492,8 @@ class Messenger {
                         override fun onCompletion(result: Result<Any>) {
                             if(result is Result.Success) {
                                 val ellenUser = result.data as EllenUser
-                                val conversationUser = User(tenantId = ellenUser.tenantId, userId = ellenUser.userId, displayName = ellenUser.profile.displayName, profileImageUrl = ellenUser.profile.profileImageUrl)
-                                val newParticipant = Participant(user = conversationUser)
+                                val user = User(tenantId = ellenUser.tenantId, userId = ellenUser.userId, displayName = ellenUser.profile.displayName, profileImageUrl = ellenUser.profile.profileImageUrl)
+                                val newParticipant = Participant(user = user)
                                 c.participants.add(newParticipant)
 
                                 // Update local db
@@ -502,12 +502,17 @@ class Messenger {
                                     val str = String(localConvo.payload)
                                     val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
 
-                                    val newParticipant = Participant(user = conversationUser)
+                                    val newParticipant = Participant(user = user)
                                     convo.participants.add(newParticipant)
 
-                                    val json = Gson().toJson(convo)
+                                    var json = Gson().toJson(convo)
                                     val conversation = com.koder.ellen.persistence.Conversation(conversationId, json.toString().toByteArray(Charsets.UTF_8))
                                     db?.conversationDao()?.update(conversation)
+
+                                    // Add UserProfile
+                                    json = Gson().toJson(user)
+                                    val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, System.currentTimeMillis(), json.toString().toByteArray(Charsets.UTF_8))
+                                    db?.userProfileDao()?.insert(obj)
                                 }
                             }
                         }
@@ -542,9 +547,14 @@ class Messenger {
                 convo.participants.add(newParticipant)
 //                Log.d(TAG, "participants ${convo.participants}")
 
-                val json = Gson().toJson(convo)
+                var json = Gson().toJson(convo)
                 val conversation = com.koder.ellen.persistence.Conversation(conversationId, json.toString().toByteArray(Charsets.UTF_8))
                 db?.conversationDao()?.update(conversation)
+
+                // Add UserProfile
+                json = Gson().toJson(user)
+                val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, System.currentTimeMillis(), json.toString().toByteArray(Charsets.UTF_8))
+                db?.userProfileDao()?.insert(obj)
             }
         }
 
