@@ -292,9 +292,13 @@ internal class MessageViewModel(private val messageRepository: MessageRepository
         launch {
             try {
                 // Get message to update
-                val result = async(IO) { messageRepository.getMessages(conversationMessage.conversationId) }.await()
-                if(result is Result.Success) {
-                    message.value = result.data.find { it.messageId.equals(conversationMessage.messageId, ignoreCase = true) }
+//                val result = async(IO) { messageRepository.getMessages(conversationMessage.conversationId) }.await()
+//                if(result is Result.Success) {
+//                    message.value = result.data.find { it.messageId.equals(conversationMessage.messageId, ignoreCase = true) }
+//                }
+                val msg = async(IO) { messageRepository.getMessage(conversationMessage.messageId!!) }.await()
+                msg?.let {
+                    message.value = msg
                 }
             } catch (e: Exception) {
             }

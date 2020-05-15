@@ -118,6 +118,16 @@ internal class MessageRepository(val dataSource: MessageDataSource) {
 //        return dataSource.getMessages(conversationId)
     }
 
+    fun getMessage(messageId: String): Message? {
+        val msg = messageDao?.getMessage(messageId)
+        if(msg != null) {
+            val str = String(msg.payload)
+            val m = Gson().fromJson(JSONObject(str).toString(), Message::class.java)
+            return m
+        }
+        return null
+    }
+
     fun addParticipant(user: User, conversationId: String): Result<Any> {
         val result = dataSource.addParticipant(user, conversationId)
 

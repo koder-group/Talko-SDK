@@ -43,6 +43,7 @@ class Messenger {
 
         internal var prefs: Prefs? = null
         internal val subscribedChannels: MutableSet<String> = mutableSetOf()
+        private val reactionMap: MutableMap<String, Long> = mutableMapOf()
 
         // Options
         // All Screens
@@ -300,7 +301,16 @@ class Messenger {
                             eventCallback.onModeratorRemoved(userId)
                         }
                         EventName.messageUserReaction.value -> {
-                            val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Message::class.java)
+                            var message = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Message::class.java)
+                            val reactionCode = pnMessageResult.message.asJsonObject.get("reactionCode").asString
+
+                            // Prevent duplicate based on time token
+                            if(reactionMap.get(message.messageId!!) != pnMessageResult.timetoken || !reactionMap.containsKey(message.messageId!!)) {
+                                reactionMap.put(message.messageId!!, pnMessageResult.timetoken)
+
+                                updateMessageReaction(message, reactionCode)
+                            }
+
                             eventCallback.onMessageUserReaction(message)
                         }
                         EventName.messageDeleted.value -> {
@@ -395,6 +405,45 @@ class Messenger {
                     db?.messageDao()?.deleteMessage(message.messageId!!)
                 }.await()
             }
+        }
+
+        // Update local db
+        fun updateMessageReaction(message: Message, reactionCode: String): Message? {
+            val msg = db?.messageDao()?.getMessage(message.messageId!!)
+            if(msg != null) {
+                val str = String(msg.payload)
+                val m = Gson().fromJson(JSONObject(str).toString(), Message::class.java)
+
+                if(m.reactionSummary == null) {
+                    m.reactionSummary = ReactionSummary(Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_LIKE"),
+                        Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_DISLIKE"))
+                }
+
+                when(reactionCode) {
+                    "REACTION_CODE_LIKE" -> {
+                        if(m.reactionSummary!!.reactioN_CODE_LIKE == null) {
+                            m.reactionSummary!!.reactioN_CODE_LIKE = Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_LIKE")
+                        }
+
+                        m.reactionSummary!!.reactioN_CODE_LIKE!!.count += 1
+                    }
+                    "REACTION_CODE_DISLIKE" -> {
+                        if(m.reactionSummary!!.reactioN_CODE_DISLIKE == null) {
+                            m.reactionSummary!!.reactioN_CODE_DISLIKE = Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_DISLIKE")
+                        }
+
+                        m.reactionSummary!!.reactioN_CODE_DISLIKE!!.count += 1
+                    }
+                }
+
+                val json = Gson().toJson(m)
+                val dbMsg = com.koder.ellen.persistence.Message(m.messageId!!, m.conversationId, m.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+                db?.messageDao()?.update(dbMsg)
+
+                return m
+            }
+
+            return null
         }
 
         fun updateTitle(conversationId: String, title: String) {
