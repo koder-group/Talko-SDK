@@ -138,6 +138,10 @@ class Messenger {
         @JvmStatic fun signOut() {
             prefs?.resetUser()
             pubNub.unsubscribeAll()
+
+            GlobalScope.launch {
+                async(IO) { db?.clearAllTables() }.await()
+            }
         }
 
         @JvmStatic fun isClientConfigSet(): Boolean {
