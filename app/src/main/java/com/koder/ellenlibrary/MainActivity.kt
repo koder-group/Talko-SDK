@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity() {
             ).commit()
         }
 
-
         // Conversation Screen item click listener
         ConversationScreen.setItemClickListener(object: ConversationScreen.OnItemClickListener() {
             override fun OnItemClickListener(conversation: Conversation, position: Int) {
@@ -197,12 +196,14 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_info -> {
-                // Show Message Info Screen
-                val bundle = Bundle()
-                val messageInfoScreen = MessageInfoScreen()
-                bundle.putString("CONVERSATION_ID", Messenger.currentConversationId)
-                messageInfoScreen.setArguments(bundle)
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageInfoScreen, resources.getString(R.string.info)).addToBackStack(resources.getString(R.string.info)).commit()
+                if(Messenger.isConversationCreated(Messenger.currentConversationId)) {
+                    // Show Message Info Screen
+                    val bundle = Bundle()
+                    val messageInfoScreen = MessageInfoScreen()
+                    bundle.putString("CONVERSATION_ID", Messenger.currentConversationId)
+                    messageInfoScreen.setArguments(bundle)
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageInfoScreen, resources.getString(R.string.info)).addToBackStack(resources.getString(R.string.info)).commit()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

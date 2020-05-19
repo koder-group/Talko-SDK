@@ -246,6 +246,7 @@ class ConversationScreen : Fragment() {
         super.onResume()
         // Update new message indicators
         updateIndicators()
+        Messenger.currentConversationId = ""
     }
 
     // If onResume is not called

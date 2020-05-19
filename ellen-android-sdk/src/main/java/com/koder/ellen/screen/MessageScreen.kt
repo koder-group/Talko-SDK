@@ -206,6 +206,10 @@ class MessageScreen : Fragment(),
         cornerRadius = arguments?.getIntArray("CORNER_RADIUS")
 
         // Set fragment conversation
+        conversationId?.let {
+            Messenger.currentConversationId = it
+        }
+
         val found = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
         found?.let {
             Log.d(TAG, "found ${it}")

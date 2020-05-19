@@ -148,6 +148,11 @@ class Messenger {
             return (prefs?.clientConfiguration != null && !prefs?.clientConfiguration.toString().isBlank())
         }
 
+        @JvmStatic fun isConversationCreated(conversationId: String): Boolean {
+            val found = conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true)}
+            return found != null
+        }
+
         // Register Firebase Cloud Messaging notification token
         @JvmStatic fun setPushNotificationToken(fcmToken: String) {
             GlobalScope.launch {
@@ -380,6 +385,7 @@ class Messenger {
             found?.let {
                 Log.d(TAG, "Remove ${it}")
                 conversations.remove(found)
+                currentConversationId = ""
             }
 
             // Remove from db
