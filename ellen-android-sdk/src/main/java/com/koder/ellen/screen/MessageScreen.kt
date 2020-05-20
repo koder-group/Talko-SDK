@@ -736,7 +736,8 @@ class MessageScreen : Fragment(),
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+//        super.onActivityResult(requestCode, resultCode, data)
+
         Log.d(TAG, "onActivityResult")
         Log.d(TAG, "${requestCode}")
         Log.d(TAG, "${resultCode}")
@@ -769,6 +770,10 @@ class MessageScreen : Fragment(),
                     mediaList                           // Media input
                 )
             }
+        }
+
+        if (resultCode != RESULT_OK) {
+            return
         }
     }
 
@@ -1649,9 +1654,9 @@ class MessageScreen : Fragment(),
             }
 
             override fun onConversationClosed(conversation: Conversation) {
-                if(conversationId.equals(conversation.conversationId, ignoreCase = true)) {
-                    // Close conversation
-                }
+//                if(conversationId.equals(conversation.conversationId, ignoreCase = true)) {
+//                    activity?.getSupportFragmentManager()?.popBackStack()
+//                }
             }
 
             override fun onConversationModified(
