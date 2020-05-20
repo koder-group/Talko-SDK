@@ -61,6 +61,7 @@ internal class MessageInfoAdapter(private val context: Context, private val curr
 
         // Set Owner
         Log.d(TAG, "${user}")
+        ownerView.visibility = View.GONE
         if(user.role == 100) ownerView.visibility = View.VISIBLE
 
 //                val userId = (dataset.get(position) as Array<String>)[1]
