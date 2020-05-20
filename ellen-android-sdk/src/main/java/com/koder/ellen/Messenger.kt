@@ -153,6 +153,12 @@ class Messenger {
             return found != null
         }
 
+        // Listener for conversation events
+        var mConversationListener: ConversationListener? = null
+        @JvmStatic fun setConversationListener(conversationListener: ConversationListener) {
+            mConversationListener = conversationListener
+        }
+
         // Register Firebase Cloud Messaging notification token
         @JvmStatic fun setPushNotificationToken(fcmToken: String) {
             GlobalScope.launch {
@@ -250,8 +256,10 @@ class Messenger {
                         EventName.conversationClosed.value -> {
                             // Conversation closed
                             val conversation = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Conversation::class.java)
+                            mConversationListener?.onConversationClosed(conversation.conversationId, currentConversationId.equals(conversation.conversationId, ignoreCase = true))
                             eventCallback.onConversationClosed(conversation)
                             removeConversation(conversation.conversationId)
+                            currentConversationId = ""
                         }
                         EventName.conversationModified.value -> {
                             // Conversation modified
@@ -385,7 +393,6 @@ class Messenger {
             found?.let {
                 Log.d(TAG, "Remove ${it}")
                 conversations.remove(found)
-                currentConversationId = ""
             }
 
             // Remove from db
@@ -775,6 +782,13 @@ interface RequestHandlerInterface {
     fun onRefreshTokenRequest(): String
 }
 
+// Interface for conversation events
+interface ConversationInterface {
+    fun onConversationClosed(conversationId: String, currentConversation: Boolean)
+}
+
+// Conversation event listener
+abstract class ConversationListener: ConversationInterface {}
 // Client callback for PubNub
 abstract class EventCallback: EventInterface {}
 // Request handler for refreshing user tokens

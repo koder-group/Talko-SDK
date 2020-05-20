@@ -10,11 +10,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.koder.ellen.Client
-import com.koder.ellen.CompletionCallback
-import com.koder.ellen.Messenger
+import com.koder.ellen.*
+import com.koder.ellen.Messenger.Companion.currentConversationId
 import com.koder.ellen.Messenger.Companion.getUserId
-import com.koder.ellen.UnreadCallback
 import com.koder.ellen.data.Result
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.User
@@ -139,6 +137,21 @@ class MainActivity : AppCompatActivity() {
         Messenger.setUnreadListener(object: UnreadCallback() {
             override fun onNewUnread(unreadCount: Int) {
                 Log.d(TAG, "unreadCount ${unreadCount}")
+            }
+        })
+
+        Messenger.setConversationListener(object: ConversationListener() {
+            override fun onConversationClosed(
+                conversationId: String,
+                currentConversation: Boolean
+            ) {
+                if(currentConversation) {
+                    // Pop backstack until conversation screen
+                    hideKeyboard(this@MainActivity)
+                    while(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                        getSupportFragmentManager().popBackStack()
+                    }
+                }
             }
         })
     }
