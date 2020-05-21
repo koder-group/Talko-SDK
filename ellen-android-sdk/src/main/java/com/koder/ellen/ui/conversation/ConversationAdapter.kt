@@ -25,6 +25,7 @@ import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
 import com.koder.ellen.model.Conversation
+import com.koder.ellen.model.Message
 import com.koder.ellen.model.Participant
 import com.koder.ellen.model.User
 import com.squareup.picasso.Picasso
@@ -112,7 +113,9 @@ internal class ConversationAdapter(private val context: Context, private val dat
         var subtitle = ""
 //        var latestMessageCreated: Long = 0
         if (!dataset.get(position).messages.isEmpty()) {
-            subtitle = dataset.get(position).messages.first().body
+//            subtitle = dataset.get(position).messages.first().body
+
+            subtitle = prefixSubtitle(dataset.get(position))
 
             // Set new message indicator
             // If latest message is newer than last read
@@ -294,6 +297,31 @@ internal class ConversationAdapter(private val context: Context, private val dat
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         df.setTimeZone(TimeZone.getTimeZone("UTC"))
         return df.parse(date).time
+    }
+
+    private fun prefixSubtitle(conversation: Conversation): String {
+        if(conversation.messages.isEmpty()) return ""
+
+        val message = conversation.messages.first()
+        var subtitle = message.body
+        when {
+            conversation.participants.size == 2 -> {
+                if(message.sender.userId.equals(prefs?.userId, ignoreCase = true)) {
+                    // Sender is current user
+                    subtitle = "You: ${subtitle}"
+                }
+            }
+            conversation.participants.size > 2 -> {
+                if(message.sender.userId.equals(prefs?.userId, ignoreCase = true)) {
+                    // Sender is current user
+                    subtitle = "You: ${subtitle}"
+                } else {
+                    // Sender is not current user
+                    subtitle = "${message.sender.displayName}: ${subtitle}"
+                }
+            }
+        }
+        return subtitle
     }
 
     // Bitmaps are 100x100
