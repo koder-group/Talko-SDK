@@ -154,6 +154,22 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+//        Messenger.createConversation(userId = "ed4b93a3-3501-4a8b-bf4b-d755629ec493", callback = object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TAG, "Conversation created")
+//                }
+//            }
+//        })
+//
+//        Messenger.sendTextMessage("hello world", "6ba8494b-a2cd-4336-b96f-c199b2c658e7", object: CompletionCallback() {
+//            override fun onCompletion(result: Result<Any>) {
+//                if(result is Result.Success) {
+//                    Log.d(TAG, "Message sent")
+//                }
+//            }
+//        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

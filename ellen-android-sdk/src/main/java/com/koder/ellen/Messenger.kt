@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
+import java.util.*
 
 
 class Messenger {
@@ -77,60 +78,68 @@ class Messenger {
         }
 
 //        @JvmStatic fun set(userToken: String, externalUserId: String, completion: CompletionCallback? = null) {
+        var settingMessenger = false
         @JvmStatic fun set(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
-            Stetho.initializeWithDefaults(applicationContext)
-            db = TalkoDatabase.getInstance(applicationContext)
+            Log.d(TAG, "Setting Messenger")
 
-            // Decode user token for user info
-            val parts = userToken.split('.')
-            val decoded = Base64.decode(parts[1], Base64.DEFAULT)
-            val decodedStr = String(decoded)
-            val decodedObj = JSONObject(decodedStr)
+            if(!settingMessenger) {
+                settingMessenger = true
+                Stetho.initializeWithDefaults(applicationContext)
+                db = TalkoDatabase.getInstance(applicationContext)
 
-            // Create current user object
-            val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
+                // Decode user token for user info
+                val parts = userToken.split('.')
+                val decoded = Base64.decode(parts[1], Base64.DEFAULT)
+                val decodedStr = String(decoded)
+                val decodedObj = JSONObject(decodedStr)
 
-            // Init Prefs
-            prefs = Prefs(applicationContext)
-            // Set user token
-            prefs?.userToken = userToken
-            // Set tenant Id
-            prefs?.tenantId = decodedObj.get("tenant_id").toString()
-            // Set user Id
-            prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
-            // Set current user
-            prefs?.currentUser = currentUser
+                // Create current user object
+                val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
 
-            GlobalScope.launch {
-                // Get client configuration
-                val clientConfig = async(IO) { initClientConfiguration() }
+                // Init Prefs
+                prefs = Prefs(applicationContext)
+                // Set user token
+                prefs?.userToken = userToken
+                // Set tenant Id
+                prefs?.tenantId = decodedObj.get("tenant_id").toString()
+                // Set user Id
+                prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
+                // Set current user
+                prefs?.currentUser = currentUser
 
-                // Initialize PubNub client
-                async(IO) { initPubNub() }.await()
+                GlobalScope.launch {
+                    // Get client configuration
+                    val clientConfig = async(IO) { initClientConfiguration() }
+
+                    // Initialize PubNub client
+                    async(IO) { initPubNub() }.await()
 
 
-                if(prefs?.clientConfiguration == null || prefs?.clientConfiguration.toString().isBlank()) {
-                    val clientConfigResult = clientConfig.await()
+                    if(prefs?.clientConfiguration == null || prefs?.clientConfiguration.toString().isBlank()) {
+                        val clientConfigResult = clientConfig.await()
 
-                    if(clientConfigResult is Result.Success) {
-    //                    completion?.onCompletion(Result.Success(true))
+                        if(clientConfigResult is Result.Success) {
+                            //                    completion?.onCompletion(Result.Success(true))
 
-                        // Populate initial conversations with messages
-                        val client = Client()
-                        client.getConversationMessages(object: CompletionCallback() {
-                            override fun onCompletion(result: Result<Any>) {
-                                if(result is Result.Success) {
-                                    conversations = result.data as MutableList<Conversation>
+                            // Populate initial conversations with messages
+                            val client = Client()
+                            client.getConversationMessages(object: CompletionCallback() {
+                                override fun onCompletion(result: Result<Any>) {
+                                    if(result is Result.Success) {
+                                        conversations = result.data as MutableList<Conversation>
 
-                                    completion?.onCompletion(Result.Success(true))
+                                        completion?.onCompletion(Result.Success(true))
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        } else {
+                            completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
+                        }
+
                     } else {
-                        completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
+                        completion?.onCompletion(Result.Success(true))
                     }
-                } else {
-                    completion?.onCompletion(Result.Success(true))
+                    settingMessenger = false
                 }
             }
         }
@@ -728,8 +737,26 @@ class Messenger {
             return title
         }
 
+        // Set unread conversation listener
         @JvmStatic fun setUnreadListener(callback: UnreadCallback) {
             unreadCallback = callback
+        }
+
+        // Create a conversation
+        @JvmStatic fun createConversation(userId: String, callback: CompletionCallback) {
+            val client = Client()
+            client.createConversation(userId, callback)
+        }
+
+        // Send a message
+        @JvmStatic fun sendTextMessage(body: String, conversationId: String, callback: CompletionCallback) {
+            val client = Client()
+
+            val sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!)
+
+            val message = Message(conversationId = conversationId, body = body, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()))
+
+            client.createMessage(message, callback)
         }
     }
 
