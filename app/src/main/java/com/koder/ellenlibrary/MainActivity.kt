@@ -74,6 +74,8 @@ class MainActivity : AppCompatActivity() {
 //                // Auto-send populated message. Default false
 //                bundle.putBoolean(MessageScreen.SEND_AUTO_POPULATE_MSG, false)
 
+                bundle.putBoolean(MessageScreen.ENABLE_MESSAGING, true)
+
                 messageScreen.setArguments(bundle)
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
             }

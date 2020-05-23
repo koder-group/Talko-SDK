@@ -90,11 +90,17 @@ class MessageScreen : Fragment(),
         // Auto populate message
         const val AUTO_POPULATE_MSG = "AUTO_POPULATE_MSG"
         const val SEND_AUTO_POPULATE_MSG = "SEND_AUTO_POPULATE_MSG"
+
+        const val ENABLE_MESSAGING = "ENABLE_MESSAGING"
     }
+
 
     private var conversationId: String? = null
     private var backgroundColor: String? = null
     private var cornerRadius: IntArray? = null
+
+    // Bundle arguments
+    private var enableMessaging: Boolean = true
 
     private lateinit var rootView: View
     private lateinit var containerView: RelativeLayout
@@ -201,6 +207,9 @@ class MessageScreen : Fragment(),
 
         conversationId = arguments?.getString("CONVERSATION_ID")
         qrPublicId = arguments?.getString("ADD_USER_ID")
+
+        // Enable messaging
+        if(arguments?.containsKey(ENABLE_MESSAGING)!!)  enableMessaging = arguments?.getBoolean(ENABLE_MESSAGING)!!
 
         backgroundColor = arguments?.getString("BACKGROUND_COLOR")
         cornerRadius = arguments?.getIntArray("CORNER_RADIUS")
@@ -350,6 +359,10 @@ class MessageScreen : Fragment(),
         // Customizable UI options
         setBackgroundColor(Messenger.screenBackgroundColor)
         setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
+
+        // Enable messaging
+        val messageInputFrame = rootView.findViewById<FrameLayout>(R.id.message_input_frame)
+        if(!enableMessaging) messageInputFrame.visibility = View.GONE
 
         return rootView
     }
