@@ -212,7 +212,8 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_message -> {
                 // Show User Search Screen
-                val userSearchScreen = UserSearchScreen()
+//                val userSearchScreen = UserSearchScreen()
+                val userSearchScreen = myUserSearchScreen()
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, userSearchScreen, resources.getString(R.string.search)).addToBackStack(resources.getString(R.string.search)).commit()
                 true
             }

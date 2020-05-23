@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.koder.ellen.CompletionCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
@@ -37,6 +38,7 @@ import com.koder.ellen.core.Utils
 import com.koder.ellen.core.Utils.Companion.getShape
 import com.koder.ellen.data.MessageDataSource
 import com.koder.ellen.data.MessageRepository
+import com.koder.ellen.data.Result
 import com.koder.ellen.model.User
 import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.main.MainViewModel
@@ -44,7 +46,7 @@ import com.koder.ellen.ui.message.MessageViewModel
 import com.koder.ellen.ui.search.SearchAdapter
 
 
-class UserSearchScreen : Fragment() {
+open class UserSearchScreen : Fragment() {
 
     companion object {
         fun newInstance() = UserSearchScreen()
@@ -127,9 +129,18 @@ class UserSearchScreen : Fragment() {
                 mProgressBar.visibility = View.GONE
             } else {
                 mProgressBar.visibility = View.VISIBLE
-                messageViewModel.userSearchChanged(
-                    searchEditText.text.toString()
-                )
+//                messageViewModel.userSearchChanged(   // TODO
+//                    searchEditText.text.toString()
+//                ) // TODO
+                searchUser(searchEditText.text.toString(), object: CompletionCallback() {
+                    override fun onCompletion(result: Result<Any>) {
+                        if(result is Result.Success) {
+                            var resultData = result.data
+                            if(resultData is List<*>) resultData = resultData.toMutableList()
+                            messageViewModel.userSearchResult.postValue(resultData as MutableList<User>)
+                        }
+                    }
+                })
             }
         }
 
@@ -237,4 +248,8 @@ class UserSearchScreen : Fragment() {
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    open fun searchUser(searchString: String, callback: CompletionCallback) {
+        messageViewModel.userSearchChanged(searchString)
+    }
 }
