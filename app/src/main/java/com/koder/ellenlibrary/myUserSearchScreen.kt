@@ -25,6 +25,7 @@ class myUserSearchScreen: UserSearchScreen() {
             client.findUsers(searchString, object: CompletionCallback() {
                 override fun onCompletion(result: Result<Any>) {
                     if(result is Result.Success) {
+                        // TODO Call callback.onCompletion(com.koder.ellen.data.Result.Success(List<User>))
                         callback.onCompletion(com.koder.ellen.data.Result.Success((result.data as MutableList<User>).toList()))
                     }
                 }
