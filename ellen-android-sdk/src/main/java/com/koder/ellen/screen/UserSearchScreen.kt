@@ -129,7 +129,7 @@ open class UserSearchScreen : Fragment() {
                 mProgressBar.visibility = View.GONE
             } else {
                 mProgressBar.visibility = View.VISIBLE
-//                messageViewModel.userSearchChanged(   // TODO
+//                messageViewModel.userSearchChanged(   // TODO Use searchUser instead
 //                    searchEditText.text.toString()
 //                ) // TODO
                 searchUser(searchEditText.text.toString(), object: CompletionCallback() {
