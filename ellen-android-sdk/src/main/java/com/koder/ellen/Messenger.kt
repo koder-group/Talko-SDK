@@ -422,7 +422,23 @@ class Messenger {
 
             val json = Gson().toJson(message)
             val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
-            db?.messageDao()?.insert(msg)
+
+            GlobalScope.launch {
+                async(IO) { db?.messageDao()?.insert(msg) }.await()
+            }
+        }
+
+        // Update message in db
+        fun updateMessageForError(message: Message) {
+            Log.d(TAG, "updateMessage ${message}")
+            if(message.timeCreated.toString().contains("-")) {
+                message.timeCreated = Utils.convertDateToLong(message.timeCreated.toString())
+            }
+            val json = Gson().toJson(message)
+            val msg = com.koder.ellen.persistence.Message(message.metadata.localReferenceId, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+//            GlobalScope.launch {
+//                async(IO) { db?.messageDao()?.update(msg) }.await()
+//            }
         }
 
         fun deleteMessage(message: Message) {

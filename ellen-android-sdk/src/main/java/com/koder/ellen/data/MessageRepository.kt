@@ -68,15 +68,16 @@ internal class MessageRepository(val dataSource: MessageDataSource) {
 
         if(result is Result.Success) {
             // Add to db
-            val message = result.data
-
-            if(message.timeCreated.toString().contains("-")) {
-                message.timeCreated = Utils.convertDateToLong(message.timeCreated.toString())
-            }
-
-            val json = Gson().toJson(message)
-            val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
-            messageDao?.insert(msg)
+//            val message = result.data
+//            Log.d(TAG, "createMessage ${message}")
+//
+//            if(message.timeCreated.toString().contains("-")) {
+//                message.timeCreated = Utils.convertDateToLong(message.timeCreated.toString())
+//            }
+//
+//            val json = Gson().toJson(message)
+//            val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+//            messageDao?.insert(msg)
         }
 
         return result

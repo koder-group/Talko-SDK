@@ -686,7 +686,7 @@ internal class MessageAdapter(private val context: Context, private val dataset:
 
     fun isLatestSelfMessage(message: Message): Boolean {
         val found =
-            dataset.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId, ignoreCase = true) }
+            dataset.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId, ignoreCase = true) && !it.metadata.error }
         return found?.metadata?.localReferenceId.equals(message.metadata.localReferenceId, ignoreCase = true)
     }
 

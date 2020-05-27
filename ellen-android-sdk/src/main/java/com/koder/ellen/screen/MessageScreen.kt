@@ -1362,6 +1362,7 @@ class MessageScreen : Fragment(),
         found?.let {
             val index = messages.indexOf(found)
             messages.removeAt(index)
+            Messenger.deleteMessage(found)
             viewAdapter.notifyItemRemoved(index)
             Log.d(TAG, "Deleted ${message}")
         }
@@ -1531,6 +1532,11 @@ class MessageScreen : Fragment(),
             found.metadata.error = true
             found.metadata.errorMessage = errorMessage
             Log.d(TAG, "showMessageError ${found}")
+
+            // Add error message to db
+            found.messageId = localReferenceId
+            Messenger.addMessage(found)
+
             viewAdapter.notifyItemChanged(index)
 
             // Scroll down a little to show status indicator icon
