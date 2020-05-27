@@ -2,6 +2,7 @@ package com.koder.ellen
 
 import android.content.Context
 import android.os.CountDownTimer
+import android.text.Html
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.Lifecycle
@@ -78,19 +79,19 @@ class Messenger {
         }
 
 //        @JvmStatic fun set(userToken: String, externalUserId: String, completion: CompletionCallback? = null) {
-        var settingMessenger = false
+//        var settingMessenger = false
         @JvmStatic fun set(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
-            Log.d(TAG, "Setting Messenger")
+//            Log.d(TAG, "Setting Messenger")
 
-            if(!settingMessenger) {
-                settingMessenger = true
+//            if(!settingMessenger) {
+//                settingMessenger = true
                 Stetho.initializeWithDefaults(applicationContext)
                 db = TalkoDatabase.getInstance(applicationContext)
 
                 // Decode user token for user info
                 val parts = userToken.split('.')
-                val decoded = Base64.decode(parts[1], Base64.DEFAULT)
-                val decodedStr = String(decoded)
+                val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
+                var decodedStr = String(decoded)
                 val decodedObj = JSONObject(decodedStr)
 
                 // Create current user object
@@ -98,9 +99,9 @@ class Messenger {
 
                 // Init Prefs
                 prefs = Prefs(applicationContext)
-                // Set user token
+//                // Set user token
                 prefs?.userToken = userToken
-                // Set tenant Id
+//                // Set tenant Id
                 prefs?.tenantId = decodedObj.get("tenant_id").toString()
                 // Set user Id
                 prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
@@ -139,9 +140,9 @@ class Messenger {
                     } else {
                         completion?.onCompletion(Result.Success(true))
                     }
-                    settingMessenger = false
+//                    settingMessenger = false
                 }
-            }
+//            }
         }
 
         @JvmStatic fun signOut() {

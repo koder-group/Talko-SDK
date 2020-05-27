@@ -75,7 +75,7 @@ class AuthInterceptor : Interceptor {
 
         // Decode user token for user info
         val parts = userToken.split('.')
-        val decoded = Base64.decode(parts[1], Base64.DEFAULT)
+        val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
         val decodedStr = String(decoded)
         val decodedObj = JSONObject(decodedStr)
 
