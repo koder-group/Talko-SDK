@@ -50,6 +50,19 @@ class Client {
         return Result.Error(IOException("Error getting user"))
     }
 
+    fun getCurrentUser(): Result<EllenUser> {
+        try {
+            val response = RetrofitClient.ellen.getCurrentUser().execute()
+            Log.d(TAG, "${response}")
+            if(response.isSuccessful) {
+                return Result.Success(response.body()!!)
+            }
+        } catch (e: Throwable) {
+            return Result.Error(IOException("Error getting current user", e))
+        }
+        return Result.Error(IOException("Error getting current user"))
+    }
+
     // Find users by display name
     fun findUsers(displayNameFilter: String, completion: CompletionCallback? = null) {
         GlobalScope.launch {
