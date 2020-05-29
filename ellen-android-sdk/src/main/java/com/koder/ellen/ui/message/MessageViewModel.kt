@@ -10,6 +10,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
+import com.koder.ellen.Messenger
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.Message
 import com.koder.ellen.model.User
@@ -171,6 +173,18 @@ internal class MessageViewModel(private val messageRepository: MessageRepository
         launch {
             try {
                 var result = async(IO) { messageRepository.getMessages(conversationId, forceLoad)}.await()
+
+                // Update profile image url cache
+                if(result is Result.Success) {
+                    val messages = result.data
+                    for(message in messages) {
+                        val user = message.sender
+                        var json = Gson().toJson(user)
+                        val obj = com.koder.ellen.persistence.UserProfile(user.userId.toLowerCase(), user.userId, user.displayName, user.profileImageUrl, System.currentTimeMillis(), json.toString().toByteArray(Charsets.UTF_8))
+                        Messenger.userProfileCache.put(message.sender.userId.toLowerCase(), obj)
+                    }
+                }
+
                 if(result is Result.Success) messages.value = result.data
             } catch (e: Exception) {
 
