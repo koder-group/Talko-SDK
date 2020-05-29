@@ -6,6 +6,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.koder.ellen.Messenger
+import com.koder.ellen.Messenger.Companion.db
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.ClientConfiguration
@@ -52,6 +54,17 @@ internal class ConversationViewModel(val conversationRepository: ConversationRep
                 // Get Conversation Messages
                 convos = async(Dispatchers.IO) {conversationRepository.getConversationMessages(convos, forceLoad)}.await()
                 Log.d(TAG, "${convos}")
+
+                // User profile cache
+                val result = async(IO) {
+                    val userProfiles = db?.userProfileDao()?.getAll()
+                    userProfiles?.let {
+                        for(profile in userProfiles) {
+                            Messenger.userProfileCache.put(profile.userId, profile)
+                        }
+                    }
+                }.await()
+
                 conversations.apply { value = convos }
             } catch (e: Exception) {
 //                updateUi(e.toString())

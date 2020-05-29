@@ -69,6 +69,7 @@ class Messenger {
         var currentConversationId = ""
 
         var db: TalkoDatabase? = null
+        var userProfileCache = mutableMapOf<String, com.koder.ellen.persistence.UserProfile>()
 
         // Application context
         @JvmStatic fun init(appId: String, context: Context?) {
@@ -816,11 +817,14 @@ class Messenger {
 
                 // If message is newer
                 if(message.timeCreated.toLong() > userProfile.updatedTs) {
+//                    Log.d(TAG, "${message.sender.profileImageUrl}")
                     // Update UserProfile
                     val user = message.sender
                     var json = Gson().toJson(user)
                     val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
                     db?.userProfileDao()?.update(obj)
+
+                    userProfileCache.put(user.userId, obj)
                 }
             }
         }
@@ -829,7 +833,9 @@ class Messenger {
             var json = Gson().toJson(user)
             val obj = com.koder.ellen.persistence.UserProfile(user.userId.toLowerCase(), user.userId, user.displayName, user.profileImageUrl, System.currentTimeMillis(), json.toString().toByteArray(Charsets.UTF_8))
             db?.userProfileDao()?.insert(obj)
-            Log.d(TAG,"${user.profileImageUrl}")
+//            Log.d(TAG,"${user.profileImageUrl}")
+
+            userProfileCache.put(user.userId, obj)
         }
     }
 

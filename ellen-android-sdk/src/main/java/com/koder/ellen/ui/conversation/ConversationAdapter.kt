@@ -286,6 +286,12 @@ internal class ConversationAdapter(private val context: Context, private val dat
             if(participant.user.displayName != null) {
                 if (!participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) {
 //                Log.d(TAG, "participant ${participant.user.displayName}")
+                    // Get cached
+                    val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
+                    if(cachedProfile != null) {
+                        return cachedProfile.photoUrl
+                    }
+
                     return participant.user.profileImageUrl
                 }
             }

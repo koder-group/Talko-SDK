@@ -37,6 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.internal.VisibilityAwareImageButton
 import com.koder.ellen.Messenger
+import com.koder.ellen.Messenger.Companion.db
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
 import com.koder.ellen.model.Message
@@ -302,7 +303,17 @@ internal class MessageAdapter(private val context: Context, private val dataset:
                 // Show icon
                 val icon = holder.layout.findViewById<ImageView>(R.id.sender_icon)
                 if(message.sender.profileImageUrl.isNotBlank()) {   // For User typing...
-                    Picasso.get().load(message.sender.profileImageUrl).into(icon)
+//                    Picasso.get().load(message.sender.profileImageUrl).into(icon)   // TODO Cached icon
+
+                    // Get url from cache
+                    val cachedUrl = Messenger.userProfileCache.get(message.sender.userId.toLowerCase())
+                    Log.d(TAG, "cachedUrl ${cachedUrl}")
+                    Picasso.get().load(cachedUrl?.photoUrl).into(icon)    // TODO Cached icon
+
+                    if(cachedUrl == null) {
+                        Picasso.get().load(message.sender.profileImageUrl).into(icon)
+                    }
+
                     senderIconLayout.visibility = View.VISIBLE
                 } else {
                     senderIconLayout.visibility = View.GONE
