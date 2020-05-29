@@ -188,6 +188,24 @@ class Messenger {
             }
         }
 
+        // Update Messaging Token
+        @JvmStatic fun updateMessagingToken(userToken: String) {
+            // Decode user token for user info
+            val parts = userToken.split('.')
+            val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
+            var decodedStr = String(decoded)
+            val decodedObj = JSONObject(decodedStr)
+
+            // Create current user object
+            val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
+
+            // Update cached token
+            prefs?.userToken = userToken
+
+            // Update cached current user
+            prefs?.currentUser = currentUser
+        }
+
         // Initialize PubNub client
         fun initPubNub() {
             val pnConfiguration = PNConfiguration()
