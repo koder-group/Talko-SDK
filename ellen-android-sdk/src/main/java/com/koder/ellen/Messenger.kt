@@ -204,6 +204,11 @@ class Messenger {
 
             // Update cached current user
             prefs?.currentUser = currentUser
+
+            // Update db
+            val userId = decodedObj.get("user_id").toString()
+            val user = User(tenantId = currentUser.tenantId, userId = userId, displayName = currentUser.profile.displayName, profileImageUrl = currentUser.profile.profileImageUrl)
+            cacheUser(user)
         }
 
         // Initialize PubNub client
@@ -444,6 +449,10 @@ class Messenger {
             GlobalScope.launch {
                 async(IO) { db?.messageDao()?.insert(msg) }.await()
             }
+
+            // User profile cache
+//            Log.d(TAG, "addMessage ${message}")
+            cacheUserIfNeeded(message)
         }
 
         // Update message in db
@@ -792,6 +801,35 @@ class Messenger {
             val message = Message(conversationId = conversationId, body = body, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()))
 
             client.createMessage(message, callback)
+        }
+
+        // Caching user profile
+        private fun cacheUserIfNeeded(message: Message) {
+            val userId = message.sender.userId
+            val userProfile = db?.userProfileDao()?.getUserProfile(userId)
+//            Log.d(TAG, "${userProfile}")
+
+            userProfile?.let {
+                if(message.timeCreated.toString().contains("-")) {
+                    message.timeCreated = Utils.convertDateToLong(message.timeCreated.toString())
+                }
+
+                // If message is newer
+                if(message.timeCreated.toLong() > userProfile.updatedTs) {
+                    // Update UserProfile
+                    val user = message.sender
+                    var json = Gson().toJson(user)
+                    val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+                    db?.userProfileDao()?.update(obj)
+                }
+            }
+        }
+
+        private fun cacheUser(user: User) {
+            var json = Gson().toJson(user)
+            val obj = com.koder.ellen.persistence.UserProfile(user.userId.toLowerCase(), user.userId, user.displayName, user.profileImageUrl, System.currentTimeMillis(), json.toString().toByteArray(Charsets.UTF_8))
+            db?.userProfileDao()?.insert(obj)
+            Log.d(TAG,"${user.profileImageUrl}")
         }
     }
 
