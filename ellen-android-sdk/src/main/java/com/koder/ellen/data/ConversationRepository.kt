@@ -3,6 +3,8 @@ package com.koder.ellen.data
 import android.util.Log
 import com.google.gson.Gson
 import com.koder.ellen.Messenger
+import com.koder.ellen.Messenger.Companion.userProfileCache
+import com.koder.ellen.core.Utils
 import com.koder.ellen.core.Utils.Companion.sortConversationsByLatestMessage
 import com.koder.ellen.model.ClientConfiguration
 import com.koder.ellen.model.Conversation
@@ -97,13 +99,17 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
 
             // Add messages to database
             messageDao?.deleteAll()
+            userProfileDao?.deleteAll()
             for(conversation in remoteConversationMessages) {
                 for(message in conversation.messages) {
 //                    Log.d(TAG, "msg ${message}")
 
-                    val json = Gson().toJson(message)
+                    var json = Gson().toJson(message)
                     val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
                     messageDao?.insert(msg)
+
+                    // Update profile image url
+                    cacheUserIfNeeded(message)
                 }
             }
 
@@ -112,6 +118,7 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
 
         // Return local conversation+messages
         val localConversationMessages = mutableListOf<Conversation>()
+        userProfileDao?.deleteAll()
         for(conversation in conversations) {
             val messages: List<com.koder.ellen.persistence.Message> = messageDao?.getMessages(conversation.conversationId)!!
             val msgList = mutableListOf<Message>()
@@ -120,6 +127,9 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
                 val str = String(message.payload)
                 val msg = Gson().fromJson(JSONObject(str).toString(), Message::class.java)
                 msgList.add(msg)
+
+                // Update profile image url
+                cacheUserIfNeeded(msg)
             }
             conversation.messages = msgList
             localConversationMessages.add(conversation)
@@ -128,6 +138,10 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
         return sortConversationsByLatestMessage(localConversationMessages)
 
 //        return dataSource.getConversationMessages(conversations)
+    }
+
+    fun updateUserProfileCache() {
+
     }
 
     fun deleteConversation(conversationId: String): Result<Boolean> {
@@ -147,5 +161,42 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
 
     private fun setCurrentUser(currentUser: EllenUser) {
 //        prefs.saveCurrentUser(currentUser)
+    }
+
+    private fun cacheUserIfNeeded(message: Message) {
+
+//        Log.d(TAG, "cacheUserIfNeeded ${message}")
+        val userId = message.sender.userId
+        val userProfile = userProfileDao?.getUserProfile(userId)
+
+        if(userProfile == null) {
+            val user = message.sender
+            var json = Gson().toJson(user)
+            val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+            userProfileDao?.insert(obj)
+
+            userProfileCache.put(user.userId, obj)
+            return
+        }
+
+
+//        Log.d(TAG, "userProfile ${userProfile}")
+        if(message.timeCreated.toString().contains("-")) {
+            message.timeCreated = Utils.convertDateToLong(message.timeCreated.toString())
+        }
+
+        // If message is newer
+//        Log.d(TAG, "${message.timeCreated.toLong() > userProfile.updatedTs} timeCreated ${message.timeCreated.toLong()} updatedTs ${userProfile.updatedTs}")
+        if(message.timeCreated.toLong() > userProfile.updatedTs) {
+//                Log.d(TAG, "update ${message.sender.displayName} ${message.sender.profileImageUrl}")
+            // Update UserProfile
+            val user = message.sender
+            var json = Gson().toJson(user)
+            val obj = com.koder.ellen.persistence.UserProfile(user.userId, user.userId, user.displayName, user.profileImageUrl, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+            userProfileDao?.update(obj)
+
+            userProfileCache.put(user.userId, obj)
+        }
+
     }
 }

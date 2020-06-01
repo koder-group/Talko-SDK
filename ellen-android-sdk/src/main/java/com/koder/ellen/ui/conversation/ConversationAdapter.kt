@@ -22,6 +22,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.card.MaterialCardView
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
+import com.koder.ellen.Messenger.Companion.userProfileCache
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
 import com.koder.ellen.model.Conversation
@@ -285,9 +286,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
         for (participant in participants) {
             if(participant.user.displayName != null) {
                 if (!participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) {
-//                Log.d(TAG, "participant ${participant.user.displayName}")
+
                     // Get cached
                     val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
+//                    Log.d(TAG, "cachedProfile ${cachedProfile?.photoUrl}")
                     if(cachedProfile != null) {
                         return cachedProfile.photoUrl
                     }

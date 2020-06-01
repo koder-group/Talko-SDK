@@ -55,16 +55,6 @@ internal class ConversationViewModel(val conversationRepository: ConversationRep
                 convos = async(Dispatchers.IO) {conversationRepository.getConversationMessages(convos, forceLoad)}.await()
                 Log.d(TAG, "${convos}")
 
-                // User profile cache
-                val result = async(IO) {
-                    val userProfiles = db?.userProfileDao()?.getAll()
-                    userProfiles?.let {
-                        for(profile in userProfiles) {
-                            Messenger.userProfileCache.put(profile.userId, profile)
-                        }
-                    }
-                }.await()
-
                 conversations.apply { value = convos }
             } catch (e: Exception) {
 //                updateUi(e.toString())
