@@ -722,6 +722,8 @@ class Messenger {
 
         // Get Conversation Id between 2 participants. Returns the first Conversation Id found.
         @JvmStatic fun fetchConversation(participantId1: String, participantId2: String): Conversation? {
+            val conversations = fetchConversations()
+
             for(conversation in conversations) {
                 val p1found = conversation.participants.find { p -> p.user.userId.equals(participantId1, ignoreCase = true) }
                 val p2found = conversation.participants.find { p -> p.user.userId.equals(participantId2, ignoreCase = true) }
@@ -732,6 +734,21 @@ class Messenger {
                 }
             }
             return null
+        }
+
+        // Get all conversations
+        @JvmStatic fun fetchConversations(): List<Conversation> {
+            val list = mutableListOf<Conversation>()
+            val conversations = db?.conversationDao()?.getAll()
+
+            if(conversations != null) {
+                for(conversation in conversations) {
+                    val str = String(conversation.payload)
+                    val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+                    list.add(convo)
+                }
+            }
+            return list.toList()
         }
 
         @JvmStatic fun getUserId(): String {

@@ -23,6 +23,7 @@ abstract class TalkoDatabase : RoomDatabase() {
             Room.databaseBuilder(context.applicationContext,
                 TalkoDatabase::class.java, "talko_db")
                 .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
                 .build()
     }
 }
