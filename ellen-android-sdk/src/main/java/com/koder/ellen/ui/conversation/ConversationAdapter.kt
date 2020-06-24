@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -133,6 +134,8 @@ internal class ConversationAdapter(private val context: Context, private val dat
 //        val notificationDot = holder.layout.findViewById<ImageView>(R.id.notification_dot)
 //
 //        notificationDot.visibility = View.VISIBLE
+        } else {
+            subtitle = Messenger.conversationEmptyText
         }
         holder.layout.findViewById<TextView>(R.id.conversation_subtitle).text = subtitle
 
