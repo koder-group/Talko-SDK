@@ -60,6 +60,8 @@ class Messenger {
         @JvmStatic var conversationSwipeToDelete = true // true = enabled, false = disabled
         @JvmStatic var conversationLongClickToDelete = false // true = enabled, false = disabled
         @JvmStatic var conversationEmptyText = "(Conversation is empty. Click to send message.)"
+        @JvmStatic var conversationNewMessageColor = "#2196f3"
+        @JvmStatic var conversationNewMessageCheckmark = false
         // Message Screen
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18

@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Bitmap.createScaledBitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.text.format.DateFormat
 import android.util.Log
@@ -14,7 +15,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -74,6 +77,37 @@ internal class ConversationAdapter(private val context: Context, private val dat
         icon.layoutParams.height = Messenger.conversationIconRadius.px * 2
         icon.layoutParams.width = Messenger.conversationIconRadius.px * 2
 
+        // New message checkmark
+        val check = layout.findViewById<ImageView>(R.id.new_message_check)
+        DrawableCompat.setTint(check.getDrawable(), Color.parseColor(Messenger.conversationNewMessageColor));
+
+        // Date position
+        if(Messenger.conversationNewMessageCheckmark) {
+            // Display date view on subtitle-row
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(layout)
+//            app:layout_constraintBottom_toBottomOf="@id/conversation_subtitle"
+            constraintSet.connect(
+                R.id.conversation_date,
+                ConstraintSet.BOTTOM,
+                R.id.conversation_subtitle,
+                ConstraintSet.BOTTOM,
+                0)
+            constraintSet.applyTo(layout)
+        } else {
+            // Display date view on title-row
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(layout)
+//            app:layout_constraintTop_toTopOf="@id/conversation_title"
+            constraintSet.connect(
+                R.id.conversation_date,
+                ConstraintSet.TOP,
+                R.id.conversation_title,
+                ConstraintSet.TOP,
+                0)
+            constraintSet.applyTo(layout)
+        }
+
         return MyViewHolder(layout)
     }
 
@@ -88,8 +122,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
 //
         val cardView = holder.layout.findViewById<MaterialCardView>(R.id.conversation_icon_layout)
         val newMessageDot = holder.layout.findViewById<ImageView>(R.id.new_message_dot)
+        val newMessageCheck = holder.layout.findViewById<ImageView>(R.id.new_message_check)
         cardView.strokeWidth = 0
         newMessageDot.visibility = View.GONE
+        newMessageCheck.visibility = View.GONE
 
         // Set title
         var title = ""
@@ -128,8 +164,14 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
             if(latestMessageCreated > lastRead) {
                 // Show new message indicator
-                newMessageDot.visibility = View.VISIBLE
-                cardView.strokeWidth = 2.px
+                if(!Messenger.conversationNewMessageCheckmark) {
+                    // Show dot and border
+                    newMessageDot.visibility = View.VISIBLE
+                    cardView.strokeWidth = 2.px
+                } else {
+                    // Show check mark
+                    newMessageCheck.visibility = View.VISIBLE
+                }
             }
 //        val notificationDot = holder.layout.findViewById<ImageView>(R.id.notification_dot)
 //
