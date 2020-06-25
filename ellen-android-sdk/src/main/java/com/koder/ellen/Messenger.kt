@@ -68,7 +68,7 @@ class Messenger {
         @JvmStatic var senderBackgroundColor = "#88000000"  // gray
         @JvmStatic var selfBackgroundColor = "#1A73E9"  // blue
 
-        var conversations = mutableListOf<Conversation>()
+        internal var conversations = mutableListOf<Conversation>()
         var currentConversationId = ""
 
         var db: TalkoDatabase? = null
@@ -82,14 +82,9 @@ class Messenger {
             }
         }
 
-//        @JvmStatic fun set(userToken: String, externalUserId: String, completion: CompletionCallback? = null) {
-//        var settingMessenger = false
-        @JvmStatic fun set(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
-//            Log.d(TAG, "Setting Messenger")
 
-//            if(!settingMessenger) {
-//                settingMessenger = true
-                Stetho.initializeWithDefaults(applicationContext)
+        @JvmStatic fun set(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
+//                Stetho.initializeWithDefaults(applicationContext)
                 db = TalkoDatabase.getInstance(applicationContext)
 
                 // Decode user token for user info
@@ -120,11 +115,10 @@ class Messenger {
                     async(IO) { initPubNub() }.await()
 
 
-                    if(prefs?.clientConfiguration == null || prefs?.clientConfiguration.toString().isBlank()) {
+//                    if(prefs?.clientConfiguration == null || prefs?.clientConfiguration.toString().isBlank()) {   // TODO
                         val clientConfigResult = clientConfig.await()
 
                         if(clientConfigResult is Result.Success) {
-                            //                    completion?.onCompletion(Result.Success(true))
 
                             // Populate initial conversations with messages
                             val client = Client()
@@ -141,12 +135,11 @@ class Messenger {
                             completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
                         }
 
-                    } else {
-                        completion?.onCompletion(Result.Success(true))
-                    }
-//                    settingMessenger = false
+                    // TODO
+//                    } else {
+//                        completion?.onCompletion(Result.Success(true))
+//                    }
                 }
-//            }
         }
 
         @JvmStatic fun signOut() {
@@ -741,17 +734,18 @@ class Messenger {
 
         // Get all conversations
         @JvmStatic fun fetchConversations(): List<Conversation> {
-            val list = mutableListOf<Conversation>()
-            val conversations = db?.conversationDao()?.getAll()
-
-            if(conversations != null) {
-                for(conversation in conversations) {
-                    val str = String(conversation.payload)
-                    val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
-                    list.add(convo)
-                }
-            }
-            return list.toList()
+//            val list = mutableListOf<Conversation>()
+//            val conversations = db?.conversationDao()?.getAll()
+//
+//            if(conversations != null) {
+//                for(conversation in conversations) {
+//                    val str = String(conversation.payload)
+//                    val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+//                    list.add(convo)
+//                }
+//            }
+//            return list.toList()
+            return conversations
         }
 
         @JvmStatic fun getUserId(): String {
