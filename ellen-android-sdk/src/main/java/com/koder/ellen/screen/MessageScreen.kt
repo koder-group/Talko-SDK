@@ -28,6 +28,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -266,6 +267,8 @@ class MessageScreen : Fragment(),
         messageSendButton = rootView.findViewById(R.id.message_send_btn)
         messageSendButton.setOnClickListener(this)
         messageSendButton.isEnabled = false
+
+        DrawableCompat.setTint(messageSendButton.drawable, Color.parseColor("#1A73E8"));
 
         messageEditText = rootView.findViewById(R.id.message_input)
 
