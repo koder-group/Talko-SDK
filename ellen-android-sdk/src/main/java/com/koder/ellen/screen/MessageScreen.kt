@@ -2,10 +2,12 @@ package com.koder.ellen.screen
 
 import android.Manifest
 import android.animation.*
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.*
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -366,6 +368,23 @@ class MessageScreen : Fragment(),
         // Enable messaging
         val messageInputFrame = rootView.findViewById<FrameLayout>(R.id.message_input_frame)
         if(!enableMessaging) messageInputFrame.visibility = View.GONE
+
+        // Dark mode
+        var color = "#FFFFFF"
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                messageInputFrame.setBackgroundColor(activity?.resources!!.getColor(R.color.dmBackground))
+
+                val messageInputLayout = rootView.findViewById<RelativeLayout>(R.id.message_input_layout)
+                messageInputLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_round_border_message_dark)
+
+                mediaInputLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_border_media_input_dark)
+
+//                addImageButton.setColorFilter(ContextCompat.getColor(activity!!, R.color.dmTextHigh), android.graphics.PorterDuff.Mode.MULTIPLY);
+                DrawableCompat.setTint(addImageButton.drawable, ContextCompat.getColor(activity!!, R.color.dmTextMed))
+            }
+        }
 
         return rootView
     }
@@ -1795,8 +1814,14 @@ class MessageScreen : Fragment(),
         containerView.setBackgroundColor(Color.parseColor(color))
     }
 
+    @SuppressLint("ResourceType")
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
-        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
+        var color = "#FFFFFF"
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> { color = activity?.resources!!.getString(R.color.dmBackground) }
+        }
+        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), color)
         listFrame.background = shape
     }
 

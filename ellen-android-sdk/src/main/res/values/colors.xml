@@ -25,4 +25,9 @@
     <color name="message_gray">#88000000</color>
     <color name="mention_blue">#bbdefb</color>
     <color name="green">#4caf50</color>
+
+    <!-- Dark mode -->
+    <color name="dmBackground">#121212</color>
+    <color name="dmTextHigh">#DEFFFFFF</color>
+    <color name="dmTextMed">#99FFFFFF</color>
 </resources>

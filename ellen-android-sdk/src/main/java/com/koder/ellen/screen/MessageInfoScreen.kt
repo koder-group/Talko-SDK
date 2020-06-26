@@ -1,8 +1,10 @@
 package com.koder.ellen.screen
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -530,8 +532,14 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
         containerView.setBackgroundColor(Color.parseColor(color))
     }
 
+    @SuppressLint("ResourceType")
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
-        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
+        var color = "#FFFFFF"
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> { color = activity?.resources!!.getString(R.color.dmBackground) }
+        }
+        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), color)
         listFrame.background = shape
     }
 }

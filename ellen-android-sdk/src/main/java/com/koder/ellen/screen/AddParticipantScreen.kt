@@ -1,8 +1,10 @@
 package com.koder.ellen.screen
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -92,6 +94,7 @@ class AddParticipantScreen : Fragment() {
         excludeUserIds = getUserIds(conversation.participants)
     }
 
+    @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -142,7 +145,13 @@ class AddParticipantScreen : Fragment() {
         // Customizable UI options
         rootView.setBackgroundColor(Color.parseColor(Messenger.screenBackgroundColor))
         val contentFrame = rootView.findViewById<LinearLayout>(R.id.content_frame)
-        val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), "#FFFFFF")
+
+        var color = "#FFFFFF"
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> { color = activity?.resources!!.getString(R.color.dmBackground) }
+        }
+        val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), color)
         contentFrame.background = shape
 
         return rootView

@@ -1,6 +1,8 @@
 package com.koder.ellen.ui.message
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -62,6 +64,7 @@ internal class MessageAdapter(private val context: Context, private val dataset:
     class MyViewHolder(val layout: ConstraintLayout) : RecyclerView.ViewHolder(layout)
 
     // Create new views (invoked by the layout manager)
+    @SuppressLint("ResourceType")
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -77,7 +80,12 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         val senderMediaLayout = layout.findViewById<MaterialCardView>(R.id.sender_media_layout)
         val senderRadius = Messenger.senderMessageRadius.px.toFloat()
         senderMediaLayout.radius = senderRadius
-        senderBody.background = getShape(senderRadius, Messenger.senderBackgroundColor)
+        var color = Messenger.senderBackgroundColor
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> { color = context?.resources!!.getString(R.color.darkGray) }
+        }
+        senderBody.background = getShape(senderRadius, color)
 
         val selfBody = layout.findViewById<TextView>(R.id.self_body)
         val selfMediaLayout = layout.findViewById<MaterialCardView>(R.id.self_media_layout)

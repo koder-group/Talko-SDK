@@ -1,6 +1,8 @@
 package com.koder.ellen.ui.conversation
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Bitmap.createScaledBitmap
@@ -114,6 +116,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @SuppressLint("ResourceType")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
@@ -129,10 +132,20 @@ internal class ConversationAdapter(private val context: Context, private val dat
         newMessageDot.visibility = View.GONE
         newMessageCheck.visibility = View.GONE
 
+        val titleView = holder.layout.findViewById<TextView>(R.id.conversation_title)
+
         val dateView = holder.layout.findViewById<TextView>(R.id.conversation_date)
         dateView.setTextColor(Color.parseColor("#000000"))
         dateView.setAlpha(0.54f)
         dateView.setTypeface(null, Typeface.NORMAL)
+
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                titleView.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh))
+                dateView.setTextColor(context?.resources!!.getColor(R.color.dmTextMed))
+            }
+        }
 
         // Set title
         var title = ""
@@ -142,7 +155,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
         } else {
             title = dataset.get(position).title
         }
-        holder.layout.findViewById<TextView>(R.id.conversation_title).text = title
+        titleView.text = title
 
         // Set date
         var date = ""
@@ -184,8 +197,9 @@ internal class ConversationAdapter(private val context: Context, private val dat
                     // Show dot and border
                     newMessageDot.visibility = View.VISIBLE
                     cardView.strokeWidth = 2.px
-                    dateView.setTextColor(ContextCompat.getColor(context, R.color.blue))
+                    dateView.setTextColor(ContextCompat.getColor(context, R.color.material_blue_500))
                     dateView.setTypeface(null, Typeface.BOLD)
+                    dateView.alpha = 1.0f
                 }
 
             } else {

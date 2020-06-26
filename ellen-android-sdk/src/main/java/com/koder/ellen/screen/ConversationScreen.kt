@@ -1,7 +1,9 @@
 package com.koder.ellen.screen
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
@@ -16,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -88,8 +91,11 @@ class ConversationScreen : Fragment() {
 
     private var filterUserIds: ArrayList<String>? = null
 
+    private var mContext: Context? = null
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        mContext = context
         setEventHandler()
     }
 
@@ -115,6 +121,7 @@ class ConversationScreen : Fragment() {
 
         // Inflate Fragment's view
         rootView = inflater.inflate(R.layout.fragment_conversation, container, false)
+
         mToolbar = rootView.findViewById<Toolbar>(R.id.toolbar)
 
         // Set SwipeRefreshLayout listener and refresh Conversations
@@ -486,8 +493,15 @@ class ConversationScreen : Fragment() {
         rootView.setBackgroundColor(Color.parseColor(color))
     }
 
+    @SuppressLint("ResourceType")
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
-        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), "#FFFFFF")
+        var color = "#FFFFFF"
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> { color = activity?.resources!!.getString(R.color.dmBackground) }
+        }
+
+        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), color)
         listFrame.background = shape
     }
 
