@@ -204,7 +204,7 @@ class MessageScreen : Fragment(),
         setHasOptionsMenu(true)
 
         // Always use the day (light) theme
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         conversationId = arguments?.getString("CONVERSATION_ID")
         qrPublicId = arguments?.getString("ADD_USER_ID")

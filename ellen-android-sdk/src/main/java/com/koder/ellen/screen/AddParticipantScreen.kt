@@ -84,7 +84,7 @@ class AddParticipantScreen : Fragment() {
         setHasOptionsMenu(true)
 
         // Always use the day (light) theme
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         conversationId = arguments?.getString("CONVERSATION_ID")
         // Exclude user IDs

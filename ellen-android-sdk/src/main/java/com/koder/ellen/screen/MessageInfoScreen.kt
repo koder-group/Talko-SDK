@@ -99,7 +99,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
         setHasOptionsMenu(true)
 
         // Always use the day (light) theme
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         conversationId = arguments?.getString("CONVERSATION_ID")
     }

@@ -90,7 +90,7 @@ open class UserSearchScreen : Fragment() {
         setHasOptionsMenu(true)
 
         // Always use the day (light) theme
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
     override fun onCreateView(
