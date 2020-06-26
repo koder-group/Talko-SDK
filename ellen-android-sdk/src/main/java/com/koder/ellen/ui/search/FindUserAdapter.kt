@@ -2,6 +2,7 @@ package com.koder.ellen.ui.search
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -62,6 +63,12 @@ internal class FindUserAdapter(private val context: Context, private val dataset
 
         Picasso.get().load(user.profileImageUrl).into(userProfileImage)
         userName.text = user.displayName
+
+        // Dark mode
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> { userName.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh)) }
+        }
 
         holder.layout.setOnClickListener { view -> {}
 //            Toast.makeText(holder.layout.context, "${position}", Toast.LENGTH_SHORT).show()

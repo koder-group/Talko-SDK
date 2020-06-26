@@ -73,7 +73,7 @@ internal class SearchAdapter(private val context: Context, private val dataset: 
         Picasso.get().load(user.profileImageUrl).into(userProfileImage)
         userName.text = user.displayName
 
-        var color = "#FFFFFF"
+        // Dark mode
         val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
         when (mode) {
             Configuration.UI_MODE_NIGHT_YES -> { userName.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh)) }

@@ -270,7 +270,7 @@ class MessageScreen : Fragment(),
         messageSendButton.setOnClickListener(this)
         messageSendButton.isEnabled = false
 
-        DrawableCompat.setTint(messageSendButton.drawable, Color.parseColor("#1A73E8"));
+        DrawableCompat.setTint(messageSendButton.drawable, Color.parseColor("#1A73E8"))
 
         messageEditText = rootView.findViewById(R.id.message_input)
 
@@ -383,6 +383,20 @@ class MessageScreen : Fragment(),
 
 //                addImageButton.setColorFilter(ContextCompat.getColor(activity!!, R.color.dmTextHigh), android.graphics.PorterDuff.Mode.MULTIPLY);
                 DrawableCompat.setTint(addImageButton.drawable, ContextCompat.getColor(activity!!, R.color.dmTextMed))
+
+                // SwipeRefreshLayout ProgressBar
+                swipeRefreshLayout.setColorSchemeColors(activity?.resources!!.getColor(R.color.dmTextHigh))
+                swipeRefreshLayout.setProgressBackgroundColorSchemeColor(activity?.resources!!.getColor(R.color.darkGray))
+
+                // Sliding Profile view
+                val dragView = rootView.findViewById<LinearLayout>(R.id.dragView)
+                dragView.background = activity?.resources!!.getDrawable(R.drawable.bg_round_top_dark)
+
+                val dragHandle = rootView.findViewById<ImageView>(R.id.sliding_handle)
+                DrawableCompat.setTint(dragHandle.drawable, ContextCompat.getColor(activity!!, R.color.dmTextDisabled))
+
+                val profileName = rootView.findViewById<TextView>(R.id.sliding_display_name)
+                profileName.setTextColor(ContextCompat.getColor(activity!!, R.color.dmTextMed))
             }
         }
 

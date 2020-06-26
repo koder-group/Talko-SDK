@@ -1,6 +1,9 @@
 package com.koder.ellen.ui.message
 
 import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.util.Log
 import android.view.*
@@ -13,6 +16,7 @@ import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
 import com.koder.ellen.model.User
 import com.koder.ellen.screen.MessageInfoScreen
+import kotlinx.android.synthetic.main.item_message_info.view.*
 
 
 internal class MessageInfoAdapter(private val context: Context, private val currentUser: User? = null, private val dataset: MutableList<User>, private val fragment: Fragment? = null) :
@@ -39,6 +43,16 @@ internal class MessageInfoAdapter(private val context: Context, private val curr
             .inflate(R.layout.item_message_info, parent, false) as ConstraintLayout
         // set the view's size, margins, paddings and layout parameters
         // ...
+
+        // Dark mode
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                val item = layout.findViewById<TextView>(R.id.item_title)
+                item.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh))
+            }
+        }
+
         return MyViewHolder(layout)
     }
 
@@ -72,10 +86,20 @@ internal class MessageInfoAdapter(private val context: Context, private val curr
 //                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setTitle("Title")
             dialog.setContentView(R.layout.dialog_bottom_sheet)
+
             val nameView = dialog.findViewById<TextView>(R.id.name_view)
             val promoteView = dialog.findViewById<TextView>(R.id.promote_view)
             val removeModeratorView = dialog.findViewById<TextView>(R.id.remove_moderator_view)
             val removeView = dialog.findViewById<TextView>(R.id.remove_view)
+
+            // Dark mode
+            val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+            when (mode) {
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    val background = dialog.findViewById<ConstraintLayout>(R.id.dialog_bottom_sheet)
+                    background?.background = context.resources.getDrawable(R.drawable.dialog_round_top_dark)
+                }
+            }
 
             // Do not allow user to promote or remove themself
             if(user.userId.equals(prefs?.externalUserId, ignoreCase = true)) {

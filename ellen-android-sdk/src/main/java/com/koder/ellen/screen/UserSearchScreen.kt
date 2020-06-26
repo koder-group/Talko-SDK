@@ -159,10 +159,13 @@ open class UserSearchScreen : Fragment() {
         rootView.setBackgroundColor(Color.parseColor(Messenger.screenBackgroundColor))
         val contentFrame = rootView.findViewById<LinearLayout>(R.id.content_frame)
 
+        // Dark mode
         var color = "#FFFFFF"
         val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
         when (mode) {
-            Configuration.UI_MODE_NIGHT_YES -> { color = activity?.resources!!.getString(R.color.dmBackground) }
+            Configuration.UI_MODE_NIGHT_YES -> {
+                color = activity?.resources!!.getString(R.color.dmBackground)
+            }
         }
 
         val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), color)

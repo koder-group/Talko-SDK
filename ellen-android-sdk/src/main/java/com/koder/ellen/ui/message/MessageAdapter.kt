@@ -4,50 +4,36 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
-import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.text.*
 import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.transition.Slide
-import android.transition.TransitionManager
 import android.util.Log
-import android.view.*
-import android.widget.*
-import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.PopupMenu
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
-import androidx.core.widget.PopupWindowCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.internal.VisibilityAwareImageButton
 import com.koder.ellen.Messenger
-import com.koder.ellen.Messenger.Companion.db
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
 import com.koder.ellen.model.Message
 import com.koder.ellen.screen.MessageScreen
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
-import kotlinx.android.synthetic.main.dialog_message_actions.view.*
-import java.io.InputStream
 import java.util.*
 
 
@@ -485,40 +471,6 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         return false
     }
 
-//    private fun addPopup(view: View, message: Message) {
-//        // Popup menu
-//        val popup = PopupMenu(context, view)
-//        //inflating menu from xml resource
-//        popup.inflate(R.menu.popup_reactions)
-//        //adding click listener
-//        popup.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
-//            override fun onMenuItemClick(item: MenuItem): Boolean {
-//                return when (item.getItemId()) {
-//                    R.id.reaction_like -> { //handle menu1 click
-//                        Log.d(TAG, "Liked messageId ${message.messageId}")
-//                        Log.d(TAG, "Liked conversationId ${message.conversationId}")
-//                        (context as MessageActivity).setReaction(
-//                            message,
-//                            context.getResources().getString(R.string.reaction_code_like)
-//                        )
-//                        true
-//                    }
-//                    R.id.reaction_dislike -> { //handle menu2 click
-//                        Log.d(TAG, "Disliked ${message.messageId}")
-//                        (context as MessageActivity).setReaction(
-//                            message,
-//                            context.getResources().getString(R.string.reaction_code_dislike)
-//                        )
-//                        true
-//                    }
-//                    else -> false
-//                }
-//            }
-//        })
-//        //displaying the popup
-//        popup.show()
-//    }
-
     private fun showBottomSheetDialog(view: View, message: Message) {
         val dialog = BottomSheetDialog(view.context)
 //                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -531,6 +483,37 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         val report = dialog.findViewById<TextView>(R.id.report)
         val delete = dialog.findViewById<TextView>(R.id.delete)
         val errorMessage = dialog.findViewById<TextView>(R.id.error_message)
+
+        // Dark mode
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                val background = dialog.findViewById<ConstraintLayout>(R.id.dialog_bottom_sheet)
+                background?.background = context.resources.getDrawable(R.drawable.dialog_round_top_dark)
+
+                copyText?.setTextColor(context?.resources.getColor(R.color.dmTextHigh))
+                var drawables = copyText?.compoundDrawables
+                drawables?.let {
+                    for (drawable in it) {
+                        drawable?.let {
+                            DrawableCompat.setTint(it, context?.resources.getColor(R.color.dmTextMed))
+                        }
+                    }
+                }
+
+                saveMedia?.setTextColor(context?.resources.getColor(R.color.dmTextHigh))
+                drawables = saveMedia?.compoundDrawables
+                drawables?.let {
+                    for (drawable in it) {
+                        drawable?.let {
+                            DrawableCompat.setTint(it, context?.resources.getColor(R.color.dmTextMed))
+                        }
+                    }
+                }
+
+                errorMessage?.setTextColor(context?.resources.getColor(R.color.dmTextHigh))
+            }
+        }
 
         // Reaction, Like
         likeBtn!!.setOnClickListener {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:paddingBottom="15dp"
     android:id="@+id/dialog_bottom_sheet"
-    android:background="@drawable/dialog_round_top"
+    android:background="@drawable/bg_round_top_dark"
     >
     <TextView
         android:id="@+id/name_view"

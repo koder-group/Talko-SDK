@@ -130,6 +130,13 @@ class ConversationScreen : Fragment() {
             conversationViewModel.loadConversations(true)
 //            swipeRefreshLayout.setRefreshing(false)
         }
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                swipeRefreshLayout.setColorSchemeColors(activity?.resources!!.getColor(R.color.dmTextHigh))
+                swipeRefreshLayout.setProgressBackgroundColorSchemeColor(activity?.resources!!.getColor(R.color.darkGray))
+            }
+        }
 
         listFrame = rootView.findViewById(R.id.list_frame) as FrameLayout
         val appBar = rootView.findViewById(R.id.appbar_layout) as AppBarLayout

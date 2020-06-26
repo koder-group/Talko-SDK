@@ -30,4 +30,5 @@
     <color name="dmBackground">#121212</color>
     <color name="dmTextHigh">#DEFFFFFF</color>
     <color name="dmTextMed">#99FFFFFF</color>
+    <color name="dmTextDisabled">#38FFFFFF</color>
 </resources>

@@ -10,12 +10,10 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +38,7 @@ import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.main.MainViewModel
 import com.koder.ellen.ui.message.MessageInfoAdapter
 import com.koder.ellen.ui.message.MessageViewModel
+import kotlinx.android.synthetic.main.fragment_message_info.*
 
 
 class MessageInfoScreen : Fragment(), View.OnClickListener {
@@ -128,6 +127,32 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
         setBackgroundColor(Messenger.screenBackgroundColor)
         setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
+
+        // Dark mode
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                val titleText = rootView.findViewById<TextView>(R.id.title_text)
+                val titleLayout = rootView.findViewById<ConstraintLayout>(R.id.title_layout)
+
+                val descriptionText = rootView.findViewById<TextView>(R.id.description_text)
+                val descriptionLayout = rootView.findViewById<ConstraintLayout>(R.id.description_layout)
+
+                val addParticipantText = rootView.findViewById<TextView>(R.id.add_participant)
+                val addParticipantIcon = rootView.findViewById<ImageView>(R.id.add_icon)
+                val addParticipantLayout = rootView.findViewById<ConstraintLayout>(R.id.add_participant_layout)
+
+                titleText.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh))
+                titleLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_bottom_border_dark)
+
+                descriptionText.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh))
+                descriptionLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_bottom_border_dark)
+
+                addParticipantText.setTextColor(context?.resources!!.getColor(R.color.dmTextHigh))
+                DrawableCompat.setTint(addParticipantIcon.drawable, activity?.resources!!.getColor(R.color.dmTextHigh))
+                addParticipantLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_bottom_border_dark)
+            }
+        }
 
         return rootView
     }
@@ -534,6 +559,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
 
     @SuppressLint("ResourceType")
     fun setListCornerRadius(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) {
+        // Dark mode
         var color = "#FFFFFF"
         val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
         when (mode) {
