@@ -36,6 +36,7 @@ import com.koder.ellen.model.User
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.floor
 
 
 internal class ConversationAdapter(private val context: Context, private val dataset: MutableList<Conversation>, private val fragment: Fragment? = null) :
@@ -143,7 +144,8 @@ internal class ConversationAdapter(private val context: Context, private val dat
 //            holder.layout.findViewById<ImageView>(R.id.conversation_arrow).visibility =
 //                View.INVISIBLE
         } else {
-            date = getTodayYestDateFromMilli(dataset.get(position).messages.first().timeCreated!!.toLong())
+//            date = getTodayYestDateFromMilli(dataset.get(position).messages.first().timeCreated!!.toLong())
+            date = getTimeAgo(dataset.get(position).messages.first().timeCreated!!.toLong())
         }
         holder.layout.findViewById<TextView>(R.id.conversation_date).text = date
 
@@ -155,27 +157,30 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
             subtitle = prefixSubtitle(dataset.get(position))
 
-            // Set new message indicator
+            // New message indicator
             // If latest message is newer than last read
-            val latestMessageCreated = dataset.get(position).messages.first().timeCreated.toLong()
-//            Log.d(TAG, "latestMessageCreated ${latestMessageCreated}")
+            val latestMessage = dataset.get(position).messages.first()
 
-            val lastRead = prefs?.getConversationLastRead(dataset.get(position).conversationId) ?: 0
+            if(!latestMessage.sender.userId.equals(prefs?.userId)) {
+                // Latest message is not current user's
 
-            if(latestMessageCreated > lastRead) {
-                // Show new message indicator
-                if(!Messenger.conversationNewMessageCheckmark) {
-                    // Show dot and border
-                    newMessageDot.visibility = View.VISIBLE
-                    cardView.strokeWidth = 2.px
-                } else {
-                    // Show check mark
-                    newMessageCheck.visibility = View.VISIBLE
+                val latestMessageCreated = dataset.get(position).messages.first().timeCreated.toLong()
+    //            Log.d(TAG, "latestMessageCreated ${latestMessageCreated}")
+
+                val lastRead = prefs?.getConversationLastRead(dataset.get(position).conversationId) ?: 0
+
+                if(latestMessageCreated > lastRead) {
+                    // Show new message indicator
+//                    if(!Messenger.conversationNewMessageCheckmark) {
+                        // Show dot and border
+                        newMessageDot.visibility = View.VISIBLE
+                        cardView.strokeWidth = 2.px
+//                    } else {
+//                        // Show check mark
+//                        newMessageCheck.visibility = View.VISIBLE
+//                    }
                 }
             }
-//        val notificationDot = holder.layout.findViewById<ImageView>(R.id.notification_dot)
-//
-//        notificationDot.visibility = View.VISIBLE
         } else {
             subtitle = Messenger.conversationEmptyText
         }
@@ -304,6 +309,27 @@ internal class ConversationAdapter(private val context: Context, private val dat
         } else {
             DateFormat.format(strDateFormat, messageTime).toString()
         }
+    }
+
+    fun getTimeAgo(msgTimeMillis: Long): String {
+        val timeMillis = System.currentTimeMillis()
+        val diffMillis = timeMillis - msgTimeMillis
+        val diffSecs = diffMillis/1000
+        return if (diffSecs < 60) {
+            "${diffSecs}s"
+        } else if (diffSecs < 3600) {
+            "${getFloor(diffSecs/60)}m"
+        } else if (diffSecs < 86400) {
+            "${getFloor(diffSecs/3600)}h"
+        } else if (diffSecs < 604800) {
+            "${getFloor(diffSecs/86400)}d"
+        } else {
+            "${getFloor(diffSecs/604800)}w"
+        }
+    }
+
+    private fun getFloor(value: Long): Int {
+        return floor((value).toDouble()).toInt()
     }
 
     // Return participants in format Participant1, Participant2, ...
