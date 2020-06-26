@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.createScaledBitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.format.DateFormat
 import android.util.Log
@@ -128,6 +129,11 @@ internal class ConversationAdapter(private val context: Context, private val dat
         newMessageDot.visibility = View.GONE
         newMessageCheck.visibility = View.GONE
 
+        val dateView = holder.layout.findViewById<TextView>(R.id.conversation_date)
+        dateView.setTextColor(Color.parseColor("#000000"))
+        dateView.setAlpha(0.54f)
+        dateView.setTypeface(null, Typeface.NORMAL)
+
         // Set title
         var title = ""
         if (dataset.get(position).title.isNullOrBlank()) {
@@ -145,9 +151,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
 //                View.INVISIBLE
         } else {
 //            date = getTodayYestDateFromMilli(dataset.get(position).messages.first().timeCreated!!.toLong())
-            date = getTimeAgo(dataset.get(position).messages.first().timeCreated!!.toLong())
+//            date = getTimeAgo(dataset.get(position).messages.first().timeCreated!!.toLong())
+            date = getTimeAgo(dataset.get(position).timeCreated!!.toLong())
         }
-        holder.layout.findViewById<TextView>(R.id.conversation_date).text = date
+        dateView.text = date
 
         // Set subtitle
         var subtitle = ""
@@ -161,26 +168,31 @@ internal class ConversationAdapter(private val context: Context, private val dat
             // If latest message is newer than last read
             val latestMessage = dataset.get(position).messages.first()
 
-            if(!latestMessage.sender.userId.equals(prefs?.userId)) {
-                // Latest message is not current user's
 
-                val latestMessageCreated = dataset.get(position).messages.first().timeCreated.toLong()
-    //            Log.d(TAG, "latestMessageCreated ${latestMessageCreated}")
+            val latestMessageCreated = dataset.get(position).messages.first().timeCreated.toLong()
+//            Log.d(TAG, "latestMessageCreated ${latestMessageCreated}")
 
-                val lastRead = prefs?.getConversationLastRead(dataset.get(position).conversationId) ?: 0
+            val lastRead = prefs?.getConversationLastRead(dataset.get(position).conversationId) ?: 0
 
-                if(latestMessageCreated > lastRead) {
-                    // Show new message indicator
+            if(latestMessageCreated > lastRead) {
+                // Show new message indicator
 //                    if(!Messenger.conversationNewMessageCheckmark) {
-                        // Show dot and border
-                        newMessageDot.visibility = View.VISIBLE
-                        cardView.strokeWidth = 2.px
-//                    } else {
-//                        // Show check mark
-//                        newMessageCheck.visibility = View.VISIBLE
-//                    }
+
+
+                if(!latestMessage.sender.userId.equals(prefs?.userId, ignoreCase = true)) {
+                    // Latest message is not current user's
+                    // Show dot and border
+                    newMessageDot.visibility = View.VISIBLE
+                    cardView.strokeWidth = 2.px
+                    dateView.setTextColor(ContextCompat.getColor(context, R.color.blue))
+                    dateView.setTypeface(null, Typeface.BOLD)
                 }
+
+            } else {
+                // Show check mark
+                newMessageCheck.visibility = View.VISIBLE
             }
+
         } else {
             subtitle = Messenger.conversationEmptyText
         }
@@ -315,7 +327,9 @@ internal class ConversationAdapter(private val context: Context, private val dat
         val timeMillis = System.currentTimeMillis()
         val diffMillis = timeMillis - msgTimeMillis
         val diffSecs = diffMillis/1000
-        return if (diffSecs < 60) {
+        return if (diffSecs.toInt() == 0) {
+            "1s"
+        } else if (diffSecs < 60) {
             "${diffSecs}s"
         } else if (diffSecs < 3600) {
             "${getFloor(diffSecs/60)}m"
