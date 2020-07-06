@@ -159,42 +159,34 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
         // Set date
         var date = ""
-        if (dataset.get(position).messages.isNullOrEmpty()) {
-//            holder.layout.findViewById<ImageView>(R.id.conversation_arrow).visibility =
-//                View.INVISIBLE
-        } else {
-//            date = getTodayYestDateFromMilli(dataset.get(position).messages.first().timeCreated!!.toLong())
-//            date = getTimeAgo(dataset.get(position).messages.first().timeCreated!!.toLong())
-            date = getTimeAgo(dataset.get(position).timeCreated!!.toLong())
-        }
         dateView.text = date
 
         // Set subtitle
         var subtitle = ""
-//        var latestMessageCreated: Long = 0
         if (!dataset.get(position).messages.isEmpty()) {
-//            subtitle = dataset.get(position).messages.first().body
-
             subtitle = prefixSubtitle(dataset.get(position))
 
             // New message indicator
             // If latest message is newer than last read
             val latestMessage = dataset.get(position).messages.first()
-
-
             val latestMessageCreated = dataset.get(position).messages.first().timeCreated.toLong()
 //            Log.d(TAG, "latestMessageCreated ${latestMessageCreated}")
+//            Log.d(TAG, "System.currentTimeMillis() ${System.currentTimeMillis()}")
 
+            // Set time ago date
+            var date = getTimeAgo(latestMessageCreated)
+            dateView.text = date
+
+            // Get last-read timestamp for this conversation
             val lastRead = prefs?.getConversationLastRead(dataset.get(position).conversationId) ?: 0
 
             if(latestMessageCreated > lastRead) {
-                // Show new message indicator
-//                    if(!Messenger.conversationNewMessageCheckmark) {
-
+                // There are unread messages
 
                 if(!latestMessage.sender.userId.equals(prefs?.userId, ignoreCase = true)) {
                     // Latest message is not current user's
-                    // Show dot and border
+
+                    // Show new message indicator
                     newMessageDot.visibility = View.VISIBLE
                     cardView.strokeWidth = 2.px
                     dateView.setTextColor(ContextCompat.getColor(context, R.color.material_blue_500))
