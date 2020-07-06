@@ -114,31 +114,25 @@ class Messenger {
                     // Initialize PubNub client
                     async(IO) { initPubNub() }.await()
 
+                    val clientConfigResult = clientConfig.await()
 
-//                    if(prefs?.clientConfiguration == null || prefs?.clientConfiguration.toString().isBlank()) {   // TODO
-                        val clientConfigResult = clientConfig.await()
+                    if(clientConfigResult is Result.Success) {
 
-                        if(clientConfigResult is Result.Success) {
+                        // Populate initial conversations with messages
+                        val client = Client()
+                        client.getConversationMessages(object: CompletionCallback() {
+                            override fun onCompletion(result: Result<Any>) {
+                                if(result is Result.Success) {
+                                    conversations = result.data as MutableList<Conversation>
 
-                            // Populate initial conversations with messages
-                            val client = Client()
-                            client.getConversationMessages(object: CompletionCallback() {
-                                override fun onCompletion(result: Result<Any>) {
-                                    if(result is Result.Success) {
-                                        conversations = result.data as MutableList<Conversation>
-
-                                        completion?.onCompletion(Result.Success(true))
-                                    }
+                                    completion?.onCompletion(Result.Success(true))
                                 }
-                            })
-                        } else {
-                            completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
-                        }
+                            }
+                        })
+                    } else {
+                        completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
+                    }
 
-                    // TODO
-//                    } else {
-//                        completion?.onCompletion(Result.Success(true))
-//                    }
                 }
         }
 
@@ -210,6 +204,8 @@ class Messenger {
 
         // Initialize PubNub client
         fun initPubNub() {
+            Log.d(TAG, "Initialize PubNub")
+
             val pnConfiguration = PNConfiguration()
             pnConfiguration.subscribeKey = prefs?.clientConfiguration?.subscribeKey
             pnConfiguration.publishKey = prefs?.clientConfiguration?.publishKey
@@ -393,6 +389,12 @@ class Messenger {
                     pubNub?.subscribe()?.channels(mutableListOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))?.execute()
                 }
             }
+
+            if (!this::pubNub.isInitialized) {
+                initPubNub()
+            }
+
+            Log.d(TAG, "Add PubNub listener")
             pubNub.addListener(subscribeCallback)
         }
 
