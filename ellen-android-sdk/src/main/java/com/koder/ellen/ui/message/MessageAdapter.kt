@@ -301,7 +301,7 @@ internal class MessageAdapter(private val context: Context, private val dataset:
 
                     // Get url from cache
                     val cachedUrl = Messenger.userProfileCache.get(message.sender.userId.toLowerCase())
-                    Log.d(TAG, "cachedUrl ${cachedUrl}")
+//                    Log.d(TAG, "cachedUrl ${cachedUrl}")
                     Picasso.get().load(cachedUrl?.photoUrl).into(icon)    // TODO Cached icon
 
                     if(cachedUrl == null) {
