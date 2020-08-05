@@ -3,10 +3,12 @@ package com.koder.ellen.core
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.koder.ellen.model.ClientConfiguration
 import com.koder.ellen.model.EllenUser
 import org.json.JSONObject
+
 
 internal class Prefs (context: Context) {
     companion object {
@@ -23,7 +25,7 @@ internal class Prefs (context: Context) {
         const val LAST_READ_MAP = "LastReadMap"
     }
 
-    val gson = Gson()
+    val gson = GsonBuilder().disableHtmlEscaping().create()
 
     init {
         prefs = context.getSharedPreferences(PREFS_FILENAME, 0)
