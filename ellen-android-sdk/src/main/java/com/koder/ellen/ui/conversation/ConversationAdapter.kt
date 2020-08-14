@@ -343,8 +343,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
             "${getFloor(diffSecs/3600)}h"
         } else if (diffSecs < 604800) {
             "${getFloor(diffSecs/86400)}d"
-        } else {
+        } else if (diffSecs < (604800 * 4)) {
             "${getFloor(diffSecs/604800)}w"
+        } else {
+            "${getFloor(diffSecs/(604800 * 4))}M"
         }
     }
 
