@@ -210,10 +210,10 @@ class Messenger {
             pnConfiguration.subscribeKey = prefs?.clientConfiguration?.subscribeKey
             pnConfiguration.publishKey = prefs?.clientConfiguration?.publishKey
             pnConfiguration.authKey = prefs?.clientConfiguration?.secretKey
-            pnConfiguration.uuid = prefs?.currentUser?.userId
+            pnConfiguration.uuid = prefs?.userId
             pubNub = PubNub(pnConfiguration)
 
-            val userChannel = "${prefs?.tenantId}-${prefs?.currentUser?.userId}".toUpperCase()
+            val userChannel = "${prefs?.tenantId}-${prefs?.userId}".toUpperCase()
             pubNub.run {
                 subscribe()
                     .channels(mutableListOf(userChannel)) // subscribe to channels
@@ -222,6 +222,7 @@ class Messenger {
         }
 
         @JvmStatic fun addEventHandler(eventCallback: EventCallback) {
+//            var retries = 0;
             var subscribeCallback: SubscribeCallback = object : SubscribeCallback() {
                 var timer: CountDownTimer? = null
 
@@ -239,7 +240,12 @@ class Messenger {
                                     override fun onTick(millisUntilFinished: Long) {}
                                     override fun onFinish() {
                                         Log.d(TAG, "Retry subscribe ${channel}")
-                                        pubNub?.subscribe()?.channels(mutableListOf(channel))?.execute()
+//                                        pubNub?.subscribe()?.channels(mutableListOf(channel))?.execute()
+//                                        if(retries < 10) {
+                                            pubNub?.subscribe()?.channels(mutableListOf(channel))
+                                                ?.execute()
+//                                            retries++
+//                                        }
                                     }
                                 }.start()
                             }
@@ -785,7 +791,8 @@ class Messenger {
             participants?.let {
                 for (participant in participants) {
                     if(participant.user.displayName != null) {
-                        if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
+//                        if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
+                        if (participant.user.userId == prefs?.userId) continue
                         if (title.isEmpty()) {
                             title += participant.user.displayName
                             continue
