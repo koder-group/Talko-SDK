@@ -94,22 +94,20 @@ class Messenger {
                 val decodedObj = JSONObject(decodedStr)
 
                 // Create current user object
-//                val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
+                val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
 
                 // Init Prefs
                 prefs = Prefs(applicationContext)
 //                // Set user token
                 prefs?.userToken = userToken
 //                // Set tenant Id
-//                prefs?.tenantId = decodedObj.get("tenant_id").toString()
+                prefs?.tenantId = decodedObj.get("tenant_id").toString()
                 // Set user Id
-//                prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
+                prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
                 // Set current user
-//                prefs?.currentUser = currentUser
+                prefs?.currentUser = currentUser
 
                 GlobalScope.launch {
-                    async(IO) { initCurrentUser() }.await()
-
                     // Get client configuration
                     val clientConfig = async(IO) { initClientConfiguration() }
 
@@ -207,12 +205,9 @@ class Messenger {
         // Initialize PubNub client
         fun initPubNub() {
             Log.d(TAG, "Initialize PubNub")
-            Log.d(TAG, "authKey " + prefs?.clientConfiguration?.secretKey);
-            Log.d(TAG, "subscribeKey " + prefs?.clientConfiguration?.subscribeKey);
 
             val pnConfiguration = PNConfiguration()
             pnConfiguration.subscribeKey = prefs?.clientConfiguration?.subscribeKey
-//            pnConfiguration.subscribeKey = "sub-c-70b7eff8-8032-11ea-8dff-bafe0457d467";
             pnConfiguration.publishKey = prefs?.clientConfiguration?.publishKey
             pnConfiguration.authKey = prefs?.clientConfiguration?.secretKey
             pnConfiguration.uuid = prefs?.currentUser?.userId
@@ -227,7 +222,6 @@ class Messenger {
         }
 
         @JvmStatic fun addEventHandler(eventCallback: EventCallback) {
-            var retries = 0;
             var subscribeCallback: SubscribeCallback = object : SubscribeCallback() {
                 var timer: CountDownTimer? = null
 
@@ -240,17 +234,12 @@ class Messenger {
                         // Retry subscribe
                         pnStatus.affectedChannels?.let {
                             for(channel in pnStatus.affectedChannels!!) {
-
                                 timer?.cancel()
                                 timer = object : CountDownTimer(1000, 1500) {
                                     override fun onTick(millisUntilFinished: Long) {}
                                     override fun onFinish() {
                                         Log.d(TAG, "Retry subscribe ${channel}")
-//                                        if(retries < 10) {
-                                            pubNub?.subscribe()?.channels(mutableListOf(channel))
-                                                ?.execute()
-//                                            retries++
-//                                        }
+                                        pubNub?.subscribe()?.channels(mutableListOf(channel))?.execute()
                                     }
                                 }.start()
                             }
@@ -379,7 +368,6 @@ class Messenger {
                         }
                         EventName.controlEvent.value -> {
                             // Control event
-                            Log.d(TAG, "controlEvent ${pnMessageResult.message.asJsonObject.get("eventData").asJsonObject}")
                             val eventName = pnMessageResult.message.asJsonObject.get("eventData").asJsonObject.get("eventName").asString
                             val initiatingUser = pnMessageResult.message.asJsonObject.get("eventData").asJsonObject.get("context").asJsonObject.get("initiatingUser").asString
                             when(eventName) {
@@ -695,10 +683,6 @@ class Messenger {
                     if (response.isSuccessful) {
                         val body: EllenUser = response.body()!!
                         prefs?.currentUser = body
-                        // Set tenant Id
-                        prefs?.tenantId = prefs?.currentUser?.tenantId
-                        // Set user Id
-                        prefs?.userId = prefs?.currentUser?.userId
                         Log.d(TAG, "Current user initialized")
                         return Result.Success(body)
                     }
