@@ -206,14 +206,14 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
 
         // Set icon
-        var icon = getFirstParticipantImageUrl(dataset.get(position).participants)
+        var icon = getFirstParticipantImageUrl2(dataset.get(position).participants)
         if (!dataset.get(position).messages.isEmpty()) {
             // Set icon to Message's sender
             icon = dataset.get(position).messages.first().sender.profileImageUrl
         }
         // Set icon to first participant's if it's the same as current user's
         if (icon.equals(prefs?.currentUser?.profile?.profileImageUrl, ignoreCase = true)) icon =
-            getFirstParticipantImageUrl(dataset.get(position).participants)
+            getFirstParticipantImageUrl2(dataset.get(position).participants)
         // Load profile image
         val iconView = holder.layout.findViewById<ImageView>(R.id.conversation_icon)
 
@@ -377,19 +377,31 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
     private fun getFirstParticipantImageUrl(participants: MutableList<Participant>): String {
         for (participant in participants) {
-            if(participant.user.displayName != null) {
-                if (!participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) {
-
-                    // Get cached
-                    val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
+            if (!participant.user.userId.equals(prefs?.currentUser?.userId, ignoreCase = true)) {
+                // Get cached
+                val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
 //                    Log.d(TAG, "cachedProfile ${cachedProfile?.photoUrl}")
-                    if(cachedProfile != null) {
-                        return cachedProfile.photoUrl
-                    }
-
-                    return participant.user.profileImageUrl
+                if(cachedProfile != null) {
+                    return cachedProfile.photoUrl
                 }
+
+                return participant.user.profileImageUrl
             }
+        }
+        return prefs?.currentUser?.profile?.profileImageUrl!! // Shouldn't reach this point
+    }
+
+    // Angad
+    private fun getFirstParticipantImageUrl2(participants: MutableList<Participant>): String {
+        val otherParticipant = participants.firstOrNull {
+            it.user.displayName != prefs?.currentUser?.profile?.displayName
+        }
+        otherParticipant?.let {
+            val cachedProfile = Messenger.userProfileCache[it.user.userId.toLowerCase()]
+            if(cachedProfile != null) {
+                return cachedProfile.photoUrl
+            }
+            return it.user.profileImageUrl
         }
         return prefs?.currentUser?.profile?.profileImageUrl!! // Shouldn't reach this point
     }
