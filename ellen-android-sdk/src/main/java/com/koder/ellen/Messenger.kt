@@ -246,11 +246,11 @@ class Messenger {
                                     override fun onTick(millisUntilFinished: Long) {}
                                     override fun onFinish() {
                                         Log.d(TAG, "Retry subscribe ${channel}")
-                                        if(retries < 10) {
+//                                        if(retries < 10) {
                                             pubNub?.subscribe()?.channels(mutableListOf(channel))
                                                 ?.execute()
-                                            retries++
-                                        }
+//                                            retries++
+//                                        }
                                     }
                                 }.start()
                             }
