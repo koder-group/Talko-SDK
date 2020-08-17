@@ -364,7 +364,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
         for (participant in participants) {
             if(participant.user.displayName != null) {
-                if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
+                if (participant.user.userId == prefs?.userId) continue
                 if (title.isEmpty()) {
                     title += participant.user.displayName
                     continue
@@ -377,7 +377,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
     private fun getFirstParticipantImageUrl(participants: MutableList<Participant>): String {
         for (participant in participants) {
-            if (participant.user.userId != prefs?.currentUser?.userId) {
+            if (participant.user.userId != prefs?.userId) {
                 // Get cached
                 val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
                 if(cachedProfile != null) {
