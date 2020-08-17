@@ -10,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.text.Html
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
@@ -206,7 +207,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
 
         // Set icon
-        var icon = getFirstParticipantImageUrl(dataset.get(position).participants)
+        var icon = Html.fromHtml(getFirstParticipantImageUrl(dataset.get(position).participants)).toString()
 //        if (!dataset.get(position).messages.isEmpty()) {
 //            // Set icon to Message's sender
 //            icon = dataset.get(position).messages.first().sender.profileImageUrl
