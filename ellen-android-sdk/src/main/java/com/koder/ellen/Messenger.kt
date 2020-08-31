@@ -374,8 +374,8 @@ class Messenger {
                         }
                         EventName.controlEvent.value -> {
                             // Control event
-                            val eventName = pnMessageResult.message.asJsonObject.get("eventData").asJsonObject.get("eventName").asString
-                            val initiatingUser = pnMessageResult.message.asJsonObject.get("eventData").asJsonObject.get("context").asJsonObject.get("initiatingUser").asString
+                            val eventName = pnMessageResult.message.asJsonObject.get("eventData").asJsonObject.get("result").asJsonObject.get("eventName")?.asString
+                            val initiatingUser = pnMessageResult.message.asJsonObject.get("eventData").asJsonObject.get("result").asJsonObject.get("context").asJsonObject.get("initiatingUser").asString
                             when(eventName) {
                                 EventName.typingStart.value -> {
                                     eventCallback.onUserTypingStart(initiatingUser)
