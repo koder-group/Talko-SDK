@@ -741,12 +741,7 @@ class MessageScreen : Fragment(),
                         val sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!)
 
                         val setOfMentions = getSetOfMentions(text)
-//                    Log.d(TAG, "Mentions ${setOfMentions}")
                         var mentions = mutableListOf<Mention>()
-//                        setOfMentions.forEach { user ->
-//                            val mention = Mention(user = user, mentionTextPattern = "@${user.displayName}")
-//                            mentions.add(mention)
-//                        }
 
                         for (user in setOfMentions) {
                             val mention = Mention(user = user, mentionTextPattern = "@${user.displayName}")
@@ -764,9 +759,6 @@ class MessageScreen : Fragment(),
                         // Add to Messages, self message
                         addMessageToMessages(message)
                         Log.d(TAG, "message_send_btn ${message}")  // messageId=null
-
-                        // POST to API
-//                    messageViewModel.send(convoId!!, text)
 
                         if (allowedToSend()) messageViewModel.send(message)
                     }
