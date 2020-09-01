@@ -708,7 +708,7 @@ class MessageScreen : Fragment(),
     override fun onClick(v: View) {
         when (v.id) {
             R.id.message_send_btn -> {
-//                if((conversation != null) || conversation.conversationId.isNotBlank()) {
+                    if(!::conversation.isInitialized) return
 
                     if(mediaList.size > 0) {
                         // Send media messages
@@ -733,8 +733,6 @@ class MessageScreen : Fragment(),
                     }
 
                     if(messageEditText.text.isNotBlank()) {
-//                        val convoId = if (conversation.conversationId.isNotBlank()) conversation.conversationId else conversation!!.conversationId
-
                         val text: String = messageEditText.text.toString()
 
                         messageEditText.setText("")
