@@ -76,6 +76,19 @@ class MainActivity : AppCompatActivity() {
 
                 bundle.putBoolean(MessageScreen.ENABLE_MESSAGING, true)
 
+                // Setting ItemClickListener will override the default functionality (currently sliding window)
+                messageScreen.setItemClickListener(object: MessageScreen.ItemClickListener {
+                    override fun onAvatarClick(view: View, user: User) {
+                        Log.d(TAG, "onAvatarClick")
+                        Log.d(TAG, "${user}")
+                    }
+
+                    override fun onAvatarLongClick(view: View, user: User) {
+                        Log.d(TAG, "onAvatarLongClick")
+                        Log.d(TAG, "${user}")
+                    }
+                })
+
                 messageScreen.setArguments(bundle)
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
             }

@@ -78,7 +78,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MessageScreen : Fragment(),
+open class MessageScreen : Fragment(),
     View.OnClickListener {
 
     companion object {
@@ -97,6 +97,16 @@ class MessageScreen : Fragment(),
         const val ENABLE_MESSAGING = "ENABLE_MESSAGING"
     }
 
+    // Interface for list adapter clicks
+    interface ItemClickListener {
+        fun onAvatarClick(view: View, user: User)
+        fun onAvatarLongClick(view: View, user: User)
+    }
+
+    // Setting ItemClickListener will override the default functionality (currently sliding window)
+    open fun setItemClickListener(listener: ItemClickListener) {
+        itemClickListener = listener
+    }
 
     private var conversationId: String? = null
     private var backgroundColor: String? = null
@@ -173,6 +183,7 @@ class MessageScreen : Fragment(),
     lateinit var slidingLayout: SlidingUpPanelLayout
     lateinit var slidingProfileImage: ImageView
     lateinit var slidingDisplayName: TextView
+    private var itemClickListener: ItemClickListener? = null
 
     // User typing
     private val userTypingMap = hashMapOf<String, String>() // <User ID, Message.Metadata.localReferenceId GUID>
@@ -407,7 +418,8 @@ class MessageScreen : Fragment(),
         super.onActivityCreated(savedInstanceState)
         activity?.run {
             val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-            viewAdapter = MessageAdapter(this, messages, this@MessageScreen)
+
+            viewAdapter = MessageAdapter(this, messages, this@MessageScreen, itemClickListener)
 
             recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {
                 // use this setting to improve performance if you know that changes

@@ -20,7 +20,6 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
@@ -32,12 +31,13 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.R
 import com.koder.ellen.model.Message
+import com.koder.ellen.model.User
 import com.koder.ellen.screen.MessageScreen
 import com.squareup.picasso.Picasso
 import java.util.*
 
 
-internal class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: Fragment?) :
+internal class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: Fragment?, private val itemClickListener: MessageScreen.ItemClickListener? = null) :
     RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
     val TAG = "MessageAdapter"
@@ -319,12 +319,22 @@ internal class MessageAdapter(private val context: Context, private val dataset:
 
                 // Sender's user profile link on icon
                 icon.setOnClickListener {
-                    if(fragment is MessageFragment) {
-                        fragment?.showProfile(message.sender)
+                    if(itemClickListener == null) {
+                        if (fragment is MessageFragment) {
+                            fragment?.showProfile(message.sender)
+                        }
+                        if (fragment is MessageScreen) {
+                            fragment?.showProfile(message.sender)
+                        }
+                    } else {
+                        itemClickListener.onAvatarClick(it, message.sender)
                     }
-                    if(fragment is MessageScreen) {
-                        fragment?.showProfile(message.sender)
-                    }
+                }
+
+
+                icon.setOnLongClickListener {
+                    itemClickListener?.onAvatarLongClick(it, message.sender)
+                    return@setOnLongClickListener true
                 }
             } else {
                 senderIconLayout.visibility = View.INVISIBLE
