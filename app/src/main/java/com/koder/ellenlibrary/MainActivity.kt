@@ -185,6 +185,12 @@ class MainActivity : AppCompatActivity() {
 //                }
 //            }
 //        })
+
+        // Get Conversation by Conversation Id
+//        val conversation = Messenger.fetchConversation("CFDa9313-166e-41a8-a409-8871d1013531")
+//        Log.d(TAG, "Fetch conversation ${conversation}")
+//        val conversationNull = Messenger.fetchConversation("CFDa9313-166e-41a8-a409-8871d101353")
+//        Log.d(TAG, "Fetch conversation ${conversationNull}")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -744,6 +744,11 @@ class Messenger {
             return null
         }
 
+        // Get Conversation by Conversation Id
+        @JvmStatic fun fetchConversation(conversationId: String): Conversation? {
+            return conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+        }
+
         // Get all conversations
         @JvmStatic fun fetchConversations(): List<Conversation> {
 //            val list = mutableListOf<Conversation>()
