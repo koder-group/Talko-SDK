@@ -744,6 +744,30 @@ class Messenger {
             return null
         }
 
+        // Get the latest DM/conversation between two participants
+        @JvmStatic fun getLatestConversation(participantId1: String, participantId2: String): Conversation? {
+            val conversations = fetchConversations()
+            val dmList = mutableListOf<Conversation>()
+
+            // Get DMs
+            for(conversation in conversations) {
+                val p1found = conversation.participants.find { p -> p.user.userId.equals(participantId1, ignoreCase = true) }
+                val p2found = conversation.participants.find { p -> p.user.userId.equals(participantId2, ignoreCase = true) }
+
+                if(p1found != null && p2found != null && conversation.participants.size == 2) {
+                    // Conversation between 2 participants
+                    dmList.add(conversation)
+                }
+            }
+
+            // Sort by latest
+            val sortedList = dmList.sortedBy { dm -> dm.timeCreated?.toInt() }
+
+            if(sortedList.isEmpty()) return null
+
+            return sortedList.last()
+        }
+
         // Get Conversation by Conversation Id
         @JvmStatic fun fetchConversation(conversationId: String): Conversation? {
             return conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
