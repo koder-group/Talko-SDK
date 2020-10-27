@@ -771,7 +771,14 @@ open class MessageScreen : Fragment(),
                             mentions.add(mention)
                         }
 
-                        val message = Message(conversationId = conversation.conversationId, body = text, sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), mentions = mentions)
+                        val metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString())
+                        if(filterKey != null && filterValue != null) {
+                            when(filterKey) {
+                                "classId" -> metadata.classId = filterValue as String
+                            }
+                        }
+
+                        val message = Message(conversationId = conversation.conversationId, body = text, sender = sender, metadata = metadata, mentions = mentions)
                         Log.d(TAG, "ifAllowedToSend() ${allowedToSend()}")
 
                         // Validate if allowed to send client-side
@@ -875,14 +882,18 @@ open class MessageScreen : Fragment(),
     }
 
     private fun initMessages(messages: MutableList<Message>): MutableList<Message> {
+        val removeList = mutableListOf<Message>()
+
         // Filter messages based on key
         if(filterKey != null && filterValue != null) {
             for((index, element) in messages.withIndex()) {
                 when(filterKey) {
-                    "classId" -> if(element.metadata.classId != filterValue) messages.removeAt(index)
+                    "classId" -> if(element.metadata.classId != filterValue) removeList.add(element)
                 }
             }
         }
+
+        messages.removeAll(removeList)
 
         return messages
     }
@@ -1000,6 +1011,9 @@ open class MessageScreen : Fragment(),
         // Sort Messages in case message:published is not in order
         val sorted = sortByTimeCreated(messages)
 //        Log.d(TAG, "${sorted}")
+
+        initMessages(sorted)
+
         messages.clear()
         messages.addAll(sorted)
         val position = messages.indexOf(message)
@@ -1022,13 +1036,13 @@ open class MessageScreen : Fragment(),
         return df.parse(date).time
     }
 
-    fun sortByTimeCreated(messages: MutableList<Message>): List<Message> {
+    fun sortByTimeCreated(messages: MutableList<Message>): MutableList<Message> {
         val sorted = messages.sortedWith( object : Comparator<Message> {
             override fun compare(m1: Message, m2: Message): Int {
                 return (m1.timeCreated!!.toLong() - m2.timeCreated!!.toLong()).toInt()
             }
         })
-        return sorted
+        return sorted.toMutableList()
     }
 
     private fun updateSelfMessage(message: Message) {
@@ -1787,6 +1801,14 @@ open class MessageScreen : Fragment(),
             override fun onMessageReceived(message: Message) {
                 activity?.runOnUiThread {
                     if (conversationId.equals(message.conversationId, ignoreCase = true)) {
+
+                        // Filter
+                        if(filterKey != null && filterValue != null) {
+                            when(filterKey) {
+                                "classId" -> if(message.metadata.classId != filterKey) return@runOnUiThread
+                            }
+                        }
+
                         val found = messages.find { m -> m.messageId.equals(message.messageId, ignoreCase = true) }
                         if(found == null) addMessage(message)
 //                        Log.d(TAG, "${message.timeCreated.toString()}")

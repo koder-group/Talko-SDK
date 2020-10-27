@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                 val messageScreen = MessageScreen()
                 bundle.putString("CONVERSATION_ID", conversation.conversationId)
 
-//                val metadataFilterMap: HashMap<String, String> = hashMapOf("classId" to "asdf");
+//                val metadataFilterMap: HashMap<String, String> = hashMapOf("classId" to "6af24cf6-f84c-4b37-ae9e-66b2db6c8091");
 //                bundle.putSerializable("METADATA_FILTER", metadataFilterMap)
 
                 // Auto populate message
