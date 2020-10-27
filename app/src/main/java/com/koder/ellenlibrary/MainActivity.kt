@@ -67,6 +67,9 @@ class MainActivity : AppCompatActivity() {
                 val messageScreen = MessageScreen()
                 bundle.putString("CONVERSATION_ID", conversation.conversationId)
 
+//                val metadataFilterMap: HashMap<String, String> = hashMapOf("classId" to "asdf");
+//                bundle.putSerializable("METADATA_FILTER", metadataFilterMap)
+
                 // Auto populate message
 //                val message = "This is an auto-populated message"
 //                // Set populated message
@@ -191,6 +194,11 @@ class MainActivity : AppCompatActivity() {
 //        Log.d(TAG, "Fetch conversation ${conversation}")
 //        val conversationNull = Messenger.fetchConversation("CFDa9313-166e-41a8-a409-8871d101353")
 //        Log.d(TAG, "Fetch conversation ${conversationNull}")
+
+        // Get latest DM/conversation between 2 participants
+        // jff3, jff5
+//        val conversation = Messenger.getLatestConversation("ff2ebeea-d051-4d6c-a5fd-9becd09d7a5d", "b33d86fc-33c6-43f0-b4f5-65afc6508fad")
+//        Log.d(TAG, "Latest conversation $conversation")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

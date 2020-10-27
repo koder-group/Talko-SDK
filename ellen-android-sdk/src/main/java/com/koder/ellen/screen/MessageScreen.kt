@@ -3,7 +3,6 @@ package com.koder.ellen.screen
 import android.Manifest
 import android.animation.*
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.*
 import android.content.pm.PackageManager
@@ -19,16 +18,13 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.view.animation.DecelerateInterpolator
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.HtmlCompat
@@ -50,7 +46,6 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
-import com.koder.ellen.core.Utils
 import com.koder.ellen.data.ConversationDataSource
 import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.*
@@ -114,6 +109,9 @@ open class MessageScreen : Fragment(),
 
     // Bundle arguments
     private var enableMessaging: Boolean = true
+    private var metadataFilterMap: HashMap<String, String>? = null
+    private var filterKey: String? = null
+    private var filterValue: String? = null
 
     private lateinit var rootView: View
     private lateinit var containerView: RelativeLayout
@@ -221,6 +219,15 @@ open class MessageScreen : Fragment(),
 
         conversationId = arguments?.getString("CONVERSATION_ID")
         qrPublicId = arguments?.getString("ADD_USER_ID")
+        metadataFilterMap = arguments?.getSerializable("METADATA_FILTER") as HashMap<String, String>?
+
+        // Filter
+        if(metadataFilterMap != null) {
+            filterKey = metadataFilterMap!!.keys.first()
+            Log.d(TAG, "filterKey $filterKey")
+            if(filterKey != null) filterValue = metadataFilterMap!![filterKey!!]
+            Log.d(TAG, "filterValue $filterValue")
+        }
 
         // Enable messaging
         if(arguments?.containsKey(ENABLE_MESSAGING)!!)  enableMessaging = arguments?.getBoolean(ENABLE_MESSAGING)!!
@@ -419,6 +426,7 @@ open class MessageScreen : Fragment(),
         activity?.run {
             val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+            Log.d(TAG, "messages $messages");
             viewAdapter = MessageAdapter(this, messages, this@MessageScreen, itemClickListener)
 
             recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {
@@ -613,6 +621,9 @@ open class MessageScreen : Fragment(),
         messageViewModel.messages.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "Messages changed")
             Log.d(TAG, "${it}")
+
+            initMessages(it)
+
             messages.clear()
             messages.addAll(it)
             viewAdapter.notifyDataSetChanged()
@@ -861,6 +872,19 @@ open class MessageScreen : Fragment(),
         super.onDetach()
 //        Log.d(TAG, "onDetach()")
         hideKeyboard(activity)
+    }
+
+    private fun initMessages(messages: MutableList<Message>): MutableList<Message> {
+        // Filter messages based on key
+        if(filterKey != null && filterValue != null) {
+            for((index, element) in messages.withIndex()) {
+                when(filterKey) {
+                    "classId" -> if(element.metadata.classId != filterValue) messages.removeAt(index)
+                }
+            }
+        }
+
+        return messages
     }
 
     private fun startPhotoPicker() {
