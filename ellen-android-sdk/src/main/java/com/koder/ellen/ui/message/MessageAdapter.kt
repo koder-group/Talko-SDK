@@ -12,6 +12,7 @@ import android.text.*
 import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.util.Linkify
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -235,17 +236,14 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             }
             // Sender, body text
             if (!message.body.equals("Sent an image", ignoreCase = true)) {
-                // Hide sender body if messaage is media
-//                selfBody.text = message.body
-//                selfBody.setText( // TODO
-//                    HtmlCompat.fromHtml(
-//                        processMentions(message),
-//                        HtmlCompat.FROM_HTML_MODE_COMPACT
-//                    )
-//                ) // TODO
                 selfBody.text = message.body
-//                selfBody.makeLinks(mutableListOf<Pair<String, ViewOnClickListener>>)
+
+                // Link mentions
                 selfBody.makeLinks(getMentionPairs(message))
+
+                // Linkify WEB_URLS, EMAIL_ADDRESSES, PHONE_NUMBERS
+                Linkify.addLinks(selfBody, Linkify.ALL)
+
                 selfBody.visibility = View.VISIBLE
             }
 
@@ -358,7 +356,13 @@ internal class MessageAdapter(private val context: Context, private val dataset:
 //                    )
 //                )
                 senderBody.text = message.body
+
+                // Link mentions
                 senderBody.makeLinks(getMentionPairs(message))
+
+                // Linkify WEB_URLS, EMAIL_ADDRESSES, PHONE_NUMBERS
+                Linkify.addLinks(senderBody, Linkify.ALL)
+
                 senderBody.visibility = View.VISIBLE
             }
 
