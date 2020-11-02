@@ -82,7 +82,7 @@ class Messenger {
             }
         }
 
-
+        // Set Messenger User with Conversations
         @JvmStatic fun set(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
 //                Stetho.initializeWithDefaults(applicationContext)
                 db = TalkoDatabase.getInstance(applicationContext)
@@ -98,9 +98,9 @@ class Messenger {
 
                 // Init Prefs
                 prefs = Prefs(applicationContext)
-//                // Set user token
+                // Set user token
                 prefs?.userToken = userToken
-//                // Set tenant Id
+                // Set tenant Id
                 prefs?.tenantId = decodedObj.get("tenant_id").toString()
                 // Set user Id
                 prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
@@ -133,6 +133,48 @@ class Messenger {
                     }
 
                 }
+        }
+
+        // Set Messenger User without Conversations
+        @JvmStatic fun setUser(userToken: String, applicationContext: Context, completion: CompletionCallback? = null) {
+//                Stetho.initializeWithDefaults(applicationContext)
+            db = TalkoDatabase.getInstance(applicationContext)
+
+            // Decode user token for user info
+            val parts = userToken.split('.')
+            val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
+            var decodedStr = String(decoded)
+            val decodedObj = JSONObject(decodedStr)
+
+            // Create current user object
+            val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
+
+            // Init Prefs
+            prefs = Prefs(applicationContext)
+            // Set user token
+            prefs?.userToken = userToken
+            // Set tenant Id
+            prefs?.tenantId = decodedObj.get("tenant_id").toString()
+            // Set user Id
+            prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
+            // Set current user
+            prefs?.currentUser = currentUser
+
+            GlobalScope.launch {
+                // Get client configuration
+                val clientConfig = async(IO) { initClientConfiguration() }.await()
+
+                if(clientConfig is Result.Success) {
+
+                    // Initialize PubNub client
+                    async(IO) { initPubNub() }.await()
+
+                    completion?.onCompletion(Result.Success(true))
+                } else {
+                    completion?.onCompletion(Result.Error(IOException("Error setting Messenger User")))
+                }
+
+            }
         }
 
         @JvmStatic fun signOut() {
