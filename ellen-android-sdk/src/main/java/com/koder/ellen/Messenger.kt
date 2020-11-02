@@ -109,16 +109,15 @@ class Messenger {
 
                 GlobalScope.launch {
                     // Get client configuration
-                    val clientConfig = async(IO) { initClientConfiguration() }
+                    val clientConfig = async(IO) { initClientConfiguration() }.await()
 
-                    // Initialize PubNub client
-                    async(IO) { initPubNub() }.await()
+                    if(clientConfig is Result.Success) {
 
-                    val clientConfigResult = clientConfig.await()
-
-                    if(clientConfigResult is Result.Success) {
+                        // Initialize PubNub client
+                        async(IO) { initPubNub() }.await()
 
                         // Populate initial conversations with messages
+                        Log.d(TAG, "Get conversations with messages")
                         val client = Client()
                         client.getConversationMessages(object: CompletionCallback() {
                             override fun onCompletion(result: Result<Any>) {
@@ -404,7 +403,7 @@ class Messenger {
                 initPubNub()
             }
 
-            Log.d(TAG, "Add PubNub listener")
+            Log.d(TAG, "Add PubNub Listener")
             pubNub.addListener(subscribeCallback)
         }
 
