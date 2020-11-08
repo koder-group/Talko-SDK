@@ -535,6 +535,14 @@ class ConversationScreen : Fragment() {
                 }.toList().intersect(f.toList()).isNotEmpty() // check if any of the userids intersect with the filterUserIds if non-empty, then it means yes
             }.toMutableList() // return the all filtered conversations
         }
+
+        if(Messenger.conversationFilterEmptyConversations) {
+            // Filter conversations with no messages
+            return conversations.filter { c ->
+                c.messages.size > 0
+            }.toMutableList()
+        }
+
         return conversations
     }
 

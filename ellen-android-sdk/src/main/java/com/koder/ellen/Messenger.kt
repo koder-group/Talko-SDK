@@ -62,6 +62,7 @@ class Messenger {
         @JvmStatic var conversationEmptyText = "(Conversation is empty. Click to send message.)"
         @JvmStatic var conversationNewMessageColor = "#4caf50"
         @JvmStatic var conversationNewMessageCheckmark = true
+        @JvmStatic var conversationFilterEmptyConversations = false
         // Message Screen
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18
