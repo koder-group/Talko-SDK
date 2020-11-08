@@ -102,7 +102,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
         } else {
             // Remove checkmark from layout
             val parent = check.parent as ViewGroup
-            if(parent != null) parent.removeView(check)
+            parent.removeView(check)
 
             // Display date view on title-row
             val constraintSet = ConstraintSet()
@@ -221,6 +221,12 @@ internal class ConversationAdapter(private val context: Context, private val dat
 //            getFirstParticipantImageUrl(dataset.get(position).participants)
         // Load profile image
         val iconView = holder.layout.findViewById<ImageView>(R.id.conversation_icon)
+
+        if(dataset.get(position).participants.size == 1) {
+            // Get owner's profile image
+            icon = Html.fromHtml(getSingleParticipantImageUrl(dataset.get(position).participants)).toString()
+            Picasso.get().load(icon).into(holder.layout.findViewById<ImageView>(R.id.conversation_icon))
+        }
 
         if(dataset.get(position).participants.size == 2) Picasso.get().load(icon).into(holder.layout.findViewById<ImageView>(R.id.conversation_icon))
 
@@ -380,6 +386,18 @@ internal class ConversationAdapter(private val context: Context, private val dat
         return title
     }
 
+    // Get image url when there is only 1 participant (owner)
+    private fun getSingleParticipantImageUrl(participants: MutableList<Participant>): String {
+        val participant = participants.first()
+        // Get cached
+        val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
+        if(cachedProfile != null) {
+            return cachedProfile.photoUrl
+        }
+        return participant.user.profileImageUrl
+    }
+
+    // Get image url of the participant that isn't the current user
     private fun getFirstParticipantImageUrl(participants: MutableList<Participant>): String {
         for (participant in participants) {
             if (participant.user.userId != prefs?.userId) {
