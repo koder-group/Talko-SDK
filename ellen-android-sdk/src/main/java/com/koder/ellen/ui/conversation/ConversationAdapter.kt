@@ -100,6 +100,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
                 0)
             constraintSet.applyTo(layout)
         } else {
+            // Remove checkmark from layout
+            val parent = check.parent as ViewGroup
+            if(parent != null) parent.removeView(check)
+
             // Display date view on title-row
             val constraintSet = ConstraintSet()
             constraintSet.clone(layout)
@@ -131,7 +135,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
         val newMessageCheck = holder.layout.findViewById<ImageView>(R.id.new_message_check)
         cardView.strokeWidth = 0
         newMessageDot.visibility = View.GONE
-        newMessageCheck.visibility = View.GONE
+        newMessageCheck?.visibility = View.GONE
 
         val titleView = holder.layout.findViewById<TextView>(R.id.conversation_title)
 
@@ -197,7 +201,7 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
             } else {
                 // Show check mark
-                newMessageCheck.visibility = View.VISIBLE
+                newMessageCheck?.visibility = View.VISIBLE
             }
 
         } else {
