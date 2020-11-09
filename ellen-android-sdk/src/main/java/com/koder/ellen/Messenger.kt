@@ -63,6 +63,7 @@ class Messenger {
         @JvmStatic var conversationNewMessageColor = "#4caf50"
         @JvmStatic var conversationNewMessageCheckmark = true
         @JvmStatic var conversationFilterEmptyConversations = false
+        @JvmStatic var conversationIconStroke = true
         // Message Screen
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18

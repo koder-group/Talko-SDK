@@ -82,6 +82,9 @@ internal class ConversationAdapter(private val context: Context, private val dat
         icon.layoutParams.height = Messenger.conversationIconRadius.px * 2
         icon.layoutParams.width = Messenger.conversationIconRadius.px * 2
 
+        // Icon stroke color option
+        if(!Messenger.conversationIconStroke) icon.strokeColor = Color.TRANSPARENT
+
         // New message checkmark
         val check = layout.findViewById<ImageView>(R.id.new_message_check)
         DrawableCompat.setTint(check.getDrawable(), Color.parseColor(Messenger.conversationNewMessageColor));
