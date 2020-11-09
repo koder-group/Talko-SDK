@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.internal.VisibilityAwareImageButton
+import com.koder.ellen.Messenger
 import com.koder.ellen.R
 import com.koder.ellen.model.User
 import com.koder.ellen.screen.MessageScreen
@@ -75,7 +76,11 @@ internal class MessageMentionAdapter(private val context: Context, private val d
         val icon = holder.layout.mention_icon
 
         name.text = user.displayName
-        Picasso.get().load(user.profileImageUrl).into(icon)
+
+        // Get latest profile image url
+        val imageUrl = getLatestProfileImageUrl(user)
+
+        Picasso.get().load(imageUrl).into(icon)
 
         layout.setOnClickListener {
             Handler().postDelayed({
@@ -92,6 +97,14 @@ internal class MessageMentionAdapter(private val context: Context, private val d
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataset.size
+
+    private fun getLatestProfileImageUrl(user: User): String {
+        val cachedProfile = Messenger.userProfileCache.get(user.userId.toLowerCase())
+        if(cachedProfile != null) {
+            return cachedProfile.photoUrl
+        }
+        return user.profileImageUrl
+    }
 
     fun setData(newList: List<User>) {
         val diffCallback = DiffCallback(dataset, newList)
