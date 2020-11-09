@@ -1101,7 +1101,8 @@ open class MessageScreen : Fragment(),
 
                 val found = participantsList.find { it.displayName.equals(name, ignoreCase = true) }
                 found?.let {
-                    words.set(index, "<font color='#1A73E9'>${word}</font>")
+//                    words.set(index, "<font color='#1A73E9'>${word}</font>")
+                    words.set(index, "<font color='${Messenger.mentionInputColor}'>${word}</font>")
                 }
             }
         }
@@ -1143,7 +1144,8 @@ open class MessageScreen : Fragment(),
 
                 val found = conversation.participants.find { it.user.displayName.equals(name, ignoreCase = true) }
                 found?.let {
-                    words.set(index, "<font color='#1A73E9'>${word}</font>")
+//                    words.set(index, "<font color='#1A73E9'>${word}</font>")
+                    words.set(index, "<font color='${Messenger.mentionInputColor}'>${word}</font>")
                 }
             }
         }

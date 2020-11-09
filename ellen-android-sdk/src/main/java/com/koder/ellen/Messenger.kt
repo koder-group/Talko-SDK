@@ -68,6 +68,11 @@ class Messenger {
         @JvmStatic var selfMessageRadius = 18
         @JvmStatic var senderBackgroundColor = "#88000000"  // gray
         @JvmStatic var selfBackgroundColor = "#1A73E9"  // blue
+        @JvmStatic var senderTextColor = "#FFFFFF"
+        @JvmStatic var selfTextColor = "#FFFFFF"
+        @JvmStatic var senderLinkColor = "#BBDEFB"
+        @JvmStatic var selfLinkColor = "#BBDEFB"
+        @JvmStatic var mentionInputColor = "#1A73E9"
 
         internal var conversations = mutableListOf<Conversation>()
         var currentConversationId = ""
@@ -180,7 +185,7 @@ class Messenger {
 
         @JvmStatic fun signOut() {
             prefs?.resetUser()
-            pubNub.unsubscribeAll()
+            if(this::pubNub.isInitialized) pubNub.unsubscribeAll()
 
             GlobalScope.launch {
                 async(IO) { db?.clearAllTables() }.await()

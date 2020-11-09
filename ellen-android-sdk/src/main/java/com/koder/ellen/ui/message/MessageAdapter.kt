@@ -80,6 +80,14 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         selfMediaLayout.radius = selfRadius
         selfBody.background = getShape(selfRadius, Messenger.selfBackgroundColor)
 
+        // Text color
+        senderBody.setTextColor(Color.parseColor(Messenger.senderTextColor))
+        selfBody.setTextColor(Color.parseColor(Messenger.selfTextColor))
+
+        // Link color
+        senderBody.setLinkTextColor(Color.parseColor(Messenger.senderLinkColor))
+        selfBody.setLinkTextColor(Color.parseColor(Messenger.selfLinkColor))
+
         return MyViewHolder(layout)
     }
 
