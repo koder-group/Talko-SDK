@@ -344,6 +344,26 @@ class ConversationScreen : Fragment() {
         }
     }
 
+    // Use Messenger.conversations instead of ConversationScreen conversations
+    fun addMessageToMessengerConversations(message: Message) {
+        val filteredList: List<Conversation> = Messenger.conversations.filter { it.conversationId.equals(message.conversationId, ignoreCase = true)}
+        if (filteredList.isNotEmpty()) {
+            val conversation = filteredList.first()
+
+            // Unify date format, as its form is like "timeCreated":"2020-01-20T03:40:03.056Z"
+            if(message.timeCreated.toString().contains("-")) {
+                message.timeCreated = convertDateToLong(message.timeCreated.toString())
+            }
+
+            val newMessages = mutableListOf(message)
+            conversation.messages = newMessages
+            Messenger.conversations[Messenger.conversations.indexOf(conversation)] = conversation
+            // Sort and set conversations
+//            conversationViewModel.conversations.value = ConversationDataSource().sortConversationsByLatestMessage(conversations)
+            conversationViewModel.conversations.postValue(ConversationDataSource().sortConversationsByLatestMessage(Messenger.conversations))
+        }
+    }
+
     // conversation:participant:removed
     fun removeFromConversations(conversationId: String) {
         val filteredList: List<Conversation> = conversations.filter { it.conversationId.equals(conversationId, ignoreCase = true) }
@@ -431,7 +451,10 @@ class ConversationScreen : Fragment() {
             }
 
             override fun onMessageReceived(message: Message) {
-                activity?.runOnUiThread { addMessageToConversations(message) }
+                activity?.runOnUiThread {
+//                    addMessageToConversations(message)
+                    addMessageToMessengerConversations(message)
+                }
             }
 
             override fun onMessageRejected(message: Message, errorMessage: String) {
