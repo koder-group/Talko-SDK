@@ -64,6 +64,8 @@ class Messenger {
         @JvmStatic var conversationNewMessageCheckmark = true
         @JvmStatic var conversationFilterEmptyConversations = false
         @JvmStatic var conversationIconStroke = true
+        @JvmStatic var conversationTimeAgoDateNames = false
+        @JvmStatic var conversationTimeAgoDateHighlight = true
         // Message Screen
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18

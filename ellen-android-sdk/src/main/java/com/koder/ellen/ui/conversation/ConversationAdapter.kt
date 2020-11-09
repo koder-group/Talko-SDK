@@ -82,9 +82,6 @@ internal class ConversationAdapter(private val context: Context, private val dat
         icon.layoutParams.height = Messenger.conversationIconRadius.px * 2
         icon.layoutParams.width = Messenger.conversationIconRadius.px * 2
 
-        // Icon stroke color option
-        if(!Messenger.conversationIconStroke) icon.strokeColor = Color.TRANSPARENT
-
         // New message checkmark
         val check = layout.findViewById<ImageView>(R.id.new_message_check)
         DrawableCompat.setTint(check.getDrawable(), Color.parseColor(Messenger.conversationNewMessageColor));
@@ -182,7 +179,11 @@ internal class ConversationAdapter(private val context: Context, private val dat
 //            Log.d(TAG, "System.currentTimeMillis() ${System.currentTimeMillis()}")
 
             // Set time ago date
-            var date = getTimeAgo(latestMessageCreated)
+            var date = if(!Messenger.conversationTimeAgoDateNames) {
+                    getTimeAgo(latestMessageCreated)
+                } else {
+                    getTodayYestDateFromMilli(latestMessageCreated)
+                }
             dateView.text = date
 
             // Get last-read timestamp for this conversation
@@ -196,10 +197,21 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
                     // Show new message indicator
                     newMessageDot.visibility = View.VISIBLE
-                    cardView.strokeWidth = 2.px
-                    dateView.setTextColor(ContextCompat.getColor(context, R.color.material_blue_500))
-                    dateView.setTypeface(null, Typeface.BOLD)
-                    dateView.alpha = 1.0f
+
+                    if(Messenger.conversationIconStroke) {
+                        cardView.strokeWidth = 2.px
+                    }
+
+                    if(Messenger.conversationTimeAgoDateHighlight) {
+                        dateView.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.material_blue_500
+                            )
+                        )
+                        dateView.setTypeface(null, Typeface.BOLD)
+                        dateView.alpha = 1.0f
+                    }
                 }
 
             } else {

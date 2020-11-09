@@ -33,6 +33,25 @@ class MainActivity : AppCompatActivity() {
         Messenger.screenCornerRadius = intArrayOf(20, 20, 0, 0)
         Messenger.conversationSwipeToDelete = true
         Messenger.conversationLongClickToDelete = false
+        Messenger.conversationFilterEmptyConversations = true
+        Messenger.conversationNewMessageCheckmark = false
+        Messenger.conversationIconStroke = false
+        Messenger.conversationTimeAgoDateNames = true
+        Messenger.conversationTimeAgoDateHighlight = false
+
+        Messenger.senderBackgroundColor = "#E9E9EB"  // light gray
+        Messenger.selfBackgroundColor = "#5D4298"  // purple
+
+        // Text color
+        Messenger.senderTextColor = "#000000"
+        Messenger.selfTextColor = "#FFFFFF"
+
+        // Link color
+        Messenger.senderLinkColor = "#5D4298"
+        Messenger.selfLinkColor = "#B4E5F8"
+
+        // Message input mention color
+        Messenger.mentionInputColor = "#224EA4"
 
         setContentView(R.layout.activity_main)
 
