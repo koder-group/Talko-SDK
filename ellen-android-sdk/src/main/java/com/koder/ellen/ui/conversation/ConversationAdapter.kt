@@ -40,6 +40,8 @@ import com.koder.ellen.model.User
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.LinkedHashSet
 import kotlin.math.floor
 
 
@@ -247,44 +249,95 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
         if(dataset.get(position).participants.size > 2) {
             // MultiImageView
-            var count = 0;
-            val bitmapList = mutableListOf<Bitmap>()
-            for (participant in dataset.get(position).participants) {
-                participant.user.profileImageUrl?.let {
-                    if (!participant.user.userId.equals(
-                            prefs?.externalUserId,
-                            ignoreCase = true
-                        ) && count < 4
-                    ) {
-                        count++
+            // Get latest profile images for the first 4 users that does not include the current user
+            val participants = dataset.get(position).participants.filter { p -> p.user.userId != prefs?.userId}.take(4)
+//            Log.d(TAG, "title $title")
+//            Log.d(TAG, "participants $participants")
+            val urlList = getLatestProfileImages(participants)
+//            Log.d(TAG, "images $urlList")
 
-                        Glide.with(context)
-                            .asBitmap()
-                            .load(participant.user.profileImageUrl)
-                            .into(object : CustomTarget<Bitmap>() {
-                                override fun onResourceReady(
-                                    bitmap: Bitmap,
-                                    transition: Transition<in Bitmap>?
-                                ) {
+            // Get image bitmaps
+            // LinkedHashMap to preserve ordering
+            val bitmapMap = linkedMapOf<String, Bitmap?>()
+            for(url in urlList) {
+                bitmapMap.put(url, null)
+                Glide.with(context)
+                    .asBitmap()
+                    .load(url)
+                    .into(object : CustomTarget<Bitmap>() {
+                        override fun onResourceReady(
+                            bitmap: Bitmap,
+                            transition: Transition<in Bitmap>?
+                        ) {
 //                    imageView.setImageBitmap(resource)
 //                                    val scaled = createScaledBitmap(bitmap, 100, 100, false)
 //                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
 //                                Log.d(TAG, "scaled ${scaled.width} x ${scaled.height}")
-                                    bitmapList.add(bitmap)
-                                    val bitmapGrid = bitmapsToGrid(bitmapList)
-                                    iconView.setImageBitmap(bitmapGrid)
-                                }
+//                            bitmapList.add(bitmap)
+//                            val bitmapGrid = bitmapsToGrid(bitmapList)
+//                            iconView.setImageBitmap(bitmapGrid)
 
-                                override fun onLoadCleared(placeholder: Drawable?) {
-                                    // this is called when imageView is cleared on lifecycle call or for
-                                    // some other reason.
-                                    // if you are referencing the bitmap somewhere else too other than this imageView
-                                    // clear it here as you can no longer have the bitmap
-                                }
-                            })
-                    }
-                }
+                            // Add bitmap to map
+                            bitmapMap.put(url, bitmap)
+                            if(areBitmapsLoaded(bitmapMap)) {
+                                // All bitmaps are loaded
+                                // Create multiimageview
+                                Log.d(TAG, "title $title")
+                                Log.d(TAG, "bitmaps loaded $bitmapMap")
+
+                                val bitmapGrid = bitmapsToGrid(bitmapMap)
+                                iconView.setImageBitmap(bitmapGrid)
+                            }
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            // this is called when imageView is cleared on lifecycle call or for
+                            // some other reason.
+                            // if you are referencing the bitmap somewhere else too other than this imageView
+                            // clear it here as you can no longer have the bitmap
+                        }
+                    })
             }
+
+//            var count = 0;
+//            val bitmapList = mutableListOf<Bitmap>()
+//            for (participant in dataset.get(position).participants.take(4)) {
+//                participant.user.profileImageUrl?.let {
+//                    if (!participant.user.userId.equals(
+//                            prefs?.externalUserId,
+//                            ignoreCase = true
+//                        )
+////                        && count < 4
+//                    ) {
+////                        count++
+//
+//                        Glide.with(context)
+//                            .asBitmap()
+//                            .load(participant.user.profileImageUrl)
+//                            .into(object : CustomTarget<Bitmap>() {
+//                                override fun onResourceReady(
+//                                    bitmap: Bitmap,
+//                                    transition: Transition<in Bitmap>?
+//                                ) {
+////                    imageView.setImageBitmap(resource)
+////                                    val scaled = createScaledBitmap(bitmap, 100, 100, false)
+////                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
+////                                Log.d(TAG, "scaled ${scaled.width} x ${scaled.height}")
+//                                    bitmapList.add(bitmap)
+//                                    val bitmapGrid = bitmapsToGrid(bitmapList)
+//                                    iconView.setImageBitmap(bitmapGrid)
+//                                }
+//
+//                                override fun onLoadCleared(placeholder: Drawable?) {
+//                                    // this is called when imageView is cleared on lifecycle call or for
+//                                    // some other reason.
+//                                    // if you are referencing the bitmap somewhere else too other than this imageView
+//                                    // clear it here as you can no longer have the bitmap
+//                                }
+//                            })
+//                    }
+//                }
+//            }
         }
 
 
@@ -314,6 +367,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataset.size
+
+    private fun areBitmapsLoaded(bitmapMap: LinkedHashMap<String, Bitmap?>): Boolean {
+        return !bitmapMap.containsValue(null)
+    }
 
     fun getParticipantsList(conversation: Conversation): ArrayList<User> {
         val list = ArrayList<User>()
@@ -427,10 +484,25 @@ internal class ConversationAdapter(private val context: Context, private val dat
         return prefs?.currentUser?.profile?.profileImageUrl!! // Shouldn't reach this point
     }
 
+
     private fun convertDateToLong(date: String): Long {
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         df.setTimeZone(TimeZone.getTimeZone("UTC"))
         return df.parse(date).time
+    }
+
+    private fun getLatestProfileImages(participants: List<Participant>): List<String> {
+        val imageList = mutableListOf<String>()
+        for(participant in participants) {
+            // Get cached
+            val cachedProfile = Messenger.userProfileCache.get(participant.user.userId.toLowerCase())
+            if(cachedProfile != null) {
+                imageList.add(cachedProfile.photoUrl)
+            } else {
+                imageList.add(participant.user.profileImageUrl)
+            }
+        }
+        return imageList.toList()
     }
 
     private fun prefixSubtitle(conversation: Conversation): String {
