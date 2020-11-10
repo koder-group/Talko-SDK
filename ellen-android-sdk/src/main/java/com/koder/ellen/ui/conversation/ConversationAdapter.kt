@@ -35,6 +35,8 @@ import com.koder.ellen.model.User
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.LinkedHashSet
 import kotlin.math.floor
 
 
@@ -304,6 +306,46 @@ internal class ConversationAdapter(
                         }
                     })
             }
+
+//            var count = 0;
+//            val bitmapList = mutableListOf<Bitmap>()
+//            for (participant in dataset.get(position).participants.take(4)) {
+//                participant.user.profileImageUrl?.let {
+//                    if (!participant.user.userId.equals(
+//                            prefs?.externalUserId,
+//                            ignoreCase = true
+//                        )
+////                        && count < 4
+//                    ) {
+////                        count++
+//
+//                        Glide.with(context)
+//                            .asBitmap()
+//                            .load(participant.user.profileImageUrl)
+//                            .into(object : CustomTarget<Bitmap>() {
+//                                override fun onResourceReady(
+//                                    bitmap: Bitmap,
+//                                    transition: Transition<in Bitmap>?
+//                                ) {
+////                    imageView.setImageBitmap(resource)
+////                                    val scaled = createScaledBitmap(bitmap, 100, 100, false)
+////                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
+////                                Log.d(TAG, "scaled ${scaled.width} x ${scaled.height}")
+//                                    bitmapList.add(bitmap)
+//                                    val bitmapGrid = bitmapsToGrid(bitmapList)
+//                                    iconView.setImageBitmap(bitmapGrid)
+//                                }
+//
+//                                override fun onLoadCleared(placeholder: Drawable?) {
+//                                    // this is called when imageView is cleared on lifecycle call or for
+//                                    // some other reason.
+//                                    // if you are referencing the bitmap somewhere else too other than this imageView
+//                                    // clear it here as you can no longer have the bitmap
+//                                }
+//                            })
+//                    }
+//                }
+//            }
         }
 
 
