@@ -4,11 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.Bitmap.createScaledBitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.Html
 import android.text.format.DateFormat
@@ -30,22 +27,22 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.card.MaterialCardView
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
-import com.koder.ellen.Messenger.Companion.userProfileCache
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
 import com.koder.ellen.model.Conversation
-import com.koder.ellen.model.Message
 import com.koder.ellen.model.Participant
 import com.koder.ellen.model.User
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.LinkedHashSet
 import kotlin.math.floor
 
 
-internal class ConversationAdapter(private val context: Context, private val dataset: MutableList<Conversation>, private val fragment: Fragment? = null) :
+internal class ConversationAdapter(
+    private val context: Context,
+    private val dataset: MutableList<Conversation>,
+    private val fragment: Fragment? = null
+) :
     RecyclerView.Adapter<ConversationAdapter.MyViewHolder>() {
 
     val TAG = "ConversationsAdapter"
@@ -70,7 +67,12 @@ internal class ConversationAdapter(private val context: Context, private val dat
         // set the view's size, margins, paddings and layout parameters
         // ...
         // Top and bottom padding
-        layout.setPadding(layout.paddingLeft, Messenger.conversationItemTopPadding.px, layout.paddingRight, Messenger.conversationItemBottomPadding.px)
+        layout.setPadding(
+            layout.paddingLeft,
+            Messenger.conversationItemTopPadding.px,
+            layout.paddingRight,
+            Messenger.conversationItemBottomPadding.px
+        )
 
         // Title and subtitle text size
         val title = layout.findViewById<TextView>(R.id.conversation_title)
@@ -86,7 +88,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
 
         // New message checkmark
         val check = layout.findViewById<ImageView>(R.id.new_message_check)
-        DrawableCompat.setTint(check.getDrawable(), Color.parseColor(Messenger.conversationNewMessageColor));
+        DrawableCompat.setTint(
+            check.getDrawable(),
+            Color.parseColor(Messenger.conversationNewMessageColor)
+        );
 
         // Date position
         if(Messenger.conversationNewMessageCheckmark) {
@@ -99,7 +104,8 @@ internal class ConversationAdapter(private val context: Context, private val dat
                 ConstraintSet.BOTTOM,
                 R.id.conversation_subtitle,
                 ConstraintSet.BOTTOM,
-                0)
+                0
+            )
             constraintSet.applyTo(layout)
         } else {
             // Remove checkmark from layout
@@ -115,7 +121,8 @@ internal class ConversationAdapter(private val context: Context, private val dat
                 ConstraintSet.TOP,
                 R.id.conversation_title,
                 ConstraintSet.TOP,
-                0)
+                0
+            )
             constraintSet.applyTo(layout)
         }
 
@@ -245,16 +252,22 @@ internal class ConversationAdapter(private val context: Context, private val dat
             Picasso.get().load(icon).into(holder.layout.findViewById<ImageView>(R.id.conversation_icon))
         }
 
-        if(dataset.get(position).participants.size == 2) Picasso.get().load(icon).into(holder.layout.findViewById<ImageView>(R.id.conversation_icon))
+        if(dataset.get(position).participants.size == 2) Picasso.get().load(icon).into(
+            holder.layout.findViewById<ImageView>(
+                R.id.conversation_icon
+            )
+        )
 
         if(dataset.get(position).participants.size > 2) {
             // MultiImageView
             // Get latest profile images for the first 4 users that does not include the current user
-            val participants = dataset.get(position).participants.filter { p -> p.user.userId != prefs?.userId}.take(4)
-//            Log.d(TAG, "title $title")
+            val participants = dataset.get(position).participants.filter { p -> p.user.userId != prefs?.userId}.take(
+                4
+            )
+            Log.d(TAG, "title $title")
 //            Log.d(TAG, "participants $participants")
             val urlList = getLatestProfileImages(participants)
-//            Log.d(TAG, "images $urlList")
+            Log.d(TAG, "images $urlList")
 
             // Get image bitmaps
             // LinkedHashMap to preserve ordering
@@ -269,23 +282,16 @@ internal class ConversationAdapter(private val context: Context, private val dat
                             bitmap: Bitmap,
                             transition: Transition<in Bitmap>?
                         ) {
-//                    imageView.setImageBitmap(resource)
-//                                    val scaled = createScaledBitmap(bitmap, 100, 100, false)
-//                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
-//                                Log.d(TAG, "scaled ${scaled.width} x ${scaled.height}")
-//                            bitmapList.add(bitmap)
-//                            val bitmapGrid = bitmapsToGrid(bitmapList)
-//                            iconView.setImageBitmap(bitmapGrid)
-
                             // Add bitmap to map
                             bitmapMap.put(url, bitmap)
-                            if(areBitmapsLoaded(bitmapMap)) {
+                            if (areBitmapsLoaded(bitmapMap)) {
                                 // All bitmaps are loaded
                                 // Create multiimageview
                                 Log.d(TAG, "title $title")
-                                Log.d(TAG, "bitmaps loaded $bitmapMap")
+                                Log.d(TAG, "bitmaps loaded ${bitmapMap.values}")
 
-                                val bitmapGrid = bitmapsToGrid(bitmapMap)
+                                val bitmapGrid =
+                                    bitmapsToGrid(bitmapMap.values.toList() as List<Bitmap>)
                                 iconView.setImageBitmap(bitmapGrid)
                             }
                         }
@@ -298,46 +304,6 @@ internal class ConversationAdapter(private val context: Context, private val dat
                         }
                     })
             }
-
-//            var count = 0;
-//            val bitmapList = mutableListOf<Bitmap>()
-//            for (participant in dataset.get(position).participants.take(4)) {
-//                participant.user.profileImageUrl?.let {
-//                    if (!participant.user.userId.equals(
-//                            prefs?.externalUserId,
-//                            ignoreCase = true
-//                        )
-////                        && count < 4
-//                    ) {
-////                        count++
-//
-//                        Glide.with(context)
-//                            .asBitmap()
-//                            .load(participant.user.profileImageUrl)
-//                            .into(object : CustomTarget<Bitmap>() {
-//                                override fun onResourceReady(
-//                                    bitmap: Bitmap,
-//                                    transition: Transition<in Bitmap>?
-//                                ) {
-////                    imageView.setImageBitmap(resource)
-////                                    val scaled = createScaledBitmap(bitmap, 100, 100, false)
-////                                Log.d(TAG, "bitmap ${bitmap.width} x ${bitmap.height}")
-////                                Log.d(TAG, "scaled ${scaled.width} x ${scaled.height}")
-//                                    bitmapList.add(bitmap)
-//                                    val bitmapGrid = bitmapsToGrid(bitmapList)
-//                                    iconView.setImageBitmap(bitmapGrid)
-//                                }
-//
-//                                override fun onLoadCleared(placeholder: Drawable?) {
-//                                    // this is called when imageView is cleared on lifecycle call or for
-//                                    // some other reason.
-//                                    // if you are referencing the bitmap somewhere else too other than this imageView
-//                                    // clear it here as you can no longer have the bitmap
-//                                }
-//                            })
-//                    }
-//                }
-//            }
         }
 
 
@@ -345,7 +311,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
             // Hide new message dot
 //            Log.d(TAG, "timeCreated ${dataset.get(position).timeCreated}")
 //            Log.d(TAG, "currentTimeMillis ${System.currentTimeMillis()}")
-            prefs?.setConversationLastRead(dataset.get(position).conversationId, System.currentTimeMillis())
+            prefs?.setConversationLastRead(
+                dataset.get(position).conversationId,
+                System.currentTimeMillis()
+            )
             cardView.strokeWidth = 0
             newMessageDot.visibility = View.GONE
 
@@ -421,15 +390,15 @@ internal class ConversationAdapter(private val context: Context, private val dat
         } else if (diffSecs < 60) {
             "${diffSecs}s"
         } else if (diffSecs < 3600) {
-            "${getFloor(diffSecs/60)}m"
+            "${getFloor(diffSecs / 60)}m"
         } else if (diffSecs < 86400) {
-            "${getFloor(diffSecs/3600)}h"
+            "${getFloor(diffSecs / 3600)}h"
         } else if (diffSecs < 604800) {
-            "${getFloor(diffSecs/86400)}d"
+            "${getFloor(diffSecs / 86400)}d"
         } else if (diffSecs < (604800 * 4)) {
-            "${getFloor(diffSecs/604800)}w"
+            "${getFloor(diffSecs / 604800)}w"
         } else {
-            "${getFloor(diffSecs/(604800 * 4))}M"
+            "${getFloor(diffSecs / (604800 * 4))}M"
         }
     }
 
@@ -442,7 +411,10 @@ internal class ConversationAdapter(private val context: Context, private val dat
         var title = ""
 
         // If the only participant is the sender (myself)
-        if(participants.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId, ignoreCase = true))
+        if(participants.size == 1 && participants.first().user.userId.equals(
+                prefs?.externalUserId,
+                ignoreCase = true
+            ))
             return "Me"
 
         for (participant in participants) {
@@ -577,9 +549,12 @@ internal class ConversationAdapter(private val context: Context, private val dat
                     canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
                 }
                 3 -> {
-                    canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
-                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
-                    canvas.drawBitmap(scaledBitmaps[2], 100f, 100f, null)
+                    addWhiteBorder(scaledBitmaps[0], 4.px)?.let { canvas.drawBitmap(it, -50f, -4.px.toFloat(), null) }
+                    addWhiteBorder(scaledBitmaps[1], 4.px)?.let { canvas.drawBitmap(it, 100f, -4.px.toFloat(), null) }
+                    addWhiteBorder(scaledBitmaps[2], 4.px)?.let { canvas.drawBitmap(it, 100f, 100f, null) }
+//                    canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
+//                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
+//                    canvas.drawBitmap(scaledBitmaps[2], 100f, 100f, null)
                 }
                 4 -> {
                     canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
@@ -596,6 +571,15 @@ internal class ConversationAdapter(private val context: Context, private val dat
             e.printStackTrace()
         }
         return drawnBitmap
+    }
+
+    private fun addWhiteBorder(bmp: Bitmap, borderSize: Int): Bitmap? {
+        val bmpWithBorder =
+            Bitmap.createBitmap(bmp.width + borderSize * 2, bmp.height + borderSize * 2, bmp.config)
+        val canvas = Canvas(bmpWithBorder)
+        canvas.drawColor(Color.WHITE)
+        canvas.drawBitmap(bmp, borderSize.toFloat(), borderSize.toFloat(), null)
+        return bmpWithBorder
     }
 
     // Extensions for dp-px conversion
