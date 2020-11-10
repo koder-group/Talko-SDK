@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
 import android.graphics.Bitmap.createScaledBitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.Html
 import android.text.format.DateFormat
@@ -35,8 +38,6 @@ import com.koder.ellen.model.User
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.LinkedHashSet
 import kotlin.math.floor
 
 
@@ -515,10 +516,14 @@ internal class ConversationAdapter(
                 scaledBitmaps.add(createScaledBitmap(b[0], 100, 100, false))
             }
             2 -> {
-                width = 100 * 2
+//                width = 100 * 2
+                width = 100
 
-                scaledBitmaps.add(createScaledBitmap(b[0], 100, 100, false))
-                scaledBitmaps.add(createScaledBitmap(b[1], 100, 100, false))
+
+//                scaledBitmaps.add(createScaledBitmap(b[0], 100, 100, false))
+                scaledBitmaps.add(applyCrop(createScaledBitmap(b[0], 100, 100, false), 25, 0, 25, 0) as Bitmap)
+//                scaledBitmaps.add(createScaledBitmap(b[1], 100, 100, false))
+                scaledBitmaps.add(applyCrop(createScaledBitmap(b[1], 100, 100, false), 25, 0, 25, 0) as Bitmap)
             }
             3 -> {
                 width = 100 * 2
@@ -547,23 +552,66 @@ internal class ConversationAdapter(
                     canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
                 }
                 2 -> {
+
                     canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
-                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
+//                    addWhiteBorder(scaledBitmaps[0], 4.px)?.let {
+//                        canvas.drawBitmap(
+//                            it,
+//                            -5f,
+//                            -4.px.toFloat(),
+//                            null
+//                        )
+//                    }
+//                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
+                    canvas.drawBitmap(scaledBitmaps[1], 50f, 0f, null)
+//                    addWhiteBorder(scaledBitmaps[1], 4.px)?.let {
+//                        canvas.drawBitmap(
+//                            it,
+//                            45f,
+//                            -4.px.toFloat(),
+//                            null
+//                        )
+//                    }
                 }
-                3 -> {
-                    addWhiteBorder(scaledBitmaps[0], 4.px)?.let { canvas.drawBitmap(it, -50f, -4.px.toFloat(), null) }
-                    addWhiteBorder(scaledBitmaps[1], 4.px)?.let { canvas.drawBitmap(it, 100f, -4.px.toFloat(), null) }
-                    addWhiteBorder(scaledBitmaps[2], 4.px)?.let { canvas.drawBitmap(it, 100f, 100f, null) }
+                else -> {
+
+//                    addWhiteBorder(scaledBitmaps[0], 4.px)?.let {
+//                        canvas.drawBitmap(
+//                            it,
+//                            -50f,
+//                            -4.px.toFloat(),
+//                            null
+//                        )
+//                    }
+
+//                    addWhiteBorder(scaledBitmaps[1], 4.px)?.let {
+//                        canvas.drawBitmap(
+//                            it,
+//                            100f,
+//                            -4.px.toFloat(),
+//                            null
+//                        )
+//                    }
+
+//                    addWhiteBorder(scaledBitmaps[2], 4.px)?.let {
+//                        canvas.drawBitmap(
+//                            it,
+//                            100f,
+//                            100f,
+//                            null
+//                        )
+//                    }
+
+                    canvas.drawBitmap(scaledBitmaps[0], -50f, 0f, null)
+                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
+                    canvas.drawBitmap(scaledBitmaps[2], 100f, 100f, null)
+                }
+//                4 -> {
 //                    canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
 //                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
-//                    canvas.drawBitmap(scaledBitmaps[2], 100f, 100f, null)
-                }
-                4 -> {
-                    canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
-                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
-                    canvas.drawBitmap(scaledBitmaps[2], 0f, 100f, null)
-                    canvas.drawBitmap(scaledBitmaps[3], 100f, 100f, null)
-                }
+//                    canvas.drawBitmap(scaledBitmaps[2], 0f, 100f, null)
+//                    canvas.drawBitmap(scaledBitmaps[3], 100f, 100f, null)
+//                }
             }
 //            canvas.drawBitmap(b[0], 0f, 0f, null)
 //            canvas.drawBitmap(b[1], 200f, 300f, null)
@@ -582,6 +630,18 @@ internal class ConversationAdapter(
         canvas.drawColor(Color.WHITE)
         canvas.drawBitmap(bmp, borderSize.toFloat(), borderSize.toFloat(), null)
         return bmpWithBorder
+    }
+
+    private fun applyCrop(
+        bitmap: Bitmap,
+        leftCrop: Int,
+        topCrop: Int,
+        rightCrop: Int,
+        bottomCrop: Int
+    ): Bitmap? {
+        val cropWidth = bitmap.width - rightCrop - leftCrop
+        val cropHeight = bitmap.height - bottomCrop - topCrop
+        return Bitmap.createBitmap(bitmap, leftCrop, topCrop, cropWidth, cropHeight)
     }
 
     // Extensions for dp-px conversion
