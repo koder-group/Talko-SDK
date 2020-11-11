@@ -1807,7 +1807,7 @@ open class MessageScreen : Fragment(),
                         // Filter
                         if(filterKey != null && filterValue != null) {
                             when(filterKey) {
-                                "classId" -> if(message.metadata.classId != filterKey) return@runOnUiThread
+                                "classId" -> if(message.metadata.classId != filterValue) return@runOnUiThread
                             }
                         }
 
