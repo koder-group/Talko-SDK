@@ -125,8 +125,17 @@ class Messenger {
                         // Initialize PubNub client
                         async(IO) { initPubNub() }.await()
 
-                        // Populate initial conversations with messages
-                        Log.d(TAG, "Get conversations with messages")
+                        // Load conversations from DB
+                        conversations = loadConversationsFromDB()
+
+                        if(conversations.size > 0) {
+                            Log.d(TAG, "Get Conversations from DB")
+                            completion?.onCompletion(Result.Success(true))
+                            return@launch
+                        }
+
+                        // Load conversations from Talko API
+                        Log.d(TAG, "Get Conversations from Talko API")
                         val client = Client()
                         client.getConversationMessages(object: CompletionCallback() {
                             override fun onCompletion(result: Result<Any>) {
@@ -839,6 +848,21 @@ class Messenger {
             return conversations
         }
 
+        private fun loadConversationsFromDB(): MutableList<Conversation> {
+            val list = mutableListOf<Conversation>()
+            val conversations = db?.conversationDao()?.getAll()
+
+            if(conversations != null) {
+                for(conversation in conversations) {
+                    val str = String(conversation.payload)
+                    val convo = Gson().fromJson(JSONObject(str).toString(), Conversation::class.java)
+                    list.add(convo)
+                }
+            }
+
+            return list
+        }
+
         @JvmStatic fun getUserId(): String {
             return prefs?.userId!!
         }
@@ -847,7 +871,7 @@ class Messenger {
             var unreadCount = 0
             val list = conversations.toList()
             for(conversation in list) {
-                conversation.messages.firstOrNull()?.let {
+                conversation.messages?.firstOrNull()?.let {
                     val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
                     val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
 
