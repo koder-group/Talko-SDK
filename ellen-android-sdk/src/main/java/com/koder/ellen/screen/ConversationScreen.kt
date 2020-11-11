@@ -226,7 +226,7 @@ class ConversationScreen : Fragment() {
             swipeRefreshLayout.setRefreshing(false)
 
             // Subscribe to channels
-            subscribeToConversations(it)
+            Messenger.subscribeToConversations(it)
 
             Messenger.conversations.clear()
             Messenger.conversations.addAll(it)

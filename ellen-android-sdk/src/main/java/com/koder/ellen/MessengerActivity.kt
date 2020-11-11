@@ -38,13 +38,14 @@ import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.objects_api.channel.PNChannelMetadataResult
+import com.pubnub.api.models.consumer.objects_api.membership.PNMembershipResult
+import com.pubnub.api.models.consumer.objects_api.uuid.PNUUIDMetadataResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 import com.pubnub.api.models.consumer.pubsub.PNSignalResult
+import com.pubnub.api.models.consumer.pubsub.files.PNFileEventResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import com.pubnub.api.models.consumer.pubsub.objects.PNMembershipResult
-import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult
-import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -701,11 +702,13 @@ class MessengerActivity : AppCompatActivity() {
                 }
             }
 
-            override fun user(pubnub: PubNub, pnUserResult: PNUserResult) {
-                runOnUiThread {
-                    //                subscribeText.text = message.message.toString()
-                    Log.d(TAG, "user")
-                }
+            override fun uuid(pubnub: PubNub, pnUUIDMetadataResult: PNUUIDMetadataResult) {
+            }
+
+            override fun channel(pubnub: PubNub, pnChannelMetadataResult: PNChannelMetadataResult) {
+            }
+
+            override fun membership(pubnub: PubNub, pnMembershipResult: PNMembershipResult) {
             }
 
             override fun messageAction(pubnub: PubNub, pnMessageActionResult: PNMessageActionResult) {
@@ -715,18 +718,7 @@ class MessengerActivity : AppCompatActivity() {
                 }
             }
 
-            override fun membership(pubnub: PubNub, pnMembershipResult: PNMembershipResult) {
-                runOnUiThread {
-                    //                subscribeText.text = message.message.toString()
-                    Log.d(TAG, "membership")
-                }
-            }
-
-            override fun space(pubnub: PubNub, pnSpaceResult: PNSpaceResult) {
-                runOnUiThread {
-                    //                subscribeText.text = message.message.toString()
-                    Log.d(TAG, "space")
-                }
+            override fun file(pubnub: PubNub, pnFileEventResult: PNFileEventResult) {
             }
         }
 
