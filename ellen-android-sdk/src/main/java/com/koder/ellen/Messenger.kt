@@ -819,7 +819,7 @@ class Messenger {
         }
 
         // Get the latest DM/conversation between two participants
-        @JvmStatic fun getLatestConversation(participantId1: String, participantId2: String): Conversation? {
+        @JvmStatic fun getDMConversation(participantId1: String, participantId2: String, reverseSort: Boolean = false): Conversation? {
             val conversations = fetchConversations()
             val dmList = mutableListOf<Conversation>()
 
@@ -835,7 +835,11 @@ class Messenger {
             }
 
             // Sort by latest
-            val sortedList = dmList.sortedBy { dm -> dm.timeCreated?.toInt() }
+            var sortedList = dmList.sortedBy { dm -> dm.timeCreated?.toInt() }
+
+            if(reverseSort) {
+                sortedList = sortedList.asReversed()
+            }
 
             if(sortedList.isEmpty()) return null
 

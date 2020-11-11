@@ -218,6 +218,8 @@ class MainActivity : AppCompatActivity() {
         // jff3, jff5
 //        val conversation = Messenger.getLatestConversation("ff2ebeea-d051-4d6c-a5fd-9becd09d7a5d", "b33d86fc-33c6-43f0-b4f5-65afc6508fad")
 //        Log.d(TAG, "Latest conversation $conversation")
+//        val conversation = Messenger.getDMConversation("68a9968c-1a77-4855-829d-e133fcbe39ba", "d64b53fe-8bb8-4316-a62f-26b8c518f801", true)
+//        Log.d(TAG, "Latest conversation $conversation")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
