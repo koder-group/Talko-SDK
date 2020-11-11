@@ -264,9 +264,7 @@ internal class ConversationAdapter(
         if(dataset.get(position).participants.size > 2) {
             // MultiImageView
             // Get latest profile images for the first 4 users that does not include the current user
-            val participants = dataset.get(position).participants.filter { p -> p.user.userId != prefs?.userId}.take(
-                4
-            )
+            var participants = dataset.get(position).participants.filter { p -> p.user.userId != prefs?.userId}.take(4)
             Log.d(TAG, "title $title")
 //            Log.d(TAG, "participants $participants")
             val urlList = getLatestProfileImages(participants)
@@ -573,7 +571,7 @@ internal class ConversationAdapter(
 //                        )
 //                    }
                 }
-                else -> {
+                3 -> {
 
 //                    addWhiteBorder(scaledBitmaps[0], 4.px)?.let {
 //                        canvas.drawBitmap(
@@ -606,12 +604,12 @@ internal class ConversationAdapter(
                     canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
                     canvas.drawBitmap(scaledBitmaps[2], 100f, 100f, null)
                 }
-//                4 -> {
-//                    canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
-//                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
-//                    canvas.drawBitmap(scaledBitmaps[2], 0f, 100f, null)
-//                    canvas.drawBitmap(scaledBitmaps[3], 100f, 100f, null)
-//                }
+                4 -> {
+                    canvas.drawBitmap(scaledBitmaps[0], 0f, 0f, null)
+                    canvas.drawBitmap(scaledBitmaps[1], 100f, 0f, null)
+                    canvas.drawBitmap(scaledBitmaps[2], 0f, 100f, null)
+                    canvas.drawBitmap(scaledBitmaps[3], 100f, 100f, null)
+                }
             }
 //            canvas.drawBitmap(b[0], 0f, 0f, null)
 //            canvas.drawBitmap(b[1], 200f, 300f, null)
