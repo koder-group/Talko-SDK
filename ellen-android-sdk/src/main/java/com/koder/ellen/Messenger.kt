@@ -784,11 +784,11 @@ class Messenger {
             val list = mutableListOf<String>()
             for (conversation in conversations) {
                 val channel = "${conversation.tenantId}-${conversation.conversationId}".toUpperCase()
-                if(!Messenger.subscribedChannels.contains(channel)) {
+//                if(!Messenger.subscribedChannels.contains(channel)) {
                     //  tenant_id-conversation_id
                     list.add(channel)
-                    Messenger.subscribedChannels.add(channel)
-                }
+//                    Messenger.subscribedChannels.add(channel)
+//                }
             }
             if(list.size > 0) Messenger.subscribeToChannelList(list)
         }
