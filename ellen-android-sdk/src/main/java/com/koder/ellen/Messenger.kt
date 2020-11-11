@@ -130,6 +130,7 @@ class Messenger {
 
                         if(conversations.size > 0) {
                             Log.d(TAG, "Get Conversations from DB")
+                            subscribeToConversations(conversations)
                             completion?.onCompletion(Result.Success(true))
                             return@launch
                         }
@@ -141,7 +142,7 @@ class Messenger {
                             override fun onCompletion(result: Result<Any>) {
                                 if(result is Result.Success) {
                                     conversations = result.data as MutableList<Conversation>
-
+                                    subscribeToConversations(conversations)
                                     completion?.onCompletion(Result.Success(true))
                                 }
                             }
@@ -776,6 +777,20 @@ class Messenger {
             for(channel in channelList) {
                 subscribedChannels.remove(channel)
             }
+        }
+
+        fun subscribeToConversations(conversations: MutableList<Conversation>) {
+//        Log.d(TAG, "subscribeToConversations")
+            val list = mutableListOf<String>()
+            for (conversation in conversations) {
+                val channel = "${conversation.tenantId}-${conversation.conversationId}".toUpperCase()
+                if(!Messenger.subscribedChannels.contains(channel)) {
+                    //  tenant_id-conversation_id
+                    list.add(channel)
+                    Messenger.subscribedChannels.add(channel)
+                }
+            }
+            if(list.size > 0) Messenger.subscribeToChannelList(list)
         }
 
         // Request refresh token
