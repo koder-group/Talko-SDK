@@ -132,13 +132,12 @@ class Messenger {
                         // Load conversations from DB
                         conversations = loadConversationsFromDB()
 
-                        // TODO Resolve Messenger.set and onParticipantAdded
-//                        if(conversations.size > 0) {
-//                            Log.d(TAG, "Get Conversations from DB")
-//                            subscribeToConversations(conversations)
-//                            completion?.onCompletion(Result.Success(true))
-//                            return@launch
-//                        }
+                        if(conversations.size > 0) {
+                            Log.d(TAG, "Get Conversations from DB")
+                            subscribeToConversations(conversations)
+                            completion?.onCompletion(Result.Success(true))
+                            return@launch
+                        }
 
                         // Load latest conversations from Talko API
                         Log.d(TAG, "Get Conversations from Talko API")
