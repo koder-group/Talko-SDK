@@ -6,12 +6,14 @@ import android.text.Html
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.Lifecycle
-import com.facebook.stetho.Stetho
+//import com.facebook.stetho.Stetho
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.koder.ellen.api.RetrofitClient
 import com.koder.ellen.core.Prefs
 import com.koder.ellen.core.Utils
+import com.koder.ellen.data.ConversationDataSource
+import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.*
 import com.koder.ellen.data.Result
 import com.koder.ellen.persistence.TalkoDatabase
@@ -27,6 +29,7 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 import com.pubnub.api.models.consumer.pubsub.PNSignalResult
 import com.pubnub.api.models.consumer.pubsub.files.PNFileEventResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -129,25 +132,29 @@ class Messenger {
                         // Load conversations from DB
                         conversations = loadConversationsFromDB()
 
-                        if(conversations.size > 0) {
-                            Log.d(TAG, "Get Conversations from DB")
-                            subscribeToConversations(conversations)
-                            completion?.onCompletion(Result.Success(true))
-                            return@launch
-                        }
+                        // TODO Resolve Messenger.set and onParticipantAdded
+//                        if(conversations.size > 0) {
+//                            Log.d(TAG, "Get Conversations from DB")
+//                            subscribeToConversations(conversations)
+//                            completion?.onCompletion(Result.Success(true))
+//                            return@launch
+//                        }
 
-                        // Load conversations from Talko API
+                        // Load latest conversations from Talko API
                         Log.d(TAG, "Get Conversations from Talko API")
-                        val client = Client()
-                        client.getConversationMessages(object: CompletionCallback() {
-                            override fun onCompletion(result: Result<Any>) {
-                                if(result is Result.Success) {
-                                    conversations = result.data as MutableList<Conversation>
-                                    subscribeToConversations(conversations)
-                                    completion?.onCompletion(Result.Success(true))
-                                }
-                            }
-                        })
+                        val conversationRepository = ConversationRepository(ConversationDataSource())
+
+                        // Get Conversations
+                        var convos =  async(IO) {conversationRepository.getConversations(forceLoad = true)}.await()
+
+                        // Get Conversation Messages
+                        convos = async(IO) {conversationRepository.getConversationMessages(convos, forceLoad = true)}.await()
+                        Log.d(TAG, "${convos}")
+
+                        conversations = convos
+
+                        subscribeToConversations(conversations)
+                        completion?.onCompletion(Result.Success(true))
                     } else {
                         completion?.onCompletion(Result.Error(IOException("Error setting Messenger")))
                     }
@@ -194,6 +201,26 @@ class Messenger {
                     completion?.onCompletion(Result.Error(IOException("Error setting Messenger User")))
                 }
 
+            }
+        }
+
+        // Loads conversations from Talko API to DB and Messenger
+        fun loadConversations(forceLoad: Boolean = false) {
+            Log.d(TAG, "loadConversations")
+
+            val conversationRepository = ConversationRepository(ConversationDataSource())
+
+            GlobalScope.launch {
+                try {
+                    // Get Conversations
+                    var convos =  async(IO) {conversationRepository.getConversations(forceLoad)}.await()
+
+                    // Get Conversation Messages
+                    convos = async(IO) {conversationRepository.getConversationMessages(convos, forceLoad)}.await()
+
+                    conversations = convos
+                } catch (e: Exception) {
+                }
             }
         }
 
@@ -383,6 +410,8 @@ class Messenger {
                             eventCallback.onConversationModified(initiatingUser, title, description, conversationId)
                         }
                         EventName.participantAdded.value -> {
+                            Log.d("participantAdded", "${pnMessageResult}")
+
                             // Participant added
                             val addedUserId = pnMessageResult.message.asJsonObject.get("userId").asString
                             val conversationId = pnMessageResult.message.asJsonObject.get("context").asJsonObject.get("conversationId").asString
@@ -391,6 +420,10 @@ class Messenger {
                             if(prefs?.userId.equals(addedUserId, ignoreCase = true)) {
                                 // Current user, subscribe to channel
                                 subscribeToChannelList(mutableListOf("${prefs?.tenantId}-${conversationId}".toUpperCase()))
+
+                                // Reload conversations
+                                loadConversations(forceLoad = true)
+
                             }
                             addParticipant(conversationId, addedUserId)
                         }
@@ -826,6 +859,19 @@ class Messenger {
             return null
         }
 
+        // Returns true if metadata includes property
+        fun containsMetadataProperty(prop: String, metadataStr: String): Boolean {
+
+            val metadataParts = metadataStr.split(',')
+            for(mdPart in metadataParts) {
+                val parts = mdPart.split('=')
+                var mdProp = parts[0]
+                if(mdProp !== null && mdProp.contains(prop, ignoreCase = true)) return true
+            }
+
+            return false
+        }
+
         // Get the latest DM/conversation between two participants
         @JvmStatic fun getDMConversation(participantId1: String, participantId2: String, reverseSort: Boolean = false): Conversation? {
             val conversations = fetchConversations()
@@ -833,10 +879,17 @@ class Messenger {
 
             // Get DMs
             for(conversation in conversations) {
+
                 val p1found = conversation.participants.find { p -> p.user.userId.equals(participantId1, ignoreCase = true) }
                 val p2found = conversation.participants.find { p -> p.user.userId.equals(participantId2, ignoreCase = true) }
 
-                if(p1found != null && p2found != null && conversation.participants.size == 2) {
+
+                if(p1found != null &&
+                    p2found != null &&
+                    conversation.participants.size == 2 &&
+                    !containsMetadataProperty("classId", conversation.metadata.toString()) &&
+                    !containsMetadataProperty("entityId", conversation.metadata.toString())) {
+
                     // Conversation between 2 participants
                     dmList.add(conversation)
                 }
