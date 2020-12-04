@@ -206,7 +206,7 @@ internal class ConversationDataSource {
         val sortedConversationList = mutableListOf<Conversation>()
 
         for (conversation in conversations) {
-            if(conversation.messages.isEmpty()) {
+            if(conversation.messages == null || conversation.messages.isEmpty()) {
                 noMessageMap.put(conversation, conversation.timeCreated.toLong())
                 continue
             }
