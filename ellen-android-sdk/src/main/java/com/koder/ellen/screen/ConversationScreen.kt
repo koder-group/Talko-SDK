@@ -562,7 +562,7 @@ class ConversationScreen : Fragment() {
         if(Messenger.conversationFilterEmptyConversations) {
             // Filter conversations with no messages
             return conversations.filter { c ->
-                c.messages.size > 0
+                c.messages?.size > 0
             }.toMutableList()
         }
 
