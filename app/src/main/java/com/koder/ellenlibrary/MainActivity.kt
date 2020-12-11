@@ -53,6 +53,9 @@ class MainActivity : AppCompatActivity() {
         // Message input mention color
         Messenger.mentionInputColor = "#224EA4"
 
+        // Hide status text
+        Messenger.messageStatusText = false
+
         setContentView(R.layout.activity_main)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 val messageScreen = MessageScreen()
                 bundle.putString("CONVERSATION_ID", conversation.conversationId)
 
-//                val metadataFilterMap: HashMap<String, String> = hashMapOf("classId" to "6af24cf6-f84c-4b37-ae9e-66b2db6c8091");
+//                val metadataFilterMap: HashMap<String, String> = hashMapOf("classId" to "87278861-82af-49f9-8b7b-b5064337cd0f")
 //                bundle.putSerializable("METADATA_FILTER", metadataFilterMap)
 
                 // Auto populate message
@@ -215,10 +218,7 @@ class MainActivity : AppCompatActivity() {
 //        Log.d(TAG, "Fetch conversation ${conversationNull}")
 
         // Get latest DM/conversation between 2 participants
-        // jff3, jff5
-//        val conversation = Messenger.getLatestConversation("ff2ebeea-d051-4d6c-a5fd-9becd09d7a5d", "b33d86fc-33c6-43f0-b4f5-65afc6508fad")
-//        Log.d(TAG, "Latest conversation $conversation")
-//        val conversation = Messenger.getDMConversation("68a9968c-1a77-4855-829d-e133fcbe39ba", "d64b53fe-8bb8-4316-a62f-26b8c518f801", true)
+//        val conversation = Messenger.getDMConversation("f85c1e7e-b12b-4454-b970-12b2e93f42a6", "400d9b3a-995f-4889-8e40-dfd026c8654a", true)
 //        Log.d(TAG, "Latest conversation $conversation")
     }
 

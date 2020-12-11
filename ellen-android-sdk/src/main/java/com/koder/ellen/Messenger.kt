@@ -71,6 +71,7 @@ class Messenger {
         @JvmStatic var conversationTimeAgoDateNames = false
         @JvmStatic var conversationTimeAgoDateHighlight = true
         // Message Screen
+        @JvmStatic var messageStatusText = true // "User has been added to conversation"
         @JvmStatic var senderMessageRadius = 18 // dp
         @JvmStatic var selfMessageRadius = 18
         @JvmStatic var senderBackgroundColor = "#88000000"  // gray

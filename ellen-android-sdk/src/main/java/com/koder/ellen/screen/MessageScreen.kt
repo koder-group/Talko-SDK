@@ -241,6 +241,7 @@ open class MessageScreen : Fragment(),
         }
 
         val found = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+
         found?.let {
             Log.d(TAG, "found ${it}")
             conversation = it
@@ -1718,14 +1719,16 @@ open class MessageScreen : Fragment(),
     }
 
     fun showStatusMessage(message: String) {
-        Log.d(TAG, "${message}")
-        val message = Message(sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!), metadata = MessageMetadata(statusMessage = message))
-        // Show message
-        messages.add(message)
-        Log.d(TAG, "messages ${messages}")
-        val index = messages.indexOf(message)
-        viewAdapter.notifyItemInserted(index)
-        if(index == messages.size - 1) recyclerView.smoothScrollToPosition(index)
+        if(Messenger.messageStatusText) {
+            Log.d(TAG, "${message}")
+            val message = Message(sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!), metadata = MessageMetadata(statusMessage = message))
+            // Show message
+            messages.add(message)
+            Log.d(TAG, "messages ${messages}")
+            val index = messages.indexOf(message)
+            viewAdapter.notifyItemInserted(index)
+            if(index == messages.size - 1) recyclerView.smoothScrollToPosition(index)
+        }
     }
 
     fun updateConversation(conversationId: String) {
