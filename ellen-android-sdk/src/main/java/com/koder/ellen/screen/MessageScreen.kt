@@ -1782,7 +1782,7 @@ open class MessageScreen : Fragment(),
                             ignoreCase = true
                         )
                     ) {
-                        showStatusMessage("${initiatingUser.displayName} added a new user to the conversation.")
+                        showStatusMessage("${initiatingUser.displayName} ${Messenger.messageStatusTextAdded}")
                     }
                 }
             }
@@ -1794,7 +1794,7 @@ open class MessageScreen : Fragment(),
                             ignoreCase = true
                         )
                     ) {
-                        showStatusMessage("${initiatingUser.displayName} removed a user from the conversation.")
+                        showStatusMessage("${initiatingUser.displayName} ${Messenger.messageStatusTextRemoved}")
                     }
 
                     if (removedUserId.equals(prefs?.externalUserId, ignoreCase = true)) {
