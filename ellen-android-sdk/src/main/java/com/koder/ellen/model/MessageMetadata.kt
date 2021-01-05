@@ -6,5 +6,7 @@ data class MessageMetadata(
     var errorMessage: String = "",
     var statusMessage: String = "",
     var classId: String = "",
-    var classTitle: String = ""
+    var entityId: String = "",
+    var entityType: String = "",
+    var title: String = ""
 )

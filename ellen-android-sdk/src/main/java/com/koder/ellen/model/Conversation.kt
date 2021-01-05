@@ -8,7 +8,7 @@ data class Conversation(
     val type: Int,
     val participants: MutableList<Participant>,
     val state: Int,
-    val metadata: Any,
+    val metadata: MessageMetadata,
     val accessPolicy: Any,
     var timeCreated: Number,
     var messages: MutableList<Message>

@@ -84,7 +84,10 @@ internal class ConversationDataSource {
             if (response.isSuccessful) {
                 // Filter Conversations where state = 1
 //                Log.d(TAG, "${response.body()}")
-                return filterConversationsByState(response.body()!!, 1)
+                var conversations = filterConversationsByState(response.body()!!, 1)
+                conversations = filterLatestDMs(conversations)
+
+                return conversations
             }
 
             if(response.code() == 401 && response.message().equals("Unauthorized", ignoreCase = true)) {
@@ -197,6 +200,28 @@ internal class ConversationDataSource {
         val filteredList = list.filter { it.state == state }
 //        Log.d(TAG, "${filteredList}")
         return filteredList.toMutableList()
+    }
+
+    private fun filterLatestDMs(conversations: MutableList<Conversation>): MutableList<Conversation> {
+        var addedMap = hashMapOf<String, String>()
+        var latest = arrayListOf<Conversation>()
+        for(conversation in conversations.reversed()) {
+            if(conversation.participants.size === 2 && conversation.metadata.classId.isNullOrEmpty() && conversation.metadata.entityId.isNullOrEmpty()) {
+                // Filter latest DM Conversations
+                val recipientId = conversation.participants.filter {p -> p.user.userId != prefs?.userId}
+
+                Log.d(TAG, "conversation ${conversation.conversationId} ${addedMap["recipientId"].isNullOrEmpty()} userIds ${recipientId}")
+                if(addedMap["recipientId"].isNullOrEmpty()) {
+                    addedMap["recipientId"] = conversation.conversationId
+                    latest.add(conversation)
+                }
+            } else {
+                // Add all others
+                latest.add(conversation)
+            }
+        }
+
+        return latest.toMutableList()
     }
 
     fun sortConversationsByLatestMessage(conversations: MutableList<Conversation>): MutableList<Conversation> {
