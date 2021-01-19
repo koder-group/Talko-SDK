@@ -32,6 +32,7 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
+import com.koder.ellen.core.Utils.Companion.getShape
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.Participant
 import com.koder.ellen.model.User
@@ -142,6 +143,18 @@ internal class ConversationAdapter(
 //            Toast.makeText(holder.textView.context, holder.textView.text, Toast.LENGTH_SHORT).show()
 //        }
 //
+        val layout = holder.layout.findViewById<ConstraintLayout>(R.id.conversation_item_layout)
+
+        if(position == 0) {
+            val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), "#FFFFFF")
+            layout.background = shape
+        }
+
+        if(position == dataset.size - 1) {
+            val shape = getShape(0.px.toFloat(), 0.px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), "#FFFFFF")
+            layout.background = shape
+        }
+
         val cardView = holder.layout.findViewById<MaterialCardView>(R.id.conversation_icon_layout)
         val newMessageDot = holder.layout.findViewById<ImageView>(R.id.new_message_dot)
         val newMessageCheck = holder.layout.findViewById<ImageView>(R.id.new_message_check)

@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Bundle
@@ -43,6 +45,7 @@ import com.koder.ellen.model.User
 import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.conversation.ConversationAdapter
 import com.koder.ellen.ui.conversation.ConversationViewModel
+import com.koder.ellen.ui.conversation.SimpleDividerItemDecoration
 import com.koder.ellen.ui.conversation.SwipeToDeleteCallback
 import com.koder.ellen.ui.main.MainViewModel
 import java.text.SimpleDateFormat
@@ -143,8 +146,8 @@ class ConversationScreen : Fragment() {
         appBar.visibility = View.GONE
 
         // Customizable UI options
-        setBackgroundColor(Messenger.screenBackgroundColor)
-        setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
+//        setBackgroundColor(Messenger.screenBackgroundColor)
+//        setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
 
         initView(rootView)
 
@@ -166,7 +169,8 @@ class ConversationScreen : Fragment() {
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
-        recyclerView.addItemDecoration(DividerItemDecoration(view.context, DividerItemDecoration.VERTICAL))
+//        recyclerView.addItemDecoration(DividerItemDecoration(view.context, DividerItemDecoration.VERTICAL))
+        recyclerView.addItemDecoration(SimpleDividerItemDecoration(view.context))
         emptyView = view.findViewById(R.id.empty_conversations_view)
 
         // Load conversations
