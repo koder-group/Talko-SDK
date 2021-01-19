@@ -144,13 +144,14 @@ internal class ConversationAdapter(
 //        }
 //
         val layout = holder.layout.findViewById<ConstraintLayout>(R.id.conversation_item_layout)
+        layout.background = getShape(0.px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), "#FFFFFF")
 
         if(position == 0) {
             val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), "#FFFFFF")
             layout.background = shape
         }
 
-        if(position == dataset.size - 1) {
+        if(position == itemCount - 1) {
             val shape = getShape(0.px.toFloat(), 0.px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), "#FFFFFF")
             layout.background = shape
         }
