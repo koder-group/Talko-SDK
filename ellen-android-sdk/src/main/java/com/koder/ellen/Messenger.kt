@@ -83,6 +83,7 @@ class Messenger {
         @JvmStatic var senderLinkColor = "#BBDEFB"
         @JvmStatic var selfLinkColor = "#BBDEFB"
         @JvmStatic var mentionInputColor = "#1A73E9"
+        @JvmStatic var messageScreenBackgroundColor = "#FFFFFF"
 
         internal var conversations = mutableListOf<Conversation>()
         var currentConversationId = ""

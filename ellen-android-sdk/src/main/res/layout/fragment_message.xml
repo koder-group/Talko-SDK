@@ -79,9 +79,7 @@
 
             android:layout_alignParentBottom="true"
 
-            android:animateLayoutChanges="true"
-
-            android:background="#FFF">
+            android:animateLayoutChanges="true">
             <RelativeLayout
                 android:id="@+id/message_input_layout"
                 android:layout_width="match_parent"

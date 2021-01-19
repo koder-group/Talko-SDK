@@ -381,8 +381,8 @@ open class MessageScreen : Fragment(),
         listFrame = rootView.findViewById<FrameLayout>(R.id.list_frame)
 
         // Customizable UI options
-        setBackgroundColor(Messenger.screenBackgroundColor)
-        setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
+        setBackgroundColor(Messenger.messageScreenBackgroundColor)
+//        setListCornerRadius(Messenger.screenCornerRadius[0], Messenger.screenCornerRadius[1], Messenger.screenCornerRadius[2], Messenger.screenCornerRadius[3])
 
         // Enable messaging
         val messageInputFrame = rootView.findViewById<FrameLayout>(R.id.message_input_frame)
