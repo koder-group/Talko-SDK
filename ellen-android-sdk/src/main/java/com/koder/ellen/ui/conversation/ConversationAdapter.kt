@@ -157,7 +157,10 @@ internal class ConversationAdapter(
         }
 
         val cardView = holder.layout.findViewById<MaterialCardView>(R.id.conversation_icon_layout)
+
         val newMessageDot = holder.layout.findViewById<ImageView>(R.id.new_message_dot)
+        newMessageDot.setColorFilter(Color.parseColor(Messenger.conversationNewMessageColor))
+
         val newMessageCheck = holder.layout.findViewById<ImageView>(R.id.new_message_check)
         cardView.strokeWidth = 0
         newMessageDot.visibility = View.GONE
