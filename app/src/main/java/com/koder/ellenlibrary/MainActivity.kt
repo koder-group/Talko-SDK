@@ -126,6 +126,10 @@ class MainActivity : AppCompatActivity() {
                 messageScreen.setImageButtonColor("#aaaaaa")
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
+
+                // Testing
+                val conversation = Messenger.fetchConversation(conversation.conversationId)
+                conversation?.participants?.map { p -> Log.d(TAG, "Latest profile image ${Messenger.getLatestProfileImage(p.user.userId)}") }
             }
         })
 

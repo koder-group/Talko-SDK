@@ -946,6 +946,14 @@ class Messenger {
             return list
         }
 
+        @JvmStatic fun getLatestProfileImage(userId: String): String? {
+            return userProfileCache[userId.toLowerCase()]?.photoUrl
+        }
+
+        @JvmStatic fun getLatestDisplayName(userId: String): String? {
+            return userProfileCache[userId.toLowerCase()]?.displayName
+        }
+
         @JvmStatic fun getUserId(): String {
             return prefs?.userId!!
         }
