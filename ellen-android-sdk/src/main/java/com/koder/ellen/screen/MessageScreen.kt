@@ -405,7 +405,11 @@ open class MessageScreen : Fragment(),
         val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
         when (mode) {
             Configuration.UI_MODE_NIGHT_YES -> {
-                messageInputFrame.setBackgroundColor(activity?.resources!!.getColor(R.color.dmBackground))
+
+                if(Messenger.messageScreenBackgroundColor == "#FFFFFF")
+                    messageInputFrame.setBackgroundColor(activity?.resources!!.getColor(R.color.dmBackground))
+                else
+                    messageInputFrame.setBackgroundColor(Color.parseColor(Messenger.messageScreenBackgroundColor))
 
                 val messageInputLayout = rootView.findViewById<RelativeLayout>(R.id.message_input_layout)
                 messageInputLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_round_border_message_dark)

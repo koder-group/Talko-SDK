@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         Messenger.conversationTimeAgoDateNames = false
         Messenger.conversationTimeAgoDateHighlight = false
 
-        Messenger.messageScreenBackgroundColor = "#121212"
+        Messenger.messageScreenBackgroundColor = "#000000"
 
         Messenger.senderBackgroundColor = "#E9E9EB"  // light gray
         Messenger.selfBackgroundColor = "#5D4298"  // purple
