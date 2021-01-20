@@ -36,6 +36,7 @@ import com.koder.ellen.core.Utils.Companion.getShape
 import com.koder.ellen.model.Conversation
 import com.koder.ellen.model.Participant
 import com.koder.ellen.model.User
+import com.koder.ellen.screen.ConversationScreen
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -144,15 +145,15 @@ internal class ConversationAdapter(
 //        }
 //
         val layout = holder.layout.findViewById<ConstraintLayout>(R.id.conversation_item_layout)
-        layout.background = getShape(0.px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), "#FFFFFF")
+        layout.background = getShape(0.px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), Messenger.conversationListBackgroundColor)
 
         if(position == 0) {
-            val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), "#FFFFFF")
+            val shape = getShape(Messenger.screenCornerRadius[0].px.toFloat(), Messenger.screenCornerRadius[1].px.toFloat(), 0.px.toFloat(), 0.px.toFloat(), Messenger.conversationListBackgroundColor)
             layout.background = shape
         }
 
         if(position == itemCount - 1) {
-            val shape = getShape(0.px.toFloat(), 0.px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), "#FFFFFF")
+            val shape = getShape(0.px.toFloat(), 0.px.toFloat(), Messenger.screenCornerRadius[2].px.toFloat(), Messenger.screenCornerRadius[3].px.toFloat(), Messenger.conversationListBackgroundColor)
             layout.background = shape
         }
 

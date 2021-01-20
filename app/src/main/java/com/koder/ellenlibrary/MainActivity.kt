@@ -1,6 +1,7 @@
 package com.koder.ellenlibrary
 
 import android.app.Activity
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         Messenger.conversationTimeAgoDateNames = false
         Messenger.conversationTimeAgoDateHighlight = false
 
-        Messenger.messageScreenBackgroundColor = "#f0f1f4"
+        Messenger.messageScreenBackgroundColor = "#121212"
 
         Messenger.senderBackgroundColor = "#E9E9EB"  // light gray
         Messenger.selfBackgroundColor = "#5D4298"  // purple
@@ -60,6 +61,13 @@ class MainActivity : AppCompatActivity() {
         Messenger.messageStatusText = false
 
         Messenger.conversationNewMessageColor = "#5d4298"
+
+        val mode = resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                Messenger.conversationListBackgroundColor = "#212121"
+            }
+        }
 
         setContentView(R.layout.activity_main)
 
@@ -128,7 +136,8 @@ class MainActivity : AppCompatActivity() {
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
 
                 // Testing
-                val conversation = Messenger.fetchConversation(conversation.conversationId)
+//                val conversation = Messenger.fetchConversation(conversation.conversationId)
+                Log.d(TAG, "Conversation metadata ${conversation.metadata} ${conversation.metadata.classId.isNullOrEmpty() && conversation.metadata.entityId.isNullOrEmpty()}")
                 conversation?.participants?.map { p -> Log.d(TAG, "Latest profile image ${Messenger.getLatestProfileImage(p.user.userId)}") }
             }
         })

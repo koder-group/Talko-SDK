@@ -70,6 +70,7 @@ class Messenger {
         @JvmStatic var conversationIconStroke = true
         @JvmStatic var conversationTimeAgoDateNames = false
         @JvmStatic var conversationTimeAgoDateHighlight = true
+        @JvmStatic var conversationListBackgroundColor = "#FFFFFF"
         // Message Screen
         @JvmStatic var messageStatusText = true // "User has been added to conversation"
         @JvmStatic var messageStatusTextAdded = "added a new user to the conversation."
