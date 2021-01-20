@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item>
+    <shape android:shape="oval">
+      <solid android:color="#5d4298"/>
+    </shape>
+  </item>
+  <item
+      android:drawable="@drawable/ic_paper_plane_solid"
+      android:bottom="12dp"
+      android:left="11dp"
+      android:right="13dp"
+      android:top="12dp"/>
+</layer-list>

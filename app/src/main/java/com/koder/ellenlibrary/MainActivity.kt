@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.koder.ellen.*
 import com.koder.ellen.Messenger.Companion.currentConversationId
 import com.koder.ellen.Messenger.Companion.getUserId
@@ -30,14 +31,16 @@ class MainActivity : AppCompatActivity() {
 
         // Options
         Messenger.screenBackgroundColor = "#5d4298"
-        Messenger.screenCornerRadius = intArrayOf(20, 20, 0, 0)
+        Messenger.screenCornerRadius = intArrayOf(0, 0, 0, 0)
         Messenger.conversationSwipeToDelete = true
         Messenger.conversationLongClickToDelete = false
         Messenger.conversationFilterEmptyConversations = true
         Messenger.conversationNewMessageCheckmark = false
         Messenger.conversationIconStroke = false
-        Messenger.conversationTimeAgoDateNames = true
+        Messenger.conversationTimeAgoDateNames = false
         Messenger.conversationTimeAgoDateHighlight = false
+
+        Messenger.messageScreenBackgroundColor = "#f0f1f4"
 
         Messenger.senderBackgroundColor = "#E9E9EB"  // light gray
         Messenger.selfBackgroundColor = "#5D4298"  // purple
@@ -55,6 +58,8 @@ class MainActivity : AppCompatActivity() {
 
         // Hide status text
         Messenger.messageStatusText = false
+
+        Messenger.conversationNewMessageColor = "#5d4298"
 
         setContentView(R.layout.activity_main)
 
@@ -115,6 +120,11 @@ class MainActivity : AppCompatActivity() {
                 })
 
                 messageScreen.setArguments(bundle)
+
+                val drawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_paper_plane_circle, null)
+                messageScreen.setSendButtonDrawable(drawable!!)
+                messageScreen.setImageButtonColor("#aaaaaa")
+
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, messageScreen, resources.getString(R.string.message)).addToBackStack(resources.getString(R.string.message)).commit()
             }
         })

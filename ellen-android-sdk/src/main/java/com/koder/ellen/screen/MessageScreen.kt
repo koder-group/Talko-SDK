@@ -131,6 +131,9 @@ open class MessageScreen : Fragment(),
     val messages: MutableList<Message> = mutableListOf()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
+    private var sendButtonDrawable: Drawable? = null
+    private var imageButtonColor: String? = null
+
     private val messageViewModel: MessageViewModel by lazy {
         ViewModelProvider(this, BaseViewModelFactory {
             MessageViewModel(
@@ -289,7 +292,16 @@ open class MessageScreen : Fragment(),
         messageSendButton.setOnClickListener(this)
         messageSendButton.isEnabled = false
 
-        DrawableCompat.setTint(messageSendButton.drawable, Color.parseColor("#1A73E8"))
+        // Custom elements
+        if(sendButtonDrawable != null)  {
+            messageSendButton.setImageDrawable(sendButtonDrawable)
+        } else {
+            DrawableCompat.setTint(messageSendButton.drawable, Color.parseColor("#1A73E8"))
+        }
+
+        imageButtonColor?.let {
+            DrawableCompat.setTint(addImageButton.drawable, Color.parseColor(it))
+        }
 
         messageEditText = rootView.findViewById(R.id.message_input)
 
@@ -1899,6 +1911,14 @@ open class MessageScreen : Fragment(),
         val shape = ShapeDrawable(RoundRectShape(floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft), null, null))
         shape.getPaint().setColor(Color.parseColor(color))
         return shape
+    }
+
+    fun setSendButtonDrawable(drawable: Drawable) {
+        sendButtonDrawable = drawable
+    }
+
+    fun setImageButtonColor(hex: String) {
+        imageButtonColor = hex
     }
 }
 
