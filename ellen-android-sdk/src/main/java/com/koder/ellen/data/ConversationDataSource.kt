@@ -104,7 +104,7 @@ internal class ConversationDataSource {
                 refreshToken()
             }
         } catch (e: Throwable) {
-            Log.d(TAG, e.message)
+            Log.d(TAG, "${e?.message}")
             return mutableListOf()
         }
 
