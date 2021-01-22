@@ -639,8 +639,6 @@ open class MessageScreen : Fragment(),
             Log.d(TAG, "Messages changed")
             Log.d(TAG, "${it}")
 
-            initMessages(it)
-
             messages.clear()
             messages.addAll(it)
             viewAdapter.notifyDataSetChanged()
@@ -898,23 +896,6 @@ open class MessageScreen : Fragment(),
         hideKeyboard(activity)
     }
 
-    private fun initMessages(messages: MutableList<Message>): MutableList<Message> {
-        val removeList = mutableListOf<Message>()
-
-        // Filter messages based on key
-        if(filterKey != null && filterValue != null) {
-            for((index, element) in messages.withIndex()) {
-                when(filterKey) {
-                    "classId" -> if(element.metadata.classId != filterValue) removeList.add(element)
-                }
-            }
-        }
-
-        messages.removeAll(removeList)
-
-        return messages
-    }
-
     private fun startPhotoPicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.setType("image/*")
@@ -1026,13 +1007,12 @@ open class MessageScreen : Fragment(),
         messages.add(message)
 
         // Sort Messages in case message:published is not in order
-        val sorted = sortByTimeCreated(messages)
+//        var sorted = sortByTimeCreated(messages)
 //        Log.d(TAG, "${sorted}")
 
-        initMessages(sorted)
+//        messages.clear()
+//        messages.addAll(sorted)
 
-        messages.clear()
-        messages.addAll(sorted)
         val position = messages.indexOf(message)
 
         viewAdapter.notifyItemInserted(position)
