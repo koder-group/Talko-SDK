@@ -85,7 +85,8 @@ class MainActivity : AppCompatActivity() {
 //            val userIds = arrayListOf("ed4b93a3-3501-4a8b-bf4b-d755629ec493")
 //            bundle.putStringArrayList("userIds", userIds)
 
-            val conversationScreen = ConversationScreen()
+//            val conversationScreen = ConversationScreen()
+            val conversationScreen = myConversationScreen()
 //            conversationScreen.arguments = bundle
             getSupportFragmentManager().beginTransaction().replace(
                 R.id.frame_layout,

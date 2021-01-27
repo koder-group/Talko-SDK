@@ -52,7 +52,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ConversationScreen : Fragment() {
+open class ConversationScreen : Fragment() {
 
     companion object {
         fun newInstance() = ConversationScreen()
@@ -79,7 +79,7 @@ class ConversationScreen : Fragment() {
 
     // RecyclerView
     private lateinit var recyclerView: RecyclerView
-    private lateinit var emptyView: TextView
+    private lateinit var emptyView: ViewGroup
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var conversations: MutableList<Conversation> = mutableListOf()
@@ -171,7 +171,10 @@ class ConversationScreen : Fragment() {
         }
 //        recyclerView.addItemDecoration(DividerItemDecoration(view.context, DividerItemDecoration.VERTICAL))
         recyclerView.addItemDecoration(SimpleDividerItemDecoration(view.context))
-        emptyView = view.findViewById(R.id.empty_conversations_view)
+
+        // Empty view placeholder
+        emptyView = view.findViewById<FrameLayout>(R.id.empty_frame)
+        setEmptyPlaceholder(emptyView as FrameLayout)
 
         // Load conversations
         swipeRefreshLayout.setRefreshing(true)
@@ -588,5 +591,11 @@ class ConversationScreen : Fragment() {
                 }
             }
         }
+    }
+
+    // Override to allow the client-app to set a custom empty placeholder
+    open fun setEmptyPlaceholder(frame: FrameLayout) {
+        val emptyView = LayoutInflater.from(activity).inflate(R.layout.empty_conversations_view, null)
+        frame.addView(emptyView)
     }
 }
