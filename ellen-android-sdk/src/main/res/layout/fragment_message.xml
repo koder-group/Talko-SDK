@@ -196,7 +196,7 @@
             android:layout_above="@id/message_input_frame"
             android:elevation="2dp"
             android:outlineProvider="bounds"
-            android:background="@color/white"/>
+            android:background="@color/colorBackground"/>
 
         <!-- Expanded image -->
         <ImageView

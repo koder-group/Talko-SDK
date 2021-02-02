@@ -7,7 +7,7 @@
     android:paddingRight="15dp"
     android:paddingBottom="10dp"
     android:paddingLeft="15dp"
-    android:background="#ffffff"
+    android:background="@color/colorBackground"
     android:foreground="?android:attr/selectableItemBackground">
 
     <com.google.android.material.card.MaterialCardView
@@ -43,6 +43,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
 
         android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"/>
+        android:layout_marginLeft="10dp"
+
+        android:textColor="@color/colorText"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

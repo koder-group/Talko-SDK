@@ -33,4 +33,6 @@
     <color name="dmTextDisabled">#38FFFFFF</color>
 
     <color name="divider">#EEEEEE</color>
+    <color name="colorText">#000000</color>
+    <color name="colorBackground">#FFFFFF</color>
 </resources>
