@@ -890,9 +890,12 @@ class Messenger {
 
                 if(p1found != null &&
                     p2found != null &&
-                    conversation.participants.size == 2 &&
-                    !containsMetadataProperty("classId", conversation.metadata.toString()) &&
-                    !containsMetadataProperty("entityId", conversation.metadata.toString())) {
+                    conversation.participants.size == 2
+//                    &&
+//                    !containsMetadataProperty("classId", conversation.metadata.toString()) &&
+//                    !containsMetadataProperty("entityId", conversation.metadata.toString())
+                    && conversation.metadata.classId.isNullOrEmpty() && conversation.metadata.entityId.isNullOrEmpty()
+                ) {
 
                     // Conversation between 2 participants
                     dmList.add(conversation)
@@ -909,6 +912,10 @@ class Messenger {
             if(sortedList.isEmpty()) return null
 
             return sortedList.last()
+        }
+
+        @JvmStatic fun getDMConversation(participantId: String, reverseSort: Boolean = false): Conversation? {
+            return getDMConversation(prefs?.userId!!, participantId, reverseSort)
         }
 
         // Get Conversation by Conversation Id
