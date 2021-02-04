@@ -25,6 +25,7 @@ import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.text.HtmlCompat
@@ -41,11 +42,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.koder.ellen.EventCallback
 import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
+
 import com.koder.ellen.data.ConversationDataSource
 import com.koder.ellen.data.ConversationRepository
 import com.koder.ellen.model.*
@@ -55,8 +58,10 @@ import com.koder.ellen.ui.conversation.ConversationViewModel
 import com.koder.ellen.ui.main.MainViewModel
 import com.koder.ellen.data.MessageDataSource
 import com.koder.ellen.data.MessageRepository
+import com.koder.ellen.ui.message.*
 import com.koder.ellen.ui.message.MediaAdapter
 import com.koder.ellen.ui.message.MessageAdapter
+import com.koder.ellen.ui.message.MessageFragment
 import com.koder.ellen.ui.message.MessageMentionAdapter
 import com.koder.ellen.ui.message.MessageViewModel
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -206,6 +211,8 @@ open class MessageScreen : Fragment(),
     // Auto populate message
     private var autoPopulateMessage: String? = null
     private var sendAutoPopulateMessage: Boolean = false
+
+    // Reactions
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -1411,6 +1418,11 @@ open class MessageScreen : Fragment(),
 //        Log.d(TAG, "reaction ${reaction}")
         messageViewModel.setReaction(message, reactionCode)
     }
+
+    open fun setMessageReactions() {
+
+    }
+
     // Update message with Reaction
     fun updateMessage(message: Message) {
         messageViewModel.updateMessage(message)
@@ -1845,6 +1857,7 @@ open class MessageScreen : Fragment(),
             override fun onMessageUserReaction(message: Message) {
                 activity?.runOnUiThread {
                     if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                        Log.d(TAG, "onMessageUserReaction ${message}")
                         updateMessage(message)
                     }
                 }
@@ -1903,6 +1916,144 @@ open class MessageScreen : Fragment(),
 
     fun setImageButtonColor(hex: String) {
         imageButtonColor = hex
+    }
+
+    open fun showBottomSheetDialog(view: View, message: Message) {
+        val dialog = BottomSheetDialog(view.context)
+//                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        dialog.setTitle("Title")
+        dialog.setContentView(R.layout.dialog_message_actions)
+        val likeBtn = dialog.findViewById<TextView>(R.id.like)
+        val dislikeBtn = dialog.findViewById<TextView>(R.id.dislike)
+        val copyText = dialog.findViewById<TextView>(R.id.copy_text)
+        val saveMedia = dialog.findViewById<TextView>(R.id.save_media)
+        val report = dialog.findViewById<TextView>(R.id.report)
+        val delete = dialog.findViewById<TextView>(R.id.delete)
+        val errorMessage = dialog.findViewById<TextView>(R.id.error_message)
+
+        // Dark mode
+        val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+        when (mode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                val background = dialog.findViewById<ConstraintLayout>(R.id.dialog_bottom_sheet)
+                background?.background = resources.getDrawable(R.drawable.dialog_round_top_dark)
+
+                copyText?.setTextColor(resources.getColor(R.color.dmTextHigh))
+                var drawables = copyText?.compoundDrawables
+                drawables?.let {
+                    for (drawable in it) {
+                        drawable?.let {
+                            DrawableCompat.setTint(it, resources.getColor(R.color.dmTextMed))
+                        }
+                    }
+                }
+
+                saveMedia?.setTextColor(resources.getColor(R.color.dmTextHigh))
+                drawables = saveMedia?.compoundDrawables
+                drawables?.let {
+                    for (drawable in it) {
+                        drawable?.let {
+                            DrawableCompat.setTint(it, resources.getColor(R.color.dmTextMed))
+                        }
+                    }
+                }
+
+                errorMessage?.setTextColor(resources.getColor(R.color.dmTextHigh))
+            }
+        }
+
+        // Reaction, Like
+        likeBtn!!.setOnClickListener {
+            setReaction(
+                message,
+                resources.getString(R.string.reaction_code_like)
+            )
+            Handler().postDelayed({
+                dialog.dismiss()
+            }, 200)
+        }
+
+        // Reaction, Dislike
+        dislikeBtn?.setOnClickListener {
+            setReaction(
+                message,
+                resources.getString(R.string.reaction_code_dislike)
+            )
+            Handler().postDelayed({
+                dialog.dismiss()
+            }, 200)
+        }
+
+        // Show Copy text or Save (Image)
+        if (message.media == null || message.media?.content == null || message.media?.thumbnail == null) {
+            // Show Copy text
+            copyText!!.visibility = View.VISIBLE
+            copyText!!.setOnClickListener {
+                copyText(message, it)
+                Handler().postDelayed({
+                    dialog.dismiss()
+                }, 200)
+            }
+        } else {
+            // Show Save
+            saveMedia!!.visibility = View.VISIBLE
+            saveMedia!!.setOnClickListener {
+
+                saveMedia(message, it)
+
+                Handler().postDelayed({
+                    dialog.dismiss()
+                }, 200)
+            }
+        }
+
+        if (!message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
+            // Report
+            report!!.visibility = View.VISIBLE
+            report!!.setOnClickListener {
+
+                reportMessage(message, it)
+
+                Handler().postDelayed({
+                    dialog.dismiss()
+                }, 200)
+            }
+        } else {
+            // Delete
+            delete!!.visibility = View.VISIBLE
+            delete!!.setOnClickListener {
+
+                deleteMessage(message, it)
+
+                Handler().postDelayed({
+                    dialog.dismiss()
+                }, 200)
+            }
+        }
+
+        // Error message
+        if(!message.metadata.errorMessage.isNullOrBlank()) {
+            likeBtn.visibility = View.GONE
+            dislikeBtn?.visibility = View.GONE
+//            copyText!!.visibility = View.GONE
+            copyText!!.visibility = View.VISIBLE
+
+            errorMessage!!.text = message.metadata.errorMessage
+            errorMessage!!.visibility = View.VISIBLE
+
+            delete!!.visibility = View.VISIBLE
+            delete!!.text = "Remove"
+            delete!!.setOnClickListener {
+
+                deleteMessageFromList(message)
+
+                Handler().postDelayed({
+                    dialog.dismiss()
+                }, 200)
+            }
+        }
+
+        dialog.show()
     }
 }
 

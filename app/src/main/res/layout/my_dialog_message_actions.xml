@@ -1,0 +1,185 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:id="@+id/dialog_bottom_sheet"
+    >
+<!--    // 👍 😍 😉 🧐-->
+<!--    // REACTION_CODE_LIKE-->
+<!--    // REACTION_CODE_LOVE-->
+<!--    // REACTION_CODE_WINK-->
+<!--    // REACTION_CODE_NERDY-->
+    <LinearLayout
+        android:id="@+id/reactions_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/copy_text">
+
+        <TextView
+            android:id="@+id/like"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:gravity="center_horizontal"
+            android:textSize="20dp"
+            android:text="👍"
+
+            android:foreground="?android:attr/selectableItemBackground"
+
+            android:tag="REACTION_CODE_LIKE"/>
+
+        <TextView
+            android:id="@+id/love"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:gravity="center_horizontal"
+            android:textSize="20dp"
+            android:text="😍"
+
+            android:foreground="?android:attr/selectableItemBackground"
+
+            android:tag="REACTION_CODE_LOVE"/>
+
+        <TextView
+            android:id="@+id/wink"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:gravity="center_horizontal"
+            android:textSize="20dp"
+            android:text="😉"
+
+            android:foreground="?android:attr/selectableItemBackground"
+
+            android:tag="REACTION_CODE_WINK"/>
+
+        <TextView
+            android:id="@+id/nerdy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:gravity="center_horizontal"
+            android:textSize="20dp"
+            android:text="🧐"
+
+            android:foreground="?android:attr/selectableItemBackground"
+
+            android:tag="REACTION_CODE_NERDY"/>
+    </LinearLayout>
+
+
+    <!-- Metadata error message -->
+    <TextView
+        android:id="@+id/error_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="20dp"
+        android:drawableLeft="@drawable/ic_error_outline_gray_24"
+        android:drawablePadding="15dp"
+        android:gravity="center_vertical"
+
+        app:layout_constraintTop_toBottomOf="@id/reactions_layout"
+        app:layout_constraintBottom_toTopOf="@id/copy_text"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:visibility="gone"
+        />
+
+    <!-- Copy Text -->
+    <TextView
+        android:id="@+id/copy_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/copy_text"
+        android:textColor="@color/darkGray"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="20dp"
+        android:drawableLeft="@drawable/ic_file_copy_24"
+        android:drawablePadding="15dp"
+        android:gravity="center_vertical"
+
+        app:layout_constraintTop_toBottomOf="@id/error_message"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:foreground="?android:attr/selectableItemBackground"
+
+        android:visibility="gone"
+        />
+
+    <!-- Save Media -->
+    <TextView
+        android:id="@+id/save_media"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:textColor="@color/darkGray"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="20dp"
+        android:drawableLeft="@drawable/ic_save_alt_24"
+        android:drawablePadding="15dp"
+        android:gravity="center_vertical"
+
+        app:layout_constraintTop_toBottomOf="@id/copy_text"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:foreground="?android:attr/selectableItemBackground"
+
+        android:visibility="gone"
+        />
+
+    <!-- Report -->
+    <TextView
+        android:id="@+id/report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/report"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="20dp"
+        android:drawableLeft="@drawable/ic_flag_24"
+        android:drawablePadding="15dp"
+        android:textColor="@color/red"
+        android:gravity="center_vertical"
+
+        app:layout_constraintTop_toBottomOf="@id/save_media"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:foreground="?android:attr/selectableItemBackground"
+
+        android:visibility="gone"
+        />
+
+    <!-- Delete -->
+    <TextView
+        android:id="@+id/delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="20dp"
+        android:drawableLeft="@drawable/ic_delete_outline_24"
+        android:drawablePadding="15dp"
+        android:textColor="@color/red"
+        android:gravity="center_vertical"
+
+        app:layout_constraintTop_toBottomOf="@id/report"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:foreground="?android:attr/selectableItemBackground"
+
+        android:visibility="gone"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

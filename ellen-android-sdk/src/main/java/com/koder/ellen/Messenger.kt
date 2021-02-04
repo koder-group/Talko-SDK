@@ -460,13 +460,14 @@ class Messenger {
                         EventName.messageUserReaction.value -> {
                             var message = gson.fromJson(pnMessageResult.message.asJsonObject.get("context"), Message::class.java)
                             val reactionCode = pnMessageResult.message.asJsonObject.get("reactionCode").asString
+                            val reactionSummary = gson.fromJson(pnMessageResult.message.asJsonObject.get("summary"), ReactionSummary::class.java)
 
                             // Prevent duplicate based on time token
-                            if(reactionMap.get(message.messageId!!) != pnMessageResult.timetoken || !reactionMap.containsKey(message.messageId!!)) {
-                                reactionMap.put(message.messageId!!, pnMessageResult.timetoken)
+//                            if(reactionMap.get(message.messageId!!) != pnMessageResult.timetoken || !reactionMap.containsKey(message.messageId!!)) {
+//                                reactionMap.put(message.messageId!!, pnMessageResult.timetoken)
 
-                                updateMessageReaction(message, reactionCode)
-                            }
+                                updateMessageReaction(message, reactionSummary)
+//                            }
 
                             eventCallback.onMessageUserReaction(message)
                         }
@@ -592,33 +593,13 @@ class Messenger {
         }
 
         // Update local db
-        fun updateMessageReaction(message: Message, reactionCode: String): Message? {
+        fun updateMessageReaction(message: Message, reactionSummary: ReactionSummary): Message? {
             val msg = db?.messageDao()?.getMessage(message.messageId!!)
             if(msg != null) {
                 val str = String(msg.payload)
                 val m = Gson().fromJson(JSONObject(str).toString(), Message::class.java)
 
-                if(m.reactionSummary == null) {
-                    m.reactionSummary = ReactionSummary(Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_LIKE"),
-                        Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_DISLIKE"))
-                }
-
-                when(reactionCode) {
-                    "REACTION_CODE_LIKE" -> {
-                        if(m.reactionSummary!!.reactioN_CODE_LIKE == null) {
-                            m.reactionSummary!!.reactioN_CODE_LIKE = Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_LIKE")
-                        }
-
-                        m.reactionSummary!!.reactioN_CODE_LIKE!!.count += 1
-                    }
-                    "REACTION_CODE_DISLIKE" -> {
-                        if(m.reactionSummary!!.reactioN_CODE_DISLIKE == null) {
-                            m.reactionSummary!!.reactioN_CODE_DISLIKE = Reaction(summaryText = "RESOURCE_REACTION_REACTION_CODE_DISLIKE")
-                        }
-
-                        m.reactionSummary!!.reactioN_CODE_DISLIKE!!.count += 1
-                    }
-                }
+                m.reactionSummary = reactionSummary
 
                 val json = Gson().toJson(m)
                 val dbMsg = com.koder.ellen.persistence.Message(m.messageId!!, m.conversationId, m.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))

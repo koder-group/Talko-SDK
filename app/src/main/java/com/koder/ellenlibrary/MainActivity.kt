@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         Messenger.conversationTimeAgoDateNames = false
         Messenger.conversationTimeAgoDateHighlight = false
 
-        Messenger.messageScreenBackgroundColor = "#000000"
+//        Messenger.messageScreenBackgroundColor = "#000000"
 
         Messenger.senderBackgroundColor = "#E9E9EB"  // light gray
         Messenger.selfBackgroundColor = "#5D4298"  // purple
@@ -100,7 +100,8 @@ class MainActivity : AppCompatActivity() {
             override fun OnItemClickListener(conversation: Conversation, position: Int) {
                 // Show the conversation
                 val bundle = Bundle()
-                val messageScreen = MessageScreen()
+//                val messageScreen = MessageScreen()
+                val messageScreen = MyMessageScreen()
                 bundle.putString("CONVERSATION_ID", conversation.conversationId)
 
 //                val metadataFilterMap: HashMap<String, String> = hashMapOf("classId" to "87278861-82af-49f9-8b7b-b5064337cd0f")
@@ -244,6 +245,9 @@ class MainActivity : AppCompatActivity() {
         // Get latest DM/conversation between 2 participants
 //        val conversation = Messenger.getDMConversation("f85c1e7e-b12b-4454-b970-12b2e93f42a6", "400d9b3a-995f-4889-8e40-dfd026c8654a", true)
 //        Log.d(TAG, "Latest conversation $conversation")
+
+        val conversation = Messenger.getDMConversation("d6d3a74f-bae6-416b-b4db-59e211869b08")
+        Log.d(TAG, "getDMConversation ${conversation}")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

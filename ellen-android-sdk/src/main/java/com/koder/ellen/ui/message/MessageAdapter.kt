@@ -187,25 +187,41 @@ internal class MessageAdapter(private val context: Context, private val dataset:
         selfBody.setOnLongClickListener {
             Log.d(TAG, "selfBody OnLongClick")
 //            addPopup(it, message)
-            showBottomSheetDialog(it, message)
+            if(fragment is MessageScreen) {
+                fragment?.showBottomSheetDialog(it, message)
+            } else {
+                showBottomSheetDialog(it, message)
+            }
             true
         }
         selfMedia.setOnLongClickListener {
             Log.d(TAG, "selfMedia OnLongClick")
 //            addPopup(it, message)
-            showBottomSheetDialog(it, message)
+            if(fragment is MessageScreen) {
+                fragment?.showBottomSheetDialog(it, message)
+            } else {
+                showBottomSheetDialog(it, message)
+            }
             true
         }
         senderBody.setOnLongClickListener {
             Log.d(TAG, "senderBody OnLongClick")
 //            addPopup(it, message)
-            showBottomSheetDialog(it, message)
+            if(fragment is MessageScreen) {
+                fragment?.showBottomSheetDialog(it, message)
+            } else {
+                showBottomSheetDialog(it, message)
+            }
             true
         }
         senderMedia.setOnLongClickListener {
             Log.d(TAG, "senderMedia OnLongClick")
 //            addPopup(it, message)
-            showBottomSheetDialog(it, message)
+            if(fragment is MessageScreen) {
+                fragment?.showBottomSheetDialog(it, message)
+            } else {
+                showBottomSheetDialog(it, message)
+            }
             true
         }
 //        Picasso.get().setLoggingEnabled(true)
@@ -255,13 +271,15 @@ internal class MessageAdapter(private val context: Context, private val dataset:
                 selfBody.visibility = View.VISIBLE
             }
 
+            // 👍 👎 😍 😉 🧐
+
             // Self reactions
             val selfReactionsView = holder.layout.findViewById<TextView>(R.id.self_reactions)
             selfReactionsView.visibility = View.GONE
             selfReactionsView.text = ""
             message.reactionSummary?.reactioN_CODE_LIKE?.let {
                 selfReactionsView.text = "\uD83D\uDC4D"
-                if (message.reactionSummary?.reactioN_CODE_LIKE!!.count > 1) selfReactionsView.text =
+                if (message.reactionSummary?.reactioN_CODE_LIKE!!.count > 0) selfReactionsView.text =
                     "${selfReactionsView.text} ${message.reactionSummary?.reactioN_CODE_LIKE?.count}"
                 selfReactionsView.visibility = View.VISIBLE
             }
@@ -269,8 +287,32 @@ internal class MessageAdapter(private val context: Context, private val dataset:
                 if (!selfReactionsView.text.isBlank()) selfReactionsView.text =
                     "${selfReactionsView.text}    "
                 selfReactionsView.text = "${selfReactionsView.text}\uD83D\uDC4E"
-                if (message.reactionSummary?.reactioN_CODE_DISLIKE!!.count > 1) selfReactionsView.text =
+                if (message.reactionSummary?.reactioN_CODE_DISLIKE!!.count > 0) selfReactionsView.text =
                     "${selfReactionsView.text} ${message.reactionSummary?.reactioN_CODE_DISLIKE?.count}"
+                selfReactionsView.visibility = View.VISIBLE
+            }
+            message.reactionSummary?.reactioN_CODE_LOVE?.let {
+                if (!selfReactionsView.text.isBlank()) selfReactionsView.text =
+                    "${selfReactionsView.text}    "
+                selfReactionsView.text = "${selfReactionsView.text}\uD83D\uDE0D"
+                if (message.reactionSummary?.reactioN_CODE_LOVE!!.count > 0) selfReactionsView.text =
+                    "${selfReactionsView.text} ${message.reactionSummary?.reactioN_CODE_LOVE?.count}"
+                selfReactionsView.visibility = View.VISIBLE
+            }
+            message.reactionSummary?.reactioN_CODE_WINK?.let {
+                if (!selfReactionsView.text.isBlank()) selfReactionsView.text =
+                    "${selfReactionsView.text}    "
+                selfReactionsView.text = "${selfReactionsView.text}\uD83D\uDE09"
+                if (message.reactionSummary?.reactioN_CODE_WINK!!.count > 0) selfReactionsView.text =
+                    "${selfReactionsView.text} ${message.reactionSummary?.reactioN_CODE_WINK?.count}"
+                selfReactionsView.visibility = View.VISIBLE
+            }
+            message.reactionSummary?.reactioN_CODE_NERDY?.let {
+                if (!selfReactionsView.text.isBlank()) selfReactionsView.text =
+                    "${selfReactionsView.text}    "
+                selfReactionsView.text = "${selfReactionsView.text}\uD83E\uDDD0"
+                if (message.reactionSummary?.reactioN_CODE_NERDY!!.count > 0) selfReactionsView.text =
+                    "${selfReactionsView.text} ${message.reactionSummary?.reactioN_CODE_NERDY?.count}"
                 selfReactionsView.visibility = View.VISIBLE
             }
 
@@ -378,9 +420,26 @@ internal class MessageAdapter(private val context: Context, private val dataset:
             val senderReactionsView = holder.layout.findViewById<TextView>(R.id.sender_reactions)
             senderReactionsView.visibility = View.GONE
             senderReactionsView.text = ""
+//            message.reactionSummary?.reactioN_CODE_LIKE?.let {
+//                senderReactionsView.text = "\uD83D\uDC4D"
+//                if (message.reactionSummary?.reactioN_CODE_LIKE!!.count > 1) senderReactionsView.text =
+//                    "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_LIKE?.count}"
+//                senderReactionsView.visibility = View.VISIBLE
+//            }
+//            message.reactionSummary?.reactioN_CODE_DISLIKE?.let {
+//                if (!senderReactionsView.text.isBlank()) senderReactionsView.text =
+//                    "${senderReactionsView.text}    "
+//                senderReactionsView.text = "${senderReactionsView.text}\uD83D\uDC4E"
+//                if (message.reactionSummary?.reactioN_CODE_DISLIKE!!.count > 1) senderReactionsView.text =
+//                    "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_DISLIKE?.count}"
+//                senderReactionsView.visibility = View.VISIBLE
+//            }
+
+            // 👍 👎 😍 😉 🧐
+
             message.reactionSummary?.reactioN_CODE_LIKE?.let {
                 senderReactionsView.text = "\uD83D\uDC4D"
-                if (message.reactionSummary?.reactioN_CODE_LIKE!!.count > 1) senderReactionsView.text =
+                if (message.reactionSummary?.reactioN_CODE_LIKE!!.count > 0) senderReactionsView.text =
                     "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_LIKE?.count}"
                 senderReactionsView.visibility = View.VISIBLE
             }
@@ -388,10 +447,35 @@ internal class MessageAdapter(private val context: Context, private val dataset:
                 if (!senderReactionsView.text.isBlank()) senderReactionsView.text =
                     "${senderReactionsView.text}    "
                 senderReactionsView.text = "${senderReactionsView.text}\uD83D\uDC4E"
-                if (message.reactionSummary?.reactioN_CODE_DISLIKE!!.count > 1) senderReactionsView.text =
+                if (message.reactionSummary?.reactioN_CODE_DISLIKE!!.count > 0) senderReactionsView.text =
                     "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_DISLIKE?.count}"
                 senderReactionsView.visibility = View.VISIBLE
             }
+            message.reactionSummary?.reactioN_CODE_LOVE?.let {
+                if (!senderReactionsView.text.isBlank()) senderReactionsView.text =
+                    "${senderReactionsView.text}    "
+                senderReactionsView.text = "${senderReactionsView.text}\uD83D\uDE0D"
+                if (message.reactionSummary?.reactioN_CODE_LOVE!!.count > 0) senderReactionsView.text =
+                    "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_LOVE?.count}"
+                senderReactionsView.visibility = View.VISIBLE
+            }
+            message.reactionSummary?.reactioN_CODE_WINK?.let {
+                if (!senderReactionsView.text.isBlank()) senderReactionsView.text =
+                    "${senderReactionsView.text}    "
+                senderReactionsView.text = "${senderReactionsView.text}\uD83D\uDE09"
+                if (message.reactionSummary?.reactioN_CODE_WINK!!.count > 0) senderReactionsView.text =
+                    "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_WINK?.count}"
+                senderReactionsView.visibility = View.VISIBLE
+            }
+            message.reactionSummary?.reactioN_CODE_NERDY?.let {
+                if (!senderReactionsView.text.isBlank()) senderReactionsView.text =
+                    "${senderReactionsView.text}    "
+                senderReactionsView.text = "${senderReactionsView.text}\uD83E\uDDD0"
+                if (message.reactionSummary?.reactioN_CODE_NERDY!!.count > 0) senderReactionsView.text =
+                    "${senderReactionsView.text} ${message.reactionSummary?.reactioN_CODE_NERDY?.count}"
+                senderReactionsView.visibility = View.VISIBLE
+            }
+
 
             // Sender timestamp
             senderTimestamp.text = getTimeFromMilli(message.timeCreated.toLong())
