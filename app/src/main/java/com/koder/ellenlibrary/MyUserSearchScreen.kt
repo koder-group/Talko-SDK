@@ -11,7 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
-class myUserSearchScreen: UserSearchScreen() {
+class MyUserSearchScreen: UserSearchScreen() {
 
     companion object {
         const val TAG = "myUserSearchScreen"

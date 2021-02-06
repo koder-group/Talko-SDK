@@ -13,7 +13,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.koder.ellen.*
-import com.koder.ellen.Messenger.Companion.currentConversationId
 import com.koder.ellen.Messenger.Companion.getUserId
 import com.koder.ellen.data.Result
 import com.koder.ellen.model.Conversation
@@ -86,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 //            bundle.putStringArrayList("userIds", userIds)
 
 //            val conversationScreen = ConversationScreen()
-            val conversationScreen = myConversationScreen()
+            val conversationScreen = MyConversationScreen()
 //            conversationScreen.arguments = bundle
             getSupportFragmentManager().beginTransaction().replace(
                 R.id.frame_layout,
@@ -289,7 +288,7 @@ class MainActivity : AppCompatActivity() {
             R.id.action_message -> {
                 // Show User Search Screen
 //                val userSearchScreen = UserSearchScreen()
-                val userSearchScreen = myUserSearchScreen()
+                val userSearchScreen = MyUserSearchScreen()
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, userSearchScreen, resources.getString(R.string.search)).addToBackStack(resources.getString(R.string.search)).commit()
                 true
             }

@@ -1,0 +1,164 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingRight="15dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:id="@+id/conversation_item_layout">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/conversation_icon_layout"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:cardCornerRadius="21dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#CCC"
+        app:cardElevation="0dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:layout_marginLeft="18dp"
+        >
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/conversation_icon"
+            android:scaleType="centerCrop" />
+    </com.google.android.material.card.MaterialCardView>
+    <LinearLayout
+        android:id="@+id/conversation_title_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintStart_toEndOf="@id/conversation_icon_layout"
+        app:layout_constraintEnd_toStartOf="@id/conversation_date"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:paddingTop="3dp"
+        android:paddingRight="5dp"
+        >
+
+        <TextView
+            android:id="@+id/conversation_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/darkGray"
+            android:textSize="16sp"
+
+            android:gravity="left"
+            android:fontFamily="@font/product_sans_regular"/>
+
+        <TextView
+            android:id="@+id/class_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Class"
+            android:textSize="8sp"
+            android:textColor="#5d4298"
+            android:fontFamily="@font/product_sans_regular"
+
+            android:layout_gravity="center_vertical"
+
+            android:background="@drawable/badge_class_bg"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:layout_marginLeft="7dp"
+
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/pass_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pass"
+            android:textSize="8sp"
+            android:textColor="#0e3249"
+            android:fontFamily="@font/product_sans_regular"
+
+            android:layout_gravity="center_vertical"
+
+            android:background="@drawable/badge_pass_bg"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:layout_marginLeft="7dp"
+
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/conversation_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Subtitle"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingTop="0dp"
+        android:textColor="#8e8e8e"
+
+        app:layout_constraintStart_toEndOf="@id/conversation_icon_layout"
+        app:layout_constraintTop_toBottomOf="@id/conversation_title_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="-2dp"
+        android:paddingRight="15dp"
+
+        android:fontFamily="@font/roboto_regular"/>
+<!--    <ImageView-->
+<!--        android:id="@+id/conversation_arrow"-->
+<!--        android:layout_width="15dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/ic_arrow_forward_ios_24px"-->
+
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+
+<!--        android:layout_marginTop="0dp" />-->
+<!--    <ImageView-->
+<!--            android:id="@+id/new_message_check"-->
+<!--            android:layout_width="18dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/ic_check_black_24"-->
+
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+
+<!--            android:layout_marginTop="0dp"-->
+<!--        android:visibility="gone"/>-->
+    <TextView
+        android:id="@+id/conversation_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textColor="#8e8e8e"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/conversation_icon_layout"/>
+    <ImageView  android:id="@+id/new_message_dot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/shape_notification_dot"
+
+        app:layout_constraintTop_toTopOf="@id/conversation_icon_layout"
+        app:layout_constraintBottom_toBottomOf="@id/conversation_icon_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/conversation_icon_layout"
+
+        android:visibility="gone"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

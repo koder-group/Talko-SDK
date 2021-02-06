@@ -43,7 +43,7 @@ import java.util.*
 import kotlin.math.floor
 
 
-internal class ConversationAdapter(
+open class ConversationAdapter(
     private val context: Context,
     private val dataset: MutableList<Conversation>,
     private val fragment: Fragment? = null
@@ -226,7 +226,8 @@ internal class ConversationAdapter(
                     // Latest message is not current user's
 
                     // Show new message indicator
-                    newMessageDot.visibility = View.VISIBLE
+//                    newMessageDot.visibility = View.VISIBLE
+                    showNewMessageIndicators(layout)
 
                     if(Messenger.conversationIconStroke) {
                         cardView.strokeWidth = 2.px
@@ -335,7 +336,8 @@ internal class ConversationAdapter(
                 System.currentTimeMillis()
             )
             cardView.strokeWidth = 0
-            newMessageDot.visibility = View.GONE
+//            newMessageDot.visibility = View.GONE
+            hideNewMessageIndicators(view)
 
             if(fragment == null) {
                 // Communicate with host Activity to show MessageFragment
@@ -658,6 +660,16 @@ internal class ConversationAdapter(
         val cropWidth = bitmap.width - rightCrop - leftCrop
         val cropHeight = bitmap.height - bottomCrop - topCrop
         return Bitmap.createBitmap(bitmap, leftCrop, topCrop, cropWidth, cropHeight)
+    }
+
+    open fun showNewMessageIndicators(layout: View) {
+        val newMessageDot = layout.findViewById<ImageView>(R.id.new_message_dot)
+        newMessageDot.visibility = View.VISIBLE
+    }
+
+    open fun hideNewMessageIndicators(layout: View) {
+        val newMessageDot = layout.findViewById<ImageView>(R.id.new_message_dot)
+        newMessageDot.visibility = View.GONE
     }
 
     // Extensions for dp-px conversion

@@ -598,4 +598,16 @@ open class ConversationScreen : Fragment() {
         val emptyView = LayoutInflater.from(activity).inflate(R.layout.empty_conversations_view, null)
         frame.addView(emptyView)
     }
+
+    fun getRecyclerView(): RecyclerView  {
+        return recyclerView
+    }
+
+    fun getConversations(): MutableList<Conversation> {
+        return conversations
+    }
+
+    fun setAdapter(adapter: RecyclerView.Adapter<*>) {
+        viewAdapter = adapter
+    }
 }
