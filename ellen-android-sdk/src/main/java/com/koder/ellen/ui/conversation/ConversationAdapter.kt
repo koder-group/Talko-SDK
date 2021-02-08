@@ -166,6 +166,7 @@ open class ConversationAdapter(
         cardView.strokeWidth = 0
         newMessageDot.visibility = View.GONE
         newMessageCheck?.visibility = View.GONE
+        hideNewMessageIndicators(layout)
 
         val titleView = holder.layout.findViewById<TextView>(R.id.conversation_title)
 
