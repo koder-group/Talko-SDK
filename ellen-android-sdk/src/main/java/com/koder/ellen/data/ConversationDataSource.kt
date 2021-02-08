@@ -208,11 +208,12 @@ internal class ConversationDataSource {
         for(conversation in conversations.reversed()) {
             if(conversation.participants.size === 2 && conversation.metadata.classId.isNullOrEmpty() && conversation.metadata.entityId.isNullOrEmpty()) {
                 // Filter latest DM Conversations
-                val recipientId = conversation.participants.filter {p -> p.user.userId != prefs?.userId}
+                val recipientId = conversation.participants.find {p -> p.user.userId != prefs?.userId}
 
                 Log.d(TAG, "conversation ${conversation.conversationId} ${addedMap["recipientId"].isNullOrEmpty()} userIds ${recipientId}")
-                if(addedMap["recipientId"].isNullOrEmpty()) {
-                    addedMap["recipientId"] = conversation.conversationId
+
+                if(addedMap[recipientId?.user?.userId].isNullOrEmpty()) {
+                    addedMap[recipientId!!.user.userId] = conversation.conversationId
                     latest.add(conversation)
                 }
             } else {
