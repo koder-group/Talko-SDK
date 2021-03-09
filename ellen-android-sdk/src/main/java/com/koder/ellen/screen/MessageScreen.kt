@@ -432,7 +432,7 @@ open class MessageScreen : Fragment(),
 
                 // Sliding Profile view
                 val dragView = rootView.findViewById<LinearLayout>(R.id.dragView)
-                dragView.background = activity?.resources!!.getDrawable(R.drawable.bg_round_top_dark)
+                dragView.background = activity?.resources?.getDrawable(R.drawable.bg_round_top_dark)
 
                 val dragHandle = rootView.findViewById<ImageView>(R.id.sliding_handle)
                 DrawableCompat.setTint(dragHandle.drawable, ContextCompat.getColor(activity!!, R.color.dmTextDisabled))

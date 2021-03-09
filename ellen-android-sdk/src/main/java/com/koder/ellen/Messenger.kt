@@ -105,27 +105,46 @@ class Messenger {
 //                Stetho.initializeWithDefaults(applicationContext)
                 db = TalkoDatabase.getInstance(applicationContext)
 
-                // Decode user token for user info
-                val parts = userToken.split('.')
-                val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
-                var decodedStr = String(decoded)
-                val decodedObj = JSONObject(decodedStr)
-
-                // Create current user object
-                val currentUser = EllenUser(userId = decodedObj.get("user_id").toString().toLowerCase(), tenantId = decodedObj.get("tenant_id").toString(), profile = UserProfile(displayName = decodedObj.get("user_name").toString(), profileImageUrl = decodedObj.get("profile_image").toString()))
-
                 // Init Prefs
                 prefs = Prefs(applicationContext)
+
                 // Set user token
                 prefs?.userToken = userToken
-                // Set tenant Id
-                prefs?.tenantId = decodedObj.get("tenant_id").toString()
-                // Set user Id
-                prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
-                // Set current user
-                prefs?.currentUser = currentUser
+
+                // Flag for decode exception error
+                var decodeSuccess = false
+
+//                try {
+//                    // Decode user token for user info
+//                    val parts = userToken.split('.')
+//                    val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
+//                    var decodedStr = String(decoded)
+//                    val decodedObj = JSONObject(decodedStr)
+//
+//                    // Create current user object
+//                    val currentUser = EllenUser(
+//                        userId = decodedObj.get("user_id").toString().toLowerCase(),
+//                        tenantId = decodedObj.get("tenant_id").toString(),
+//                        profile = UserProfile(
+//                            displayName = decodedObj.get("user_name").toString(),
+//                            profileImageUrl = decodedObj.get("profile_image").toString()
+//                        )
+//                    )
+//
+//                    // Set tenant Id
+//                    prefs?.tenantId = decodedObj.get("tenant_id").toString()
+//                    // Set user Id
+//                    prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
+//                    // Set current user
+//                    prefs?.currentUser = currentUser
+//
+//                    decodeSuccess = true
+//                } catch (e: Exception) {
+//                }
 
                 GlobalScope.launch {
+                    if(!decodeSuccess) async(IO) { initCurrentUser() }.await()
+
                     // Get client configuration
                     val clientConfig = async(IO) { initClientConfiguration() }.await()
 
@@ -771,7 +790,6 @@ class Messenger {
 
         // Get and store current user
         private fun initCurrentUser(): Result<EllenUser> {
-//            GlobalScope.launch {
                 try {
                     Log.d(TAG, "Init current user")
                     val response = RetrofitClient.ellen.getCurrentUser().execute()
@@ -779,11 +797,15 @@ class Messenger {
                     if (response.isSuccessful) {
                         val body: EllenUser = response.body()!!
                         prefs?.currentUser = body
+                        // Set tenant Id
+                        prefs?.tenantId = body.tenantId
+                        // Set user Id
+                        prefs?.userId = body.userId
                         Log.d(TAG, "Current user initialized")
                         return Result.Success(body)
                     }
                 } catch (e: Exception) {}
-//            }
+
             return Result.Error(IOException("Error getting current user"))
         }
 
