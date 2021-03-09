@@ -48,14 +48,17 @@
             android:id="@+id/conversation_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
+            android:text="Title asdf asdfasdfasdfasdfs asdfasdf a sadfsadfasdfsadf "
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/darkGray"
             android:textSize="16sp"
 
             android:gravity="left"
-            android:fontFamily="@font/product_sans_regular"/>
+            android:fontFamily="@font/product_sans_regular"
+
+            android:maxWidth="200dp"
+            />
 
         <TextView
             android:id="@+id/class_badge"
@@ -95,11 +98,13 @@
             android:paddingTop="1dp"
             android:paddingBottom="1dp"
             android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
 
-            android:visibility="gone"
+            android:visibility="visible"
             />
 
     </LinearLayout>
+
     <TextView
         android:id="@+id/conversation_subtitle"
         android:layout_width="0dp"
