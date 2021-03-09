@@ -50,7 +50,7 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
         val conversations = conversationDao?.getAll()
 
         // Return remote conversations
-        if(conversations!!.isEmpty() || forceLoad) {
+        if(conversations.isNullOrEmpty() || forceLoad) {
             // Local cache empty, load from remote
             val remoteConversations = dataSource.getConversations()
 
@@ -93,7 +93,7 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
         val messages = messageDao?.getAll()
 
         // Return remote conversation+messages
-        if(messages!!.isEmpty() || forceLoad) {
+        if(messages.isNullOrEmpty() || forceLoad) {
             val remoteConversationMessages = dataSource.getConversationMessages(conversations)
 //            Log.d(TAG, "remoteMessages ${remoteConversationMessages.size}")
 
