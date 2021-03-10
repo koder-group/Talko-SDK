@@ -114,33 +114,33 @@ class Messenger {
                 // Flag for decode exception error
                 var decodeSuccess = false
 
-//                try {
-//                    // Decode user token for user info
-//                    val parts = userToken.split('.')
-//                    val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
-//                    var decodedStr = String(decoded)
-//                    val decodedObj = JSONObject(decodedStr)
-//
-//                    // Create current user object
-//                    val currentUser = EllenUser(
-//                        userId = decodedObj.get("user_id").toString().toLowerCase(),
-//                        tenantId = decodedObj.get("tenant_id").toString(),
-//                        profile = UserProfile(
-//                            displayName = decodedObj.get("user_name").toString(),
-//                            profileImageUrl = decodedObj.get("profile_image").toString()
-//                        )
-//                    )
-//
-//                    // Set tenant Id
-//                    prefs?.tenantId = decodedObj.get("tenant_id").toString()
-//                    // Set user Id
-//                    prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
-//                    // Set current user
-//                    prefs?.currentUser = currentUser
-//
-//                    decodeSuccess = true
-//                } catch (e: Exception) {
-//                }
+                try {
+                    // Decode user token for user info
+                    val parts = userToken.split('.')
+                    val decoded = Base64.decode(parts[1], Base64.URL_SAFE)
+                    var decodedStr = String(decoded)
+                    val decodedObj = JSONObject(decodedStr)
+
+                    // Create current user object
+                    val currentUser = EllenUser(
+                        userId = decodedObj.get("user_id").toString().toLowerCase(),
+                        tenantId = decodedObj.get("tenant_id").toString(),
+                        profile = UserProfile(
+                            displayName = decodedObj.get("user_name").toString(),
+                            profileImageUrl = decodedObj.get("profile_image").toString()
+                        )
+                    )
+
+                    // Set tenant Id
+                    prefs?.tenantId = decodedObj.get("tenant_id").toString()
+                    // Set user Id
+                    prefs?.userId = decodedObj.get("user_id").toString().toLowerCase()
+                    // Set current user
+                    prefs?.currentUser = currentUser
+
+                    decodeSuccess = true
+                } catch (e: Exception) {
+                }
 
                 GlobalScope.launch {
                     if(!decodeSuccess) async(IO) { initCurrentUser() }.await()
