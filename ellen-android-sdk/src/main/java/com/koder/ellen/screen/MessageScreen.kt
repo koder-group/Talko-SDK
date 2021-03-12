@@ -663,7 +663,7 @@ open class MessageScreen : Fragment(),
 
         // Mentioned Participants
         messageViewModel.mentionedParticipants.observe(viewLifecycleOwner, Observer {
-            mentionViewAdapter.setData(it)
+            mentionViewAdapter.setData(it.toSet().toList())
         })
 
         // Observer, Update Message
