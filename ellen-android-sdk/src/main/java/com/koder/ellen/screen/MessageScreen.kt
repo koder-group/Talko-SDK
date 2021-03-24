@@ -48,22 +48,16 @@ import com.koder.ellen.Messenger
 import com.koder.ellen.Messenger.Companion.prefs
 import com.koder.ellen.MessengerActivity
 import com.koder.ellen.R
-
 import com.koder.ellen.data.ConversationDataSource
 import com.koder.ellen.data.ConversationRepository
+import com.koder.ellen.data.MessageDataSource
+import com.koder.ellen.data.MessageRepository
 import com.koder.ellen.model.*
 import com.koder.ellen.model.Message
 import com.koder.ellen.ui.BaseViewModelFactory
 import com.koder.ellen.ui.conversation.ConversationViewModel
 import com.koder.ellen.ui.main.MainViewModel
-import com.koder.ellen.data.MessageDataSource
-import com.koder.ellen.data.MessageRepository
 import com.koder.ellen.ui.message.*
-import com.koder.ellen.ui.message.MediaAdapter
-import com.koder.ellen.ui.message.MessageAdapter
-import com.koder.ellen.ui.message.MessageFragment
-import com.koder.ellen.ui.message.MessageMentionAdapter
-import com.koder.ellen.ui.message.MessageViewModel
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
@@ -126,11 +120,12 @@ open class MessageScreen : Fragment(),
     private var qrPublicId: String? = null
     private var created: Boolean = false
 
-//    private lateinit var mCompleteListener: OnLayoutCompleteListener
+    //    private lateinit var mCompleteListener: OnLayoutCompleteListener
     private lateinit var listFrame: FrameLayout
 
     // RecyclerView
     private lateinit var recyclerView: RecyclerView
+
     //    private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     val messages: MutableList<Message> = mutableListOf()
@@ -172,6 +167,7 @@ open class MessageScreen : Fragment(),
     private lateinit var expandedImageView: ImageView
     private lateinit var expandedImageBg: ImageView
     private lateinit var appBar: AppBarLayout
+
     // Hold a reference to the current animator,
     // so that it can be canceled mid-way.
     private var currentAnimator: Animator? = null
@@ -192,7 +188,8 @@ open class MessageScreen : Fragment(),
     private var itemClickListener: ItemClickListener? = null
 
     // User typing
-    private val userTypingMap = hashMapOf<String, String>() // <User ID, Message.Metadata.localReferenceId GUID>
+    private val userTypingMap =
+        hashMapOf<String, String>() // <User ID, Message.Metadata.localReferenceId GUID>
 
     // Status messages
     private val currentStatusMessages = mutableListOf<String>()
@@ -229,18 +226,20 @@ open class MessageScreen : Fragment(),
 
         conversationId = arguments?.getString("CONVERSATION_ID")
         qrPublicId = arguments?.getString("ADD_USER_ID")
-        metadataFilterMap = arguments?.getSerializable("METADATA_FILTER") as HashMap<String, String>?
+        metadataFilterMap =
+            arguments?.getSerializable("METADATA_FILTER") as HashMap<String, String>?
 
         // Filter
-        if(metadataFilterMap != null) {
+        if (metadataFilterMap != null) {
             filterKey = metadataFilterMap!!.keys.first()
             Log.d(TAG, "filterKey $filterKey")
-            if(filterKey != null) filterValue = metadataFilterMap!![filterKey!!]
+            if (filterKey != null) filterValue = metadataFilterMap!![filterKey!!]
             Log.d(TAG, "filterValue $filterValue")
         }
 
         // Enable messaging
-        if(arguments?.containsKey(ENABLE_MESSAGING)!!)  enableMessaging = arguments?.getBoolean(ENABLE_MESSAGING)!!
+        if (arguments?.containsKey(ENABLE_MESSAGING)!!) enableMessaging =
+            arguments?.getBoolean(ENABLE_MESSAGING)!!
 
         backgroundColor = arguments?.getString("BACKGROUND_COLOR")
         cornerRadius = arguments?.getIntArray("CORNER_RADIUS")
@@ -250,7 +249,12 @@ open class MessageScreen : Fragment(),
             Messenger.currentConversationId = it
         }
 
-        val found = Messenger.conversations.find { c -> c.conversationId.equals(conversationId, ignoreCase = true) }
+        val found = Messenger.conversations.find { c ->
+            c.conversationId.equals(
+                conversationId,
+                ignoreCase = true
+            )
+        }
 
         found?.let {
             Log.d(TAG, "found ${it}")
@@ -300,7 +304,7 @@ open class MessageScreen : Fragment(),
         messageSendButton.isEnabled = false
 
         // Custom elements
-        if(sendButtonDrawable != null)  {
+        if (sendButtonDrawable != null) {
             messageSendButton.setImageDrawable(sendButtonDrawable)
         } else {
             DrawableCompat.setTint(messageSendButton.drawable, Color.parseColor("#1A73E8"))
@@ -320,9 +324,9 @@ open class MessageScreen : Fragment(),
         var lastTextEdit: Long = 0
         val handler = Handler()
         var userTyping = false
-        val inputFinishChecker = object: Runnable {
+        val inputFinishChecker = object : Runnable {
             override fun run() {
-                if(System.currentTimeMillis() > (lastTextEdit + delay - 500) && userTyping) {
+                if (System.currentTimeMillis() > (lastTextEdit + delay - 500) && userTyping) {
                     // User stopped typing
                     // Do stuff
 //                    Log.d(TAG, "User stop typing")
@@ -334,20 +338,25 @@ open class MessageScreen : Fragment(),
             }
         }
 
-        messageEditText.addTextChangedListener(object: TextWatcher {
+        messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if(!userTyping && s.toString().length > 0) {
+                if (!userTyping && s.toString().length > 0) {
                     Log.d(TAG, "User start typing")
                     userTyping = true
                     prefs?.externalUserId?.let {
-                        if(::conversation.isInitialized) messageViewModel.typingStarted(it, conversation.conversationId)
+                        if (::conversation.isInitialized) messageViewModel.typingStarted(
+                            it,
+                            conversation.conversationId
+                        )
                     }
                 }
                 // Remove this to run only once
                 handler.removeCallbacks(inputFinishChecker);
             }
+
             override fun afterTextChanged(s: Editable?) {
                 // Avoid triggering event when text is empty
 //                if (s.toString().length > 0) {
@@ -365,7 +374,11 @@ open class MessageScreen : Fragment(),
                 // Autocolor mentions
                 val autocolored = autoColorMentions(s.toString())
 //                messageEditText.setText(HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT))
-                s?.replace(0, s.length, HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT))
+                s?.replace(
+                    0,
+                    s.length,
+                    HtmlCompat.fromHtml(autocolored, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                )
                 // Set cursor to the end of input
                 messageEditText.setSelection(messageEditText.length())
                 messageEditText.addTextChangedListener(this)
@@ -380,7 +393,7 @@ open class MessageScreen : Fragment(),
         shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime)
 
         // Prevent recreating when going back from Message Info
-        if(!created) {
+        if (!created) {
             qrPublicId?.let {
                 // Message created by QR code
                 Log.d(TAG, "Message created by QR code ${qrPublicId}")
@@ -405,7 +418,7 @@ open class MessageScreen : Fragment(),
 
         // Enable messaging
         val messageInputFrame = rootView.findViewById<FrameLayout>(R.id.message_input_frame)
-        if(!enableMessaging) messageInputFrame.visibility = View.GONE
+        if (!enableMessaging) messageInputFrame.visibility = View.GONE
 
         // Dark mode
         var color = "#FFFFFF"
@@ -413,29 +426,42 @@ open class MessageScreen : Fragment(),
         when (mode) {
             Configuration.UI_MODE_NIGHT_YES -> {
 
-                if(Messenger.messageScreenBackgroundColor == "#FFFFFF")
+                if (Messenger.messageScreenBackgroundColor == "#FFFFFF")
                     messageInputFrame.setBackgroundColor(activity?.resources!!.getColor(R.color.dmBackground))
                 else
                     messageInputFrame.setBackgroundColor(Color.parseColor(Messenger.messageScreenBackgroundColor))
 
-                val messageInputLayout = rootView.findViewById<RelativeLayout>(R.id.message_input_layout)
-                messageInputLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_round_border_message_dark)
+                val messageInputLayout =
+                    rootView.findViewById<RelativeLayout>(R.id.message_input_layout)
+                messageInputLayout.background =
+                    activity?.resources!!.getDrawable(R.drawable.bg_round_border_message_dark)
 
-                mediaInputLayout.background = activity?.resources!!.getDrawable(R.drawable.bg_border_media_input_dark)
+                mediaInputLayout.background =
+                    activity?.resources!!.getDrawable(R.drawable.bg_border_media_input_dark)
 
 //                addImageButton.setColorFilter(ContextCompat.getColor(activity!!, R.color.dmTextHigh), android.graphics.PorterDuff.Mode.MULTIPLY);
-                DrawableCompat.setTint(addImageButton.drawable, ContextCompat.getColor(activity!!, R.color.dmTextMed))
+                DrawableCompat.setTint(
+                    addImageButton.drawable,
+                    ContextCompat.getColor(activity!!, R.color.dmTextMed)
+                )
 
                 // SwipeRefreshLayout ProgressBar
                 swipeRefreshLayout.setColorSchemeColors(activity?.resources!!.getColor(R.color.dmTextHigh))
-                swipeRefreshLayout.setProgressBackgroundColorSchemeColor(activity?.resources!!.getColor(R.color.darkGray))
+                swipeRefreshLayout.setProgressBackgroundColorSchemeColor(
+                    activity?.resources!!.getColor(
+                        R.color.darkGray
+                    )
+                )
 
                 // Sliding Profile view
                 val dragView = rootView.findViewById<LinearLayout>(R.id.dragView)
                 dragView.background = activity?.resources?.getDrawable(R.drawable.bg_round_top_dark)
 
                 val dragHandle = rootView.findViewById<ImageView>(R.id.sliding_handle)
-                DrawableCompat.setTint(dragHandle.drawable, ContextCompat.getColor(activity!!, R.color.dmTextDisabled))
+                DrawableCompat.setTint(
+                    dragHandle.drawable,
+                    ContextCompat.getColor(activity!!, R.color.dmTextDisabled)
+                )
 
                 val profileName = rootView.findViewById<TextView>(R.id.sliding_display_name)
                 profileName.setTextColor(ContextCompat.getColor(activity!!, R.color.dmTextMed))
@@ -445,168 +471,174 @@ open class MessageScreen : Fragment(),
         return rootView
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        activity?.run {
-            val viewManager = MyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-            Log.d(TAG, "messages $messages");
-            viewAdapter = MessageAdapter(this, messages, this@MessageScreen, itemClickListener)
 
-            recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {
-                // use this setting to improve performance if you know that changes
-                // in content do not change the layout size of the RecyclerView
-                setHasFixedSize(false)
+        val viewManager = MyLinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
-                // use a linear layout manager
-                layoutManager = viewManager
+        Log.d(TAG, "messages $messages");
+        viewAdapter = MessageAdapter(view.context, messages, this@MessageScreen, itemClickListener)
 
-                // specify an viewAdapter (see also next example)
-                adapter = viewAdapter
-            }
+        recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
 
-            // Initial X on down
-            var downX = 0f
-            // Moved-to X on drag
-            var moveX = 0f
-            // Store whether RecyclerView is scrolling/dragging vertically
-            var draggingVertically = false
-            var draggingHorizontally = false
-            val timestampWidth = 200.px
+            // use a linear layout manager
+            layoutManager = viewManager
+
+            // specify an viewAdapter (see also next example)
+            adapter = viewAdapter
+        }
+
+        // Initial X on down
+        var downX = 0f
+        // Moved-to X on drag
+        var moveX = 0f
+        // Store whether RecyclerView is scrolling/dragging vertically
+        var draggingVertically = false
+        var draggingHorizontally = false
+        val timestampWidth = 200.px
 //            Log.d(TAG, "timestampWidth ${timestampWidth}")
 
-            recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    when(newState) {
-                        SCROLL_STATE_DRAGGING -> {
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when (newState) {
+                    SCROLL_STATE_DRAGGING -> {
 //                            Log.d(TAG, "SCROLL_STATE_DRAGGING")
-                            draggingVertically = true
-                        }
-                        SCROLL_STATE_IDLE -> {
+                        draggingVertically = true
+                    }
+                    SCROLL_STATE_IDLE -> {
 //                            Log.d(TAG, "SCROLL_STATE_IDLE")
-                            draggingVertically = false
-                        }
+                        draggingVertically = false
                     }
                 }
-            })
+            }
+        })
 
-            recyclerView.addOnItemTouchListener(object: RecyclerView.OnItemTouchListener {
-                override fun onTouchEvent(rv: RecyclerView, event: MotionEvent) {
-                    Log.d(TAG, "onItem onTouchEvent")   // Nada
-                }
+        recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            override fun onTouchEvent(rv: RecyclerView, event: MotionEvent) {
+                Log.d(TAG, "onItem onTouchEvent")   // Nada
+            }
 
-                override fun onInterceptTouchEvent(rv: RecyclerView, event: MotionEvent): Boolean {
+            override fun onInterceptTouchEvent(rv: RecyclerView, event: MotionEvent): Boolean {
 //                    Log.d(TAG, "onInterceptTouchEvent")
 
-                    if (event.action == MotionEvent.ACTION_DOWN) {
-                        downX = event.getX()
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    downX = event.getX()
 //                    Log.d(TAG, "downX ${downX}")
-                    }
-                    if (event.action == MotionEvent.ACTION_MOVE) {
-                        moveX = event.getX()
+                }
+                if (event.action == MotionEvent.ACTION_MOVE) {
+                    moveX = event.getX()
 //                        Log.d(TAG, "moveX ${moveX}")
 
-                        val deltaX = Math.abs(downX - moveX)
+                    val deltaX = Math.abs(downX - moveX)
 //                    val deltaX = downX - moveX
 //                    Log.d(TAG, "deltaX ${deltaX}")
 
 
-                        if(!draggingVertically) {
-                            // Not dragging
-                            if(downX > moveX) {
-                                // Swiping left
+                    if (!draggingVertically) {
+                        // Not dragging
+                        if (downX > moveX) {
+                            // Swiping left
 
-                                // Set horizontal drag status
-                                draggingHorizontally = true
+                            // Set horizontal drag status
+                            draggingHorizontally = true
 
-                                // Disable RecyclerView scrolling
+                            // Disable RecyclerView scrolling
 //                            recyclerView.setLayoutFrozen(true)
-                                (recyclerView.layoutManager as MyLinearLayoutManager).setScrollEnabled(false)
+                            (recyclerView.layoutManager as MyLinearLayoutManager).setScrollEnabled(
+                                false
+                            )
 
-                                // Animate all messages
-                                for (position in 0..messages.size) {
-                                    val view = recyclerView.getChildAt(position)
-                                    view?.let { v ->
-                                        if(deltaX <= timestampWidth) {
-                                            v.animate().translationX(-deltaX).setDuration(0)
-                                        }
+                            // Animate all messages
+                            for (position in 0..messages.size) {
+                                val view = recyclerView.getChildAt(position)
+                                view?.let { v ->
+                                    if (deltaX <= timestampWidth) {
+                                        v.animate().translationX(-deltaX).setDuration(0)
                                     }
                                 }
                             }
                         }
                     }
-                    if (event.action == MotionEvent.ACTION_UP) {
-                        // Enable RecyclerView scrolling
+                }
+                if (event.action == MotionEvent.ACTION_UP) {
+                    // Enable RecyclerView scrolling
 //                    recyclerView.setLayoutFrozen(false)
-                        (recyclerView.layoutManager as MyLinearLayoutManager).setScrollEnabled(true)
+                    (recyclerView.layoutManager as MyLinearLayoutManager).setScrollEnabled(true)
 
-                        // Animate all messages
-                        for(position in 0..messages.size) {
-                            val view = recyclerView.getChildAt(position)
-                            view?.let {v ->
-                                v.animate().translationX(0f).setDuration(100)
-                            }
+                    // Animate all messages
+                    for (position in 0..messages.size) {
+                        val view = recyclerView.getChildAt(position)
+                        view?.let { v ->
+                            v.animate().translationX(0f).setDuration(100)
                         }
-
-                        // Reset horizontal drag status
-                        draggingHorizontally = false
                     }
-                    return false
-                }
 
-                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                    // Reset horizontal drag status
+                    draggingHorizontally = false
                 }
-            })
+                return false
+            }
 
-            // Load conversation
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+            }
+        })
+
+        // Load conversation
 //            if(!::conversation.isInitialized) {
 //                messageViewModel.getConversation(conversationId)
 //            }
 
-            // Auto populate message
-            autoPopulateMessage?.let { msg ->
-                if(!sendAutoPopulateMessage) messageEditText.setText(msg)
-            }
+        // Auto populate message
+        autoPopulateMessage?.let { msg ->
+            if (!sendAutoPopulateMessage) messageEditText.setText(msg)
+        }
 
-            // Load Messages
-            if(!messagesLoaded) {
-                loadMessages()
-                messagesLoaded = true
-            }
+        // Load Messages
+        if (!messagesLoaded) {
+            loadMessages()
+            messagesLoaded = true
+        }
 
-            // Keyboard listener
-            KeyboardVisibilityEvent.setEventListener(
-                this,
-                object: KeyboardVisibilityEventListener {
-                    override fun onVisibilityChanged(isOpen: Boolean) {
+        // Keyboard listener
+        KeyboardVisibilityEvent.setEventListener(
+            activity,
+            object : KeyboardVisibilityEventListener {
+                override fun onVisibilityChanged(isOpen: Boolean) {
 //                Log.d(TAG, "Keyboard open ${isOpen}")
-                        // Scroll to latest message
-                        if(isOpen && messages.size > 0) recyclerView.smoothScrollToPosition(messages.size - 1)
-                    }
-                })
-        } ?: throw Throwable("invalid activity")
+                    // Scroll to latest message
+                    if (isOpen && messages.size > 0) recyclerView.smoothScrollToPosition(messages.size - 1)
+                }
+            })
 
         // Mentions
         mentionViewManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         val mentionViewAdapter = MessageMentionAdapter(activity as Context, mentionList, this)
 
-        mentionRecyclerView = activity!!.findViewById<RecyclerView>(R.id.mention_recycler_view).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(false)
+        mentionRecyclerView =
+            activity!!.findViewById<RecyclerView>(R.id.mention_recycler_view).apply {
+                // use this setting to improve performance if you know that changes
+                // in content do not change the layout size of the RecyclerView
+                setHasFixedSize(false)
 
-            // use a linear layout manager
-            layoutManager = mentionViewManager
+                // use a linear layout manager
+                layoutManager = mentionViewManager
 
-            // specify an viewAdapter (see also next example)
-            adapter = mentionViewAdapter
+                // specify an viewAdapter (see also next example)
+                adapter = mentionViewAdapter
 
 //            itemAnimator = DefaultItemAnimator()
-        }
-        mentionRecyclerView.addItemDecoration(DividerItemDecoration(mentionRecyclerView.context, DividerItemDecoration.VERTICAL))
+            }
+        mentionRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                mentionRecyclerView.context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         // Populate participants list
-        if(::conversation.isInitialized) messageViewModel.participants.value = getParticipantsList(conversation)    // TODO UI Screens
+        if (::conversation.isInitialized) messageViewModel.participants.value =
+            getParticipantsList(conversation)    // TODO UI Screens
 
         // Media input
 //        private lateinit var mediaRecyclerView: RecyclerView
@@ -638,7 +670,8 @@ open class MessageScreen : Fragment(),
             messageSendButton.isEnabled = messageState.isDataValid
 //            Log.d(TAG, "${messageState.isDataValid}")
 //            addImageButton.visibility = if(messageState.isDataValid) View.GONE else View.VISIBLE
-            addImageButton.visibility = if(messageEditText.text.isBlank()) View.VISIBLE else View.GONE
+            addImageButton.visibility =
+                if (messageEditText.text.isBlank()) View.VISIBLE else View.GONE
         })
 
         // Observer, Messages
@@ -649,14 +682,14 @@ open class MessageScreen : Fragment(),
             messages.clear()
             messages.addAll(it)
             viewAdapter.notifyDataSetChanged()
-            recyclerView.scrollToPosition(messages.size-1)
+            recyclerView.scrollToPosition(messages.size - 1)
             swipeRefreshLayout.setRefreshing(false)
 
             // Send auto populated message
             autoPopulateMessage?.let {
-                if(sendAutoPopulateMessage) {
+                if (sendAutoPopulateMessage) {
                     messageEditText.setText(autoPopulateMessage)
-                    if(::conversation.isInitialized) messageSendButton.performClick()
+                    if (::conversation.isInitialized) messageSendButton.performClick()
                 }
             }
         })
@@ -671,7 +704,7 @@ open class MessageScreen : Fragment(),
         // message:userReaction
         messageViewModel.message.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "Update ${it}")
-            val message = messages.find { m-> m.messageId.equals(it.messageId, ignoreCase = true) }
+            val message = messages.find { m -> m.messageId.equals(it.messageId, ignoreCase = true) }
             val index = messages.indexOf(message)
             messages.set(index, it)
             viewAdapter.notifyItemChanged(index)
@@ -720,6 +753,11 @@ open class MessageScreen : Fragment(),
         })
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 //        menu.clear()
@@ -753,69 +791,84 @@ open class MessageScreen : Fragment(),
     override fun onClick(v: View) {
         when (v.id) {
             R.id.message_send_btn -> {
-                    if(!::conversation.isInitialized) return
+                if (!::conversation.isInitialized) return
 
-                    if(mediaList.size > 0) {
-                        // Send media messages
-                        for(message in mediaList) {
-                            // Validate if allowed to send client-side
-                            if(!allowedToSend()) {
-                                message.metadata.error = true
-                            }
-
-                            if(allowedToSend()) messageViewModel.addImage(message, Uri.parse(message.media?.content?.source))
-
-                            // Add media message as self-message
-                            addMessageToMessages(message)
-                        }
-
-                        // Remove media from media input list
-                        val removeList = mutableListOf<Message>()
-                        removeList.addAll(mediaList)
-                        for(message in removeList) {
-                            removeMediaItem(message)
-                        }
-                    }
-
-                    if(messageEditText.text.isNotBlank()) {
-                        val text: String = messageEditText.text.toString()
-
-                        messageEditText.setText("")
-
-                        // Add Message to UI
-                        val sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!)
-
-                        val setOfMentions = getSetOfMentions(text)
-                        var mentions = mutableListOf<Mention>()
-
-                        for (user in setOfMentions) {
-                            val mention = Mention(user = user, mentionTextPattern = "@${user.displayName}")
-                            mentions.add(mention)
-                        }
-
-                        val metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString())
-                        if(filterKey != null && filterValue != null) {
-                            when(filterKey) {
-                                "classId" -> metadata.classId = filterValue as String
-                            }
-                        }
-
-                        val message = Message(conversationId = conversation.conversationId, body = text, sender = sender, metadata = metadata, mentions = mentions)
-                        Log.d(TAG, "ifAllowedToSend() ${allowedToSend()}")
-
+                if (mediaList.size > 0) {
+                    // Send media messages
+                    for (message in mediaList) {
                         // Validate if allowed to send client-side
                         if (!allowedToSend()) {
                             message.metadata.error = true
                         }
 
-                        // Add to Messages, self message
-                        addMessageToMessages(message)
-                        Log.d(TAG, "message_send_btn ${message}")  // messageId=null
+                        if (allowedToSend()) messageViewModel.addImage(
+                            message,
+                            Uri.parse(message.media?.content?.source)
+                        )
 
-                        if (allowedToSend()) messageViewModel.send(message)
+                        // Add media message as self-message
+                        addMessageToMessages(message)
                     }
 
-                    true
+                    // Remove media from media input list
+                    val removeList = mutableListOf<Message>()
+                    removeList.addAll(mediaList)
+                    for (message in removeList) {
+                        removeMediaItem(message)
+                    }
+                }
+
+                if (messageEditText.text.isNotBlank()) {
+                    val text: String = messageEditText.text.toString()
+
+                    messageEditText.setText("")
+
+                    // Add Message to UI
+                    val sender = User(
+                        tenantId = prefs?.tenantId!!,
+                        userId = prefs?.externalUserId!!,
+                        displayName = prefs?.currentUser?.profile?.displayName!!,
+                        profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!
+                    )
+
+                    val setOfMentions = getSetOfMentions(text)
+                    var mentions = mutableListOf<Mention>()
+
+                    for (user in setOfMentions) {
+                        val mention =
+                            Mention(user = user, mentionTextPattern = "@${user.displayName}")
+                        mentions.add(mention)
+                    }
+
+                    val metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString())
+                    if (filterKey != null && filterValue != null) {
+                        when (filterKey) {
+                            "classId" -> metadata.classId = filterValue as String
+                        }
+                    }
+
+                    val message = Message(
+                        conversationId = conversation.conversationId,
+                        body = text,
+                        sender = sender,
+                        metadata = metadata,
+                        mentions = mentions
+                    )
+                    Log.d(TAG, "ifAllowedToSend() ${allowedToSend()}")
+
+                    // Validate if allowed to send client-side
+                    if (!allowedToSend()) {
+                        message.metadata.error = true
+                    }
+
+                    // Add to Messages, self message
+                    addMessageToMessages(message)
+                    Log.d(TAG, "message_send_btn ${message}")  // messageId=null
+
+                    if (allowedToSend()) messageViewModel.send(message)
+                }
+
+                true
 //                }
             }
             R.id.add_image_btn -> {
@@ -849,11 +902,11 @@ open class MessageScreen : Fragment(),
 //                for(i in 0..10) {
                 val mediaMessage = buildMediaMessage(it)
                 mediaList.add(mediaMessage)
-                mediaAdapter.notifyItemInserted(mediaList.size-1)
+                mediaAdapter.notifyItemInserted(mediaList.size - 1)
 
                 // Add media to layout
                 // Scroll to latest media item
-                mediaRecyclerView.scrollToPosition(mediaList.size-1)
+                mediaRecyclerView.scrollToPosition(mediaList.size - 1)
 //                }
 
                 messageViewModel.messageDataChanged(
@@ -870,12 +923,12 @@ open class MessageScreen : Fragment(),
 
     fun removeMediaItem(message: Message) {
         val index = mediaList.indexOf(message)
-        if(index > -1) {
+        if (index > -1) {
             mediaList.removeAt(index)
             mediaAdapter.notifyItemRemoved(index)
         }
 
-        if(mediaList.size == 0) {
+        if (mediaList.size == 0) {
             mediaInputLayout.visibility = View.GONE
         }
 
@@ -888,12 +941,26 @@ open class MessageScreen : Fragment(),
     private fun buildMediaMessage(imageUri: Uri): Message {
         // Build Message
         val contentType = activity?.contentResolver?.getType(imageUri)
-        val sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!)
+        val sender = User(
+            tenantId = prefs?.tenantId!!,
+            userId = prefs?.externalUserId!!,
+            displayName = prefs?.currentUser?.profile?.displayName!!,
+            profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!
+        )
         val conversationMedia = ConversationMedia(
             content = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString()),
-            thumbnail = ConversationMediaItem(mimeType = contentType!!, source = imageUri.toString())
+            thumbnail = ConversationMediaItem(
+                mimeType = contentType!!,
+                source = imageUri.toString()
+            )
         )
-        val message = Message(conversationId = conversation.conversationId, body = "Sent an image", sender = sender, metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()), media = conversationMedia)
+        val message = Message(
+            conversationId = conversation.conversationId,
+            body = "Sent an image",
+            sender = sender,
+            metadata = MessageMetadata(localReferenceId = UUID.randomUUID().toString()),
+            media = conversationMedia
+        )
         return message
     }
 
@@ -913,9 +980,12 @@ open class MessageScreen : Fragment(),
         // Check permissions
         // Here, thisActivity is the current activity
 //        if (ContextCompat.checkSelfPermission(activity as MessengerActivity,
-        if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                activity as AppCompatActivity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
 
             // Permission is not granted
             // Should we show an explanation?
@@ -931,7 +1001,8 @@ open class MessageScreen : Fragment(),
 //                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
             requestPermissions(
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE
+            )
             // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
             // app-defined int constant. The callback method gets the
             // result of the request.
@@ -944,15 +1015,15 @@ open class MessageScreen : Fragment(),
 
     private fun getConversationTitle(): String {
         val currentConversation = (activity as MessengerActivity).getCurrentConversation()
-        if(currentConversation != null && !currentConversation.title.isNullOrBlank()) {
+        if (currentConversation != null && !currentConversation.title.isNullOrBlank()) {
             return currentConversation.title
         }
 
-        if(!::conversation.isInitialized) {
+        if (!::conversation.isInitialized) {
             return ""
         }
 
-        if(conversation.title.isNullOrBlank()) {
+        if (conversation.title.isNullOrBlank()) {
             return getTitleByParticipants(conversation!!.participants)
         }
 
@@ -964,11 +1035,19 @@ open class MessageScreen : Fragment(),
         var title = ""
 
         // If the only participant is the sender (myself)
-        if(participants.size == 1 && participants.first().user.userId.equals(prefs?.externalUserId, ignoreCase = true))
+        if (participants.size == 1 && participants.first().user.userId.equals(
+                prefs?.externalUserId,
+                ignoreCase = true
+            )
+        )
             return "Me"
 
         for (participant in participants) {
-            if (participant.user.displayName.equals(prefs?.currentUser?.profile?.displayName, ignoreCase = true)) continue
+            if (participant.user.displayName.equals(
+                    prefs?.currentUser?.profile?.displayName,
+                    ignoreCase = true
+                )
+            ) continue
             if (title.isEmpty()) {
                 title += participant.user.displayName
                 continue
@@ -982,7 +1061,7 @@ open class MessageScreen : Fragment(),
     private fun loadMessages(forceLoad: Boolean = false) {
 //        Log.d(TAG, "loadMessages ${::conversation.isInitialized}")
         Log.d(TAG, "loadMessages")
-        if(::conversation.isInitialized) {
+        if (::conversation.isInitialized) {
             if (!conversation.conversationId.isNullOrBlank()) {
                 swipeRefreshLayout.isRefreshing = true
                 messageViewModel.getMessages(conversation.conversationId, forceLoad)
@@ -994,7 +1073,7 @@ open class MessageScreen : Fragment(),
     }
 
     fun addMessage(message: Message) {
-        if(!message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
+        if (!message.sender.userId.equals(prefs?.externalUserId, ignoreCase = true)) {
             // Add message from others
             addMessageToMessages(message)
         } else {
@@ -1006,7 +1085,7 @@ open class MessageScreen : Fragment(),
     private fun addMessageToMessages(message: Message) {
         Log.d(TAG, "addMessageToMessages ${message}")
         // Format timeCreated
-        if(message.timeCreated.toString().contains("-")) {
+        if (message.timeCreated.toString().contains("-")) {
             message.timeCreated = convertDateToLong(message.timeCreated.toString())
         }
 
@@ -1024,14 +1103,14 @@ open class MessageScreen : Fragment(),
 
         viewAdapter.notifyItemInserted(position)
         // Notify item before current message position
-        if(position > 0)
-            viewAdapter.notifyItemChanged(position-1)
+        if (position > 0)
+            viewAdapter.notifyItemChanged(position - 1)
         // Notify item after current message position
-        if(position < messages.size-2)
-            viewAdapter.notifyItemChanged(position+1)
+        if (position < messages.size - 2)
+            viewAdapter.notifyItemChanged(position + 1)
 
 //        viewAdapter.notifyDataSetChanged()
-        recyclerView.scrollToPosition(messages.size-1)
+        recyclerView.scrollToPosition(messages.size - 1)
     }
 
     fun convertDateToLong(date: String): Long {
@@ -1041,7 +1120,7 @@ open class MessageScreen : Fragment(),
     }
 
     fun sortByTimeCreated(messages: MutableList<Message>): MutableList<Message> {
-        val sorted = messages.sortedWith( object : Comparator<Message> {
+        val sorted = messages.sortedWith(object : Comparator<Message> {
             override fun compare(m1: Message, m2: Message): Int {
                 return (m1.timeCreated!!.toLong() - m2.timeCreated!!.toLong()).toInt()
             }
@@ -1052,18 +1131,28 @@ open class MessageScreen : Fragment(),
     private fun updateSelfMessage(message: Message) {
         Log.d(TAG, "updateSelfMessage ${message}")
 //        message.metadata.localReferenceId  // Delivered
-        val found = messages.find { it.metadata.localReferenceId.equals(message.metadata.localReferenceId, ignoreCase = true) }
+        val found = messages.find {
+            it.metadata.localReferenceId.equals(
+                message.metadata.localReferenceId,
+                ignoreCase = true
+            )
+        }
         found?.let {
             Log.d(TAG, "found ${found}")
             val index = messages.indexOf(found)
 
             // Format timeCreated date
-            if(message.timeCreated.toString().contains("-")) {
+            if (message.timeCreated.toString().contains("-")) {
                 message.timeCreated = convertDateToLong(message.timeCreated.toString())
             }
 
             // Update previous Delivered status
-            val lastFound = messages.findLast { it.messageId != null && it.sender.userId.equals(message.sender.userId, ignoreCase = true) }
+            val lastFound = messages.findLast {
+                it.messageId != null && it.sender.userId.equals(
+                    message.sender.userId,
+                    ignoreCase = true
+                )
+            }
             val lastIndex = messages.indexOf(lastFound)
 
             messages.set(index, message)
@@ -1077,7 +1166,7 @@ open class MessageScreen : Fragment(),
 //            Log.d(TAG, "index ${index}")
 //            Log.d(TAG, "messages.size-1 ${messages.size-1}")
             // Scroll down a little to show Delivered text
-            if(index == messages.size-1) recyclerView.smoothScrollToPosition(messages.size-1)
+            if (index == messages.size - 1) recyclerView.smoothScrollToPosition(messages.size - 1)
         }
 
     }
@@ -1097,9 +1186,8 @@ open class MessageScreen : Fragment(),
         words.set(words.size - 1, "@${user.displayName}")
         Log.d(TAG, "${words}")
         // Set color for mentioned names
-        words.forEachIndexed {
-                index, word ->
-            if(word.first().equals('@', ignoreCase = true)) {
+        words.forEachIndexed { index, word ->
+            if (word.first().equals('@', ignoreCase = true)) {
                 // @
                 val name = word.substring(1).trim()
 
@@ -1122,11 +1210,17 @@ open class MessageScreen : Fragment(),
     private fun getSetOfMentions(text: String): MutableSet<User> {
         val setOfMentions = mutableSetOf<User>()
         val words = text.split(" ").toMutableList()
-        words.forEach {
-                word ->
-            if(word.isNotEmpty() && word.first().equals('@', ignoreCase = true) && word.length > 1) {
+        words.forEach { word ->
+            if (word.isNotEmpty() && word.first()
+                    .equals('@', ignoreCase = true) && word.length > 1
+            ) {
                 val name = word.substring(1)
-                val found = conversation.participants.find { it.user.displayName.equals(name, ignoreCase = true) }
+                val found = conversation.participants.find {
+                    it.user.displayName.equals(
+                        name,
+                        ignoreCase = true
+                    )
+                }
                 found?.let {
                     setOfMentions.add(found.user)
                 }
@@ -1140,13 +1234,17 @@ open class MessageScreen : Fragment(),
         val words = text.split(" ").toMutableList()
 //        Log.d(TAG, "words ${words}")
         // Set color for mentioned names
-        words.forEachIndexed {
-                index, word ->
-            if(word.length > 1 && word.first().equals('@', ignoreCase = true)) {
+        words.forEachIndexed { index, word ->
+            if (word.length > 1 && word.first().equals('@', ignoreCase = true)) {
                 // @
                 val name = word.substring(1)
 
-                val found = conversation.participants.find { it.user.displayName.equals(name, ignoreCase = true) }
+                val found = conversation.participants.find {
+                    it.user.displayName.equals(
+                        name,
+                        ignoreCase = true
+                    )
+                }
                 found?.let {
 //                    words.set(index, "<font color='#1A73E9'>${word}</font>")
                     words.set(index, "<font color='${Messenger.mentionInputColor}'>${word}</font>")
@@ -1251,13 +1349,22 @@ open class MessageScreen : Fragment(),
         // Construct and run the parallel animation of the four translation and
         // scale properties (X, Y, SCALE_X, and SCALE_Y).
         currentAnimator = AnimatorSet().apply {
-            play(ObjectAnimator.ofFloat(
-                expandedImageView,
-                View.X,
-                startBounds.left,
-                finalBounds.left)
+            play(
+                ObjectAnimator.ofFloat(
+                    expandedImageView,
+                    View.X,
+                    startBounds.left,
+                    finalBounds.left
+                )
             ).apply {
-                with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top, finalBounds.top))
+                with(
+                    ObjectAnimator.ofFloat(
+                        expandedImageView,
+                        View.Y,
+                        startBounds.top,
+                        finalBounds.top
+                    )
+                )
                 with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScale, 1f))
                 with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_Y, startScale, 1f))
             }
@@ -1277,11 +1384,14 @@ open class MessageScreen : Fragment(),
                     val width = displayMetrics.widthPixels
                     Log.d(TAG, "screen width ${width}")
 
-                    Picasso.get().load(url).resize(width, 0).into(object: Target {
+                    Picasso.get().load(url).resize(width, 0).into(object : Target {
                         override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                         }
 
-                        override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
+                        override fun onBitmapFailed(
+                            e: java.lang.Exception?,
+                            errorDrawable: Drawable?
+                        ) {
                         }
 
                         override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
@@ -1427,6 +1537,7 @@ open class MessageScreen : Fragment(),
     fun updateMessage(message: Message) {
         messageViewModel.updateMessage(message)
     }
+
     fun copyText(message: Message, view: View) {
         val myClipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val myClip: ClipData = ClipData.newPlainText("note_copy", message.body)
@@ -1437,15 +1548,18 @@ open class MessageScreen : Fragment(),
             Toast.LENGTH_LONG
         ).show()
     }
+
     fun reportMessage(message: Message, view: View) {
         messageViewModel.reportMessage(message)
     }
+
     // Delete request to platform API
     fun deleteMessage(message: Message, view: View) {
         messageViewModel.deleteMessage(message)
     }
+
     fun deleteMessageFromList(message: Message) {
-        val found = messages.find { it.messageId.equals(message.messageId, ignoreCase = true)}
+        val found = messages.find { it.messageId.equals(message.messageId, ignoreCase = true) }
         found?.let {
             val index = messages.indexOf(found)
             messages.removeAt(index)
@@ -1464,9 +1578,12 @@ open class MessageScreen : Fragment(),
 
         // Check permissions
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(activity as AppCompatActivity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                activity as AppCompatActivity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
 
             // Permission is not granted
             // Should we show an explanation?
@@ -1482,7 +1599,8 @@ open class MessageScreen : Fragment(),
 //                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
             requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+            )
             // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
             // app-defined int constant. The callback method gets the
             // result of the request.
@@ -1493,8 +1611,10 @@ open class MessageScreen : Fragment(),
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
                 // If request is cancelled, the result arrays are empty.
@@ -1502,7 +1622,7 @@ open class MessageScreen : Fragment(),
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     Log.d(TAG, "Write permission granted")
-                    if(requestPermissionUrl.isNotBlank()) getImageWithGlide(requestPermissionUrl)
+                    if (requestPermissionUrl.isNotBlank()) getImageWithGlide(requestPermissionUrl)
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -1534,7 +1654,7 @@ open class MessageScreen : Fragment(),
         Glide.with(this)
             .asBitmap()
             .load(url)
-            .into(object : CustomTarget<Bitmap>(){
+            .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
 //                    imageView.setImageBitmap(resource)
                     saveImageToFile(bitmap, url.toString())
@@ -1545,6 +1665,7 @@ open class MessageScreen : Fragment(),
                         Toast.LENGTH_LONG
                     ).show()
                 }
+
                 override fun onLoadCleared(placeholder: Drawable?) {
                     // this is called when imageView is cleared on lifecycle call or for
                     // some other reason.
@@ -1568,8 +1689,12 @@ open class MessageScreen : Fragment(),
             val contentValues = ContentValues()
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.name)
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "Ellen")
-            val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            contentValues.put(
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_PICTURES + File.separator + "Ellen"
+            )
+            val imageUri =
+                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
             fos = resolver.openOutputStream(Objects.requireNonNull(imageUri!!))
         } else {
             Log.d(TAG, "< Build Q")
@@ -1603,7 +1728,12 @@ open class MessageScreen : Fragment(),
             out.flush()
             out.close()
 
-            MediaScannerConnection.scanFile(activity as AppCompatActivity, arrayOf(file.getPath()), arrayOf("image/jpeg"), null);
+            MediaScannerConnection.scanFile(
+                activity as AppCompatActivity,
+                arrayOf(file.getPath()),
+                arrayOf("image/jpeg"),
+                null
+            );
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -1613,7 +1743,12 @@ open class MessageScreen : Fragment(),
     fun showMessageError(localReferenceId: String, errorMessage: String) {
         Log.d(TAG, "localReferenceId ${localReferenceId}")
         Log.d(TAG, "errorMessage ${errorMessage}")
-        val found = messages.find { it.metadata.localReferenceId.equals(localReferenceId, ignoreCase = true) }
+        val found = messages.find {
+            it.metadata.localReferenceId.equals(
+                localReferenceId,
+                ignoreCase = true
+            )
+        }
         found?.let {
             val index = messages.indexOf(found)
             found.metadata.error = true
@@ -1627,7 +1762,7 @@ open class MessageScreen : Fragment(),
             viewAdapter.notifyItemChanged(index)
 
             // Scroll down a little to show status indicator icon
-            if(index == messages.size-1) recyclerView.smoothScrollToPosition(messages.size-1)
+            if (index == messages.size - 1) recyclerView.smoothScrollToPosition(messages.size - 1)
         }
     }
 
@@ -1664,10 +1799,20 @@ open class MessageScreen : Fragment(),
         val displayName = getDisplayName(initiatingUserId) + " is typing..."
         val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
-        val sender = User(tenantId = prefs?.tenantId!!, userId = initiatingUserId, displayName = displayName, profileImageUrl = "")
-        val message = Message(conversationId = conversation.conversationId, body = "", sender = sender, metadata = MessageMetadata(localReferenceId = localReferenceId))
+        val sender = User(
+            tenantId = prefs?.tenantId!!,
+            userId = initiatingUserId,
+            displayName = displayName,
+            profileImageUrl = ""
+        )
+        val message = Message(
+            conversationId = conversation.conversationId,
+            body = "",
+            sender = sender,
+            metadata = MessageMetadata(localReferenceId = localReferenceId)
+        )
 
-        if(!userTypingMap.containsKey(initiatingUserId)) {
+        if (!userTypingMap.containsKey(initiatingUserId)) {
             // Store reference of <initiatingUserId, localReferenceId>
             userTypingMap.set(initiatingUserId, localReferenceId)
 
@@ -1675,18 +1820,23 @@ open class MessageScreen : Fragment(),
             messages.add(message)
             val index = messages.indexOf(message)
             viewAdapter.notifyItemInserted(index)
-            if(index == messages.size - 1) recyclerView.smoothScrollToPosition(index)
+            if (index == messages.size - 1) recyclerView.smoothScrollToPosition(index)
         }
     }
 
     fun userStopTyping(initiatingUserId: String) {
 //        Log.d(TAG, "userStopTyping ${initiatingUserId}")
 
-        if(userTypingMap.containsKey(initiatingUserId)) {
+        if (userTypingMap.containsKey(initiatingUserId)) {
             // Find message
             val localReferenceId = userTypingMap.get(initiatingUserId)
             localReferenceId?.let {
-                val message = messages.find { m -> m.metadata.localReferenceId.equals(localReferenceId, ignoreCase = true) }
+                val message = messages.find { m ->
+                    m.metadata.localReferenceId.equals(
+                        localReferenceId,
+                        ignoreCase = true
+                    )
+                }
                 message?.let {
                     val index = messages.indexOf(message)
                     messages.remove(message)
@@ -1703,7 +1853,12 @@ open class MessageScreen : Fragment(),
 //        val conversation: Conversation? = null  // TODO UI Screens
 //        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
         conversation?.let {
-            val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
+            val found = conversation.participants.find { p ->
+                p.user.userId.equals(
+                    userId,
+                    ignoreCase = true
+                )
+            }
             found?.let {
                 return found.user.displayName
             }
@@ -1714,7 +1869,12 @@ open class MessageScreen : Fragment(),
     fun getProfileImageUrl(userId: String): String {
 //        val conversation = (activity as MessengerActivity).getCurrentConversation()
         conversation?.let {
-            val found = conversation.participants.find { p -> p.user.userId.equals(userId, ignoreCase = true) }
+            val found = conversation.participants.find { p ->
+                p.user.userId.equals(
+                    userId,
+                    ignoreCase = true
+                )
+            }
             found?.let {
                 return found.user.profileImageUrl
             }
@@ -1727,15 +1887,22 @@ open class MessageScreen : Fragment(),
     }
 
     fun showStatusMessage(message: String) {
-        if(Messenger.messageStatusText) {
+        if (Messenger.messageStatusText) {
             Log.d(TAG, "${message}")
-            val message = Message(sender = User(tenantId = prefs?.tenantId!!, userId = prefs?.externalUserId!!, displayName = prefs?.currentUser?.profile?.displayName!!, profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!), metadata = MessageMetadata(statusMessage = message))
+            val message = Message(
+                sender = User(
+                    tenantId = prefs?.tenantId!!,
+                    userId = prefs?.externalUserId!!,
+                    displayName = prefs?.currentUser?.profile?.displayName!!,
+                    profileImageUrl = prefs?.currentUser?.profile?.profileImageUrl!!
+                ), metadata = MessageMetadata(statusMessage = message)
+            )
             // Show message
             messages.add(message)
             Log.d(TAG, "messages ${messages}")
             val index = messages.indexOf(message)
             viewAdapter.notifyItemInserted(index)
-            if(index == messages.size - 1) recyclerView.smoothScrollToPosition(index)
+            if (index == messages.size - 1) recyclerView.smoothScrollToPosition(index)
         }
     }
 
@@ -1744,7 +1911,7 @@ open class MessageScreen : Fragment(),
     }
 
     fun showAllCurrentStatusMessages() {
-        for(status in currentStatusMessages) {
+        for (status in currentStatusMessages) {
             showStatusMessage(status)
         }
         currentStatusMessages.clear()
@@ -1757,7 +1924,7 @@ open class MessageScreen : Fragment(),
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
     private fun setEventHandler() {
-        Messenger.addEventHandler(object: EventCallback() {
+        Messenger.addEventHandler(object : EventCallback() {
             override fun onConversationCreated(conversation: Conversation) {
             }
 
@@ -1780,10 +1947,17 @@ open class MessageScreen : Fragment(),
                 }
             }
 
-            override fun onParticipantStateChanged(participant: Participant, conversationId: String) {
+            override fun onParticipantStateChanged(
+                participant: Participant,
+                conversationId: String
+            ) {
             }
 
-            override fun onAddedToConversation(initiatingUser: User, addedUserId: String, conversationId: String) {
+            override fun onAddedToConversation(
+                initiatingUser: User,
+                addedUserId: String,
+                conversationId: String
+            ) {
                 activity?.runOnUiThread {
                     if (this@MessageScreen.conversationId.equals(
                             conversationId,
@@ -1795,7 +1969,11 @@ open class MessageScreen : Fragment(),
                 }
             }
 
-            override fun onRemovedFromConversation(initiatingUser: User, removedUserId: String, conversationId: String) {
+            override fun onRemovedFromConversation(
+                initiatingUser: User,
+                removedUserId: String,
+                conversationId: String
+            ) {
                 activity?.runOnUiThread {
                     if (this@MessageScreen.conversationId.equals(
                             conversationId,
@@ -1816,18 +1994,23 @@ open class MessageScreen : Fragment(),
                     if (conversationId.equals(message.conversationId, ignoreCase = true)) {
 
                         // Filter
-                        if(filterKey != null && filterValue != null) {
-                            when(filterKey) {
-                                "classId" -> if(message.metadata.classId != filterValue) return@runOnUiThread
+                        if (filterKey != null && filterValue != null) {
+                            when (filterKey) {
+                                "classId" -> if (message.metadata.classId != filterValue) return@runOnUiThread
                             }
                         }
 
-                        val found = messages.find { m -> m.messageId.equals(message.messageId, ignoreCase = true) }
-                        if(found == null) addMessage(message)
+                        val found = messages.find { m ->
+                            m.messageId.equals(
+                                message.messageId,
+                                ignoreCase = true
+                            )
+                        }
+                        if (found == null) addMessage(message)
 //                        Log.d(TAG, "${message.timeCreated.toString()}")
                         var timeCreated = message.timeCreated
 //                        prefs?.setConversationLastRead(message.conversationId, message.timeCreated.toLong())
-                        if(timeCreated.toString().contains("-")) {
+                        if (timeCreated.toString().contains("-")) {
                             timeCreated = convertDateToLong(timeCreated.toString())
                         }
                         prefs?.setConversationLastRead(message.conversationId, timeCreated.toLong())
@@ -1848,7 +2031,7 @@ open class MessageScreen : Fragment(),
 
             override fun onMessageDeleted(message: Message) {
                 activity?.runOnUiThread {
-                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true)) {
                         deleteMessageFromList(message)
                     }
                 }
@@ -1856,7 +2039,7 @@ open class MessageScreen : Fragment(),
 
             override fun onMessageUserReaction(message: Message) {
                 activity?.runOnUiThread {
-                    if(conversationId.equals(message.conversationId, ignoreCase = true)) {
+                    if (conversationId.equals(message.conversationId, ignoreCase = true)) {
                         Log.d(TAG, "onMessageUserReaction ${message}")
                         updateMessage(message)
                     }
@@ -1865,7 +2048,9 @@ open class MessageScreen : Fragment(),
 
             override fun onUserTypingStart(initiatingUserId: String) {
                 activity?.runOnUiThread {
-                    if (!prefs?.userId.equals(initiatingUserId, ignoreCase = true)) userStartTyping(initiatingUserId)
+                    if (!prefs?.userId.equals(initiatingUserId, ignoreCase = true)) userStartTyping(
+                        initiatingUserId
+                    )
                 }
             }
 
@@ -1895,17 +2080,44 @@ open class MessageScreen : Fragment(),
         var color = "#FFFFFF"
         val mode = context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
         when (mode) {
-            Configuration.UI_MODE_NIGHT_YES -> { color = activity?.resources!!.getString(R.color.dmBackground) }
+            Configuration.UI_MODE_NIGHT_YES -> {
+                color = activity?.resources!!.getString(R.color.dmBackground)
+            }
         }
-        val shape = getShape(topLeft.px.toFloat(), topRight.px.toFloat(), bottomRight.px.toFloat(), bottomLeft.px.toFloat(), color)
+        val shape = getShape(
+            topLeft.px.toFloat(),
+            topRight.px.toFloat(),
+            bottomRight.px.toFloat(),
+            bottomLeft.px.toFloat(),
+            color
+        )
         listFrame.background = shape
     }
 
     // Return shape drawable with corner radius and background color
     // radius in pixels
     // color in hex string #FFFFFF
-    private fun getShape(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float, color: String): ShapeDrawable {
-        val shape = ShapeDrawable(RoundRectShape(floatArrayOf(topLeft, topLeft, topRight, topRight, bottomRight, bottomRight, bottomLeft, bottomLeft), null, null))
+    private fun getShape(
+        topLeft: Float,
+        topRight: Float,
+        bottomRight: Float,
+        bottomLeft: Float,
+        color: String
+    ): ShapeDrawable {
+        val shape = ShapeDrawable(
+            RoundRectShape(
+                floatArrayOf(
+                    topLeft,
+                    topLeft,
+                    topRight,
+                    topRight,
+                    bottomRight,
+                    bottomRight,
+                    bottomLeft,
+                    bottomLeft
+                ), null, null
+            )
+        )
         shape.getPaint().setColor(Color.parseColor(color))
         return shape
     }
@@ -2032,7 +2244,7 @@ open class MessageScreen : Fragment(),
         }
 
         // Error message
-        if(!message.metadata.errorMessage.isNullOrBlank()) {
+        if (!message.metadata.errorMessage.isNullOrBlank()) {
             likeBtn.visibility = View.GONE
             dislikeBtn?.visibility = View.GONE
 //            copyText!!.visibility = View.GONE
@@ -2058,7 +2270,8 @@ open class MessageScreen : Fragment(),
 }
 
 // Override LayoutManager to disable scroll
-class MyLinearLayoutManager(context: Context?, orientation: Int, reverseLayout: Boolean) : LinearLayoutManager(context, orientation, reverseLayout) {
+class MyLinearLayoutManager(context: Context?, orientation: Int, reverseLayout: Boolean) :
+    LinearLayoutManager(context, orientation, reverseLayout) {
     private var isScrollEnabled = true
     fun setScrollEnabled(flag: Boolean) {
         isScrollEnabled = flag
