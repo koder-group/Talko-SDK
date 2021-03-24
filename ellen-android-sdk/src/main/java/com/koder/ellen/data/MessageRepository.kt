@@ -88,7 +88,7 @@ internal class MessageRepository(val dataSource: MessageDataSource) {
         val messages = messageDao?.getMessages(conversationId)
 
         // Return remote
-        if(messages!!.isEmpty() || forceLoad) {
+        if(messages.isNullOrEmpty() || forceLoad) {
             val result = dataSource.getMessages(conversationId)
 
             if(result is Result.Success) {
@@ -108,7 +108,7 @@ internal class MessageRepository(val dataSource: MessageDataSource) {
 
         // Return local
         val localMessages = mutableListOf<Message>()
-        for(message in messages!!) {
+        for(message in messages) {
             val str = String(message.payload)
             val m = Gson().fromJson(JSONObject(str).toString(), Message::class.java)
             localMessages.add(m)
