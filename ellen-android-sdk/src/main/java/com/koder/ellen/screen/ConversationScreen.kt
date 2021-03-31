@@ -225,11 +225,13 @@ open class ConversationScreen : Fragment() {
             Log.d(TAG, "Conversations changed")
 
             val filtered = filterConversations(it)
+            val emptyFiltered = filterEmptyConversations(filtered)
 
             conversations.clear()
-            conversations.addAll(filtered)
+            conversations.addAll(emptyFiltered)
+            conversations = emptyFiltered
             viewAdapter.notifyDataSetChanged()
-            updateRV(filtered)
+            updateRV(emptyFiltered)
             swipeRefreshLayout.setRefreshing(false)
 
             // Subscribe to channels
@@ -566,6 +568,10 @@ open class ConversationScreen : Fragment() {
             }.toMutableList() // return the all filtered conversations
         }
 
+        return conversations
+    }
+
+    private fun filterEmptyConversations(conversations: MutableList<Conversation>): MutableList<Conversation> {
         if(Messenger.conversationFilterEmptyConversations) {
             // Filter conversations with no messages
             return conversations.filter { c ->
