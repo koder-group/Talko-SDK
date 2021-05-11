@@ -505,7 +505,7 @@ open class ConversationScreen : Fragment() {
 
     fun sendClick(conversation: Conversation, position: Int) {
         mClickListener?.OnItemClickListener(conversation, position)
-        Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
+        Messenger.unreadCallback?.onNewUnread(Messenger.getUnreadCount())
     }
 
     fun onLongClick(conversation: Conversation, position: Int) {
@@ -575,7 +575,9 @@ open class ConversationScreen : Fragment() {
         if(Messenger.conversationFilterEmptyConversations) {
             // Filter conversations with no messages
             return conversations.filter { c ->
-                c.messages?.size > 0
+                //Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference
+                //com.koder.ellen.screen.ConversationScreen.filterEmptyConversations
+                c.messages.size > 0
             }.toMutableList()
         }
 

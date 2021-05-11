@@ -45,7 +45,7 @@ class Messenger {
         const val TAG = "Messenger"
         lateinit var pubNub: PubNub
         lateinit var requestHandler: RequestHandler
-        lateinit var unreadCallback: UnreadCallback
+        var unreadCallback: UnreadCallback? = null
 
         internal var prefs: Prefs? = null
         internal val subscribedChannels: MutableSet<String> = mutableSetOf()
@@ -395,7 +395,7 @@ class Messenger {
                         EventName.messagePublished.value -> {
                             val message = gson.fromJson(pnMessageResult.message.asJsonObject.get("model"), Message::class.java)
                             eventCallback.onMessageReceived(message)
-                            unreadCallback.onNewUnread(getUnreadCount())
+                            unreadCallback?.onNewUnread(getUnreadCount())
                             addMessage(message)
                         }
                         EventName.conversationCreated.value -> {
@@ -828,17 +828,16 @@ class Messenger {
         }
 
         fun subscribeToConversations(conversations: MutableList<Conversation>) {
-//        Log.d(TAG, "subscribeToConversations")
-            val list = mutableListOf<String>()
-            for (conversation in conversations) {
-                val channel = "${conversation.tenantId}-${conversation.conversationId}".toUpperCase()
-//                if(!Messenger.subscribedChannels.contains(channel)) {
-                    //  tenant_id-conversation_id
+            try {
+                val list = mutableListOf<String>()
+                for (conversation in conversations) {
+                    val channel = "${conversation.tenantId}-${conversation.conversationId}".toUpperCase()
                     list.add(channel)
-//                    Messenger.subscribedChannels.add(channel)
-//                }
+                }
+                if(list.size > 0) subscribeToChannelList(list)
+            } catch (ex: ConcurrentModificationException) {
+                ex.printStackTrace()
             }
-            if(list.size > 0) Messenger.subscribeToChannelList(list)
         }
 
         // Request refresh token

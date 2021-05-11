@@ -262,7 +262,7 @@ open class MessageScreen : Fragment(),
             Messenger.currentConversationId = it.conversationId
             // Update unread count
             prefs?.setConversationLastRead(it.conversationId, System.currentTimeMillis())
-            Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
+            Messenger.unreadCallback?.onNewUnread(Messenger.getUnreadCount())
         }
 
         // Subscribe to conversation channel
@@ -2014,7 +2014,7 @@ open class MessageScreen : Fragment(),
                             timeCreated = convertDateToLong(timeCreated.toString())
                         }
                         prefs?.setConversationLastRead(message.conversationId, timeCreated.toLong())
-                        Messenger.unreadCallback.onNewUnread(Messenger.getUnreadCount())
+                        Messenger.unreadCallback?.onNewUnread(Messenger.getUnreadCount())
                     }
                 }
             }
