@@ -237,7 +237,7 @@ class MessageInfoScreen : Fragment(), View.OnClickListener {
                 container.addView(input)
 
                 // Note: A second constructor exists to pass in a theme res ID
-                MaterialAlertDialogBuilder(activity)
+                MaterialAlertDialogBuilder(requireActivity())
                     // Add customization options here
                     .setView(container)
                     .setTitle("Conversation description")

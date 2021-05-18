@@ -155,7 +155,7 @@ internal class ConversationDataSource {
                 }
 
             } catch (e: Throwable) {
-                Log.d(TAG, e.message)
+                Log.d(TAG, e?.message ?: "")
                 return conversations
             }
         }

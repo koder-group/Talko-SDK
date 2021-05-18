@@ -194,7 +194,7 @@ open class ConversationScreen : Fragment() {
 
                     // Show confirmation to delete
                     Log.d(TAG, "swipeCallback show confirmation to delete")
-                    MaterialAlertDialogBuilder(context)
+                    MaterialAlertDialogBuilder(requireContext())
                         .setTitle("Close Conversation")
                         .setMessage("Are you sure you would like to close this conversation? This will close the conversation for all participants.")
                         .setNegativeButton("Cancel") { dialog, which ->
@@ -509,7 +509,7 @@ open class ConversationScreen : Fragment() {
     }
 
     fun onLongClick(conversation: Conversation, position: Int) {
-        MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle("Close Conversation")
             .setMessage("Are you sure you would like to close this conversation? This will close the conversation for all participants.")
             .setNegativeButton("Cancel") { dialog, which ->
