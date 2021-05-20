@@ -1,17 +1,24 @@
 ### Ellen Android SDK Setup
 
-#### 1. build.gradle (project level)
+#### 1. To use JitPack with private repositories:
+Add the token to $HOME/.gradle/gradle.properties (if file not exist create one)
+```
+authToken=jp_os7h7mpvr2t3772cd8vo4t7o1u
+```
+
+#### 2. build.gradle (project level)
 ```
 allprojects {
   repositories {
     maven {
       url "https://jitpack.io"
+      credentials { username authToken }
     }
   }
 }
 ```
 
-#### 2. build.gradle (app level)
+#### 3. build.gradle (app level)
 ```
 android {
   defaultConfig {
@@ -25,18 +32,18 @@ android {
 }
 
 dependencies {
-  def ellen_version = "0.83" // Or latest version
+  def talko_version = "0.84" // Or latest version
   def multidex_version = "2.0.1"
   def material_version ="1.1.0"
   def firebase_messaging_version="20.1.0"
 
-  implementation "com.github.koder-group:Talko-SDK:$ellen_version"
+  implementation "com.github.koder-group:Talko-SDK:$talko_version"
   implementation "androidx.multidex:multidex:$multidex_version"
   implementation "com.google.android.material:material:$material_version" 
 }
 ```
 
-#### 3. AndroidManifest.xml
+#### 4. AndroidManifest.xml
 ```
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -50,7 +57,7 @@ dependencies {
 </application>
 ```
 
-#### 4. Set Messenger
+#### 5. Set Messenger
 
 1. userToken - Messaging token from user authentication
 2. applicationContext - Application Context
@@ -78,7 +85,7 @@ Messenger.set(userToken, applicationContext, object: CompletionCallback() {
 })
 ```
 
-#### 5. Implement onRefreshTokenRequest
+#### . Implement onRefreshTokenRequest
 
 ```
 // Add request handler at app-level
@@ -109,14 +116,14 @@ public class MyApplication extends Application {
   >
 ```
 
-#### 5. UI Kit
+#### 6. UI Kit
 
-##### 5a. UI Unified
+##### 6a. UI Unified
 UI Unified is an Activity that includes the entire chat application.
 ```
 startActivity(new Intent(YourActivity.this, MessengerActivity.class));
 ```
-##### 5b. UI Screens
+##### 6b. UI Screens
 
 UI Screens are Fragments that make up each part of a chat application.
 
