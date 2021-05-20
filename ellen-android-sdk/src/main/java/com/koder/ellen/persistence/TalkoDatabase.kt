@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Conversation::class, Message::class, UserProfile::class], version = 1, exportSchema = false)
+@Database(entities = [Conversation::class, Message::class, UserProfile::class], version = 1)
 abstract class TalkoDatabase : RoomDatabase() {
     abstract fun conversationDao(): ConversationDao
     abstract fun messageDao(): MessageDao
