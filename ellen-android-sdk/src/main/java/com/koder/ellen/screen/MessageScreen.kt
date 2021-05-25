@@ -331,8 +331,10 @@ open class MessageScreen : Fragment(),
                     // Do stuff
 //                    Log.d(TAG, "User stop typing")
                     userTyping = false
-                    prefs?.externalUserId?.let {
-                        messageViewModel.typingStopped(it, conversation.conversationId)
+                    if(::conversation.isInitialized) {
+                        prefs?.externalUserId?.let {
+                            messageViewModel.typingStopped(it, conversation.conversationId)
+                        }
                     }
                 }
             }
@@ -901,18 +903,19 @@ open class MessageScreen : Fragment(),
 
 //                for(i in 0..10) {
                 val mediaMessage = buildMediaMessage(it)
-                mediaList.add(mediaMessage)
-                mediaAdapter.notifyItemInserted(mediaList.size - 1)
+                if(mediaMessage != null) {
+                    mediaList.add(mediaMessage)
+                    mediaAdapter.notifyItemInserted(mediaList.size - 1)
 
-                // Add media to layout
-                // Scroll to latest media item
-                mediaRecyclerView.scrollToPosition(mediaList.size - 1)
-//                }
+                    // Add media to layout
+                    // Scroll to latest media item
+                    mediaRecyclerView.scrollToPosition(mediaList.size - 1)
 
-                messageViewModel.messageDataChanged(
-                    messageEditText.text.toString(),    // Text input
-                    mediaList                           // Media input
-                )
+                    messageViewModel.messageDataChanged(
+                        messageEditText.text.toString(),    // Text input
+                        mediaList                           // Media input
+                    )
+                }
             }
         }
 
@@ -938,7 +941,10 @@ open class MessageScreen : Fragment(),
         )
     }
 
-    private fun buildMediaMessage(imageUri: Uri): Message {
+    private fun buildMediaMessage(imageUri: Uri): Message? {
+        if(!::conversation.isInitialized) {
+            return null
+        }
         // Build Message
         val contentType = activity?.contentResolver?.getType(imageUri)
         val sender = User(
@@ -1215,14 +1221,16 @@ open class MessageScreen : Fragment(),
                     .equals('@', ignoreCase = true) && word.length > 1
             ) {
                 val name = word.substring(1)
-                val found = conversation.participants.find {
-                    it.user.displayName.equals(
-                        name,
-                        ignoreCase = true
-                    )
-                }
-                found?.let {
-                    setOfMentions.add(found.user)
+                if(::conversation.isInitialized) {
+                    val found = conversation.participants.find {
+                        it.user.displayName.equals(
+                            name,
+                            ignoreCase = true
+                        )
+                    }
+                    found?.let {
+                        setOfMentions.add(found.user)
+                    }
                 }
             }
         }
@@ -1238,16 +1246,19 @@ open class MessageScreen : Fragment(),
             if (word.length > 1 && word.first().equals('@', ignoreCase = true)) {
                 // @
                 val name = word.substring(1)
-
-                val found = conversation.participants.find {
-                    it.user.displayName.equals(
-                        name,
-                        ignoreCase = true
-                    )
-                }
-                found?.let {
-//                    words.set(index, "<font color='#1A73E9'>${word}</font>")
-                    words.set(index, "<font color='${Messenger.mentionInputColor}'>${word}</font>")
+                if(::conversation.isInitialized) {
+                    val found = conversation.participants.find {
+                        it.user.displayName.equals(
+                            name,
+                            ignoreCase = true
+                        )
+                    }
+                    found?.let {
+                        words.set(
+                            index,
+                            "<font color='${Messenger.mentionInputColor}'>${word}</font>"
+                        )
+                    }
                 }
             }
         }
@@ -1796,6 +1807,10 @@ open class MessageScreen : Fragment(),
     fun userStartTyping(initiatingUserId: String) {
         Log.d(TAG, "userStartTyping ${initiatingUserId}")
 
+        if(!::conversation.isInitialized) {
+            return
+        }
+
         val displayName = getDisplayName(initiatingUserId) + " is typing..."
         val profileImageUrl = getProfileImageUrl(initiatingUserId)
         val localReferenceId = UUID.randomUUID().toString()
@@ -1852,13 +1867,14 @@ open class MessageScreen : Fragment(),
     fun getDisplayName(userId: String): String {
 //        val conversation: Conversation? = null  // TODO UI Screens
 //        val conversation = (activity as MessengerActivity).getCurrentConversation()   // TODO UI Screens
-        conversation?.let {
+
+        if(::conversation.isInitialized && conversation != null) {
             val found = conversation.participants.find { p ->
-                p.user.userId.equals(
-                    userId,
-                    ignoreCase = true
-                )
-            }
+                    p.user.userId.equals(
+                        userId,
+                        ignoreCase = true
+                    )
+                }
             found?.let {
                 return found.user.displayName
             }
@@ -1868,13 +1884,13 @@ open class MessageScreen : Fragment(),
 
     fun getProfileImageUrl(userId: String): String {
 //        val conversation = (activity as MessengerActivity).getCurrentConversation()
-        conversation?.let {
+        if(::conversation.isInitialized && conversation != null) {
             val found = conversation.participants.find { p ->
-                p.user.userId.equals(
-                    userId,
-                    ignoreCase = true
-                )
-            }
+                    p.user.userId.equals(
+                        userId,
+                        ignoreCase = true
+                    )
+                }
             found?.let {
                 return found.user.profileImageUrl
             }
