@@ -577,7 +577,7 @@ open class ConversationScreen : Fragment() {
             return conversations.filter { c ->
                 //Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference
                 //com.koder.ellen.screen.ConversationScreen.filterEmptyConversations
-                c.messages.size > 0
+                c.messages != null && c.messages.size > 0
             }.toMutableList()
         }
 

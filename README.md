@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-  def talko_version = "0.84" // Or latest version
+  def talko_version = "0.86" // Or latest version
   def multidex_version = "2.0.1"
   def material_version ="1.1.0"
   def firebase_messaging_version="20.1.0"
