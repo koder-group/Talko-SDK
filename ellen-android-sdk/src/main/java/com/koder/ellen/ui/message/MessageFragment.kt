@@ -63,6 +63,7 @@ import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil.hideKeyboard
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -1781,5 +1782,13 @@ class MyLinearLayoutManager(context: Context?, orientation: Int, reverseLayout: 
     override fun canScrollVertically(): Boolean {
         //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
         return isScrollEnabled && super.canScrollVertically()
+    }
+
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+        try {
+            super.onLayoutChildren(recycler, state)
+        } catch (ex: IndexOutOfBoundsException) {
+            ex.printStackTrace()
+        }
     }
 }
