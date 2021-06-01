@@ -200,7 +200,6 @@ open class MessageScreen : Fragment(),
 
     // Media input
     private lateinit var mediaInputLayout: RelativeLayout
-    private lateinit var mediaRecyclerView: RecyclerView
     private lateinit var mediaAdapter: RecyclerView.Adapter<*>
     private lateinit var mediaViewManager: RecyclerView.LayoutManager
     private val mediaList: MutableList<Message> = mutableListOf()
@@ -642,18 +641,9 @@ open class MessageScreen : Fragment(),
 //            mediaList.add("Test")
 //        }
         mediaAdapter = MediaAdapter(activity as Context, mediaList, this@MessageScreen)
-
-        mediaRecyclerView = activity!!.findViewById<RecyclerView>(R.id.media_recycler_view).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-
-            // use a linear layout manager
-            layoutManager = mediaManager
-
-            // specify an viewAdapter (see also next example)
-            adapter = mediaAdapter
-        }
+        media_recycler_view.setHasFixedSize(true)
+        media_recycler_view.layoutManager = mediaManager
+        media_recycler_view.adapter = mediaAdapter
 
         // Observe messageFormState
         messageViewModel.messageFormState.observe(viewLifecycleOwner, Observer {
@@ -899,7 +889,7 @@ open class MessageScreen : Fragment(),
 
                     // Add media to layout
                     // Scroll to latest media item
-                    mediaRecyclerView.scrollToPosition(mediaList.size - 1)
+                    media_recycler_view.scrollToPosition(mediaList.size - 1)
 
                     messageViewModel.messageDataChanged(
                         messageEditText.text.toString(),    // Text input
