@@ -28,11 +28,11 @@ internal class Utils {
             val sortedConversationList = mutableListOf<Conversation>()
 
             for (conversation in conversations) {
-                if(conversation.messages.isEmpty()) {
-                    noMessageMap.put(conversation, conversation.timeCreated.toLong())
+                if(conversation.messages.isNullOrEmpty()) {
+                    noMessageMap[conversation] = conversation.timeCreated.toLong()
                     continue
                 }
-                latestMessageMap.put(conversation, conversation.messages.first().timeCreated!!.toLong()) // First message should be latest, from sort: -1
+                latestMessageMap[conversation] = conversation.messages!!.first().timeCreated.toLong() // First message should be latest, from sort: -1
             }
 
             val sortedMessageMap = sortByDescending(latestMessageMap)

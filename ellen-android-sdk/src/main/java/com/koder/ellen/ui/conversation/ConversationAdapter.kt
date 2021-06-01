@@ -199,18 +199,16 @@ open class ConversationAdapter(
 
         // Set subtitle
         var subtitle = ""
-        if (!dataset.get(position).messages.isEmpty()) {
-            subtitle = prefixSubtitle(dataset.get(position))
+        if (!dataset[position].messages.isNullOrEmpty()) {
+            subtitle = prefixSubtitle(dataset[position])
 
             // New message indicator
             // If latest message is newer than last read
-            val latestMessage = dataset.get(position).messages.first()
-            val latestMessageCreated = dataset.get(position).messages.first().timeCreated.toLong()
-//            Log.d(TAG, "latestMessageCreated ${latestMessageCreated}")
-//            Log.d(TAG, "System.currentTimeMillis() ${System.currentTimeMillis()}")
+            val latestMessage = dataset[position].messages?.firstOrNull()
+            val latestMessageCreated = dataset[position].messages?.firstOrNull()?.timeCreated?.toLong() ?: 0
 
             // Set time ago date
-            var date = if(!Messenger.conversationTimeAgoDateNames) {
+            val date = if(!Messenger.conversationTimeAgoDateNames) {
                     getTimeAgo(latestMessageCreated)
                 } else {
                     getTodayYestDateFromMilli(latestMessageCreated)
@@ -218,16 +216,15 @@ open class ConversationAdapter(
             dateView.text = date
 
             // Get last-read timestamp for this conversation
-            val lastRead = prefs?.getConversationLastRead(dataset.get(position).conversationId) ?: 0
+            val lastRead = prefs?.getConversationLastRead(dataset[position].conversationId) ?: 0
 
             if(latestMessageCreated > lastRead) {
                 // There are unread messages
 
-                if(!latestMessage.sender.userId.equals(prefs?.userId, ignoreCase = true)) {
+                if(!latestMessage?.sender?.userId?.equals(prefs?.userId, ignoreCase = true)!!) {
                     // Latest message is not current user's
 
                     // Show new message indicator
-//                    newMessageDot.visibility = View.VISIBLE
                     showNewMessageIndicators(layout)
 
                     if(Messenger.conversationIconStroke) {
@@ -500,9 +497,9 @@ open class ConversationAdapter(
     }
 
     private fun prefixSubtitle(conversation: Conversation): String {
-        if(conversation.messages.isEmpty()) return ""
+        if(conversation.messages.isNullOrEmpty()) return ""
 
-        val message = conversation.messages.first()
+        val message = conversation.messages!!.first()
         var subtitle = message.body
         when {
             conversation.participants.size == 2 -> {

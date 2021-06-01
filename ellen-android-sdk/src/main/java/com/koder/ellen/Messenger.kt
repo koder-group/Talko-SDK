@@ -973,10 +973,10 @@ class Messenger {
             val list = conversations.toList()
             for(conversation in list) {
                 conversation.messages?.firstOrNull()?.let {
-                    val latestMessageCreated = conversation.messages.first().timeCreated.toLong()
+                    val latestMessageCreated = it.timeCreated.toLong()
                     val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
 
-                    if (latestMessageCreated > lastRead) unreadCount = unreadCount + 1
+                    if (latestMessageCreated > lastRead) unreadCount += 1
                 }
             }
             return unreadCount

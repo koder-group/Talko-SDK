@@ -101,15 +101,14 @@ internal class ConversationRepository(val dataSource: ConversationDataSource) {
             messageDao?.deleteAll()
             userProfileDao?.deleteAll()
             for(conversation in remoteConversationMessages) {
-                for(message in conversation.messages) {
-//                    Log.d(TAG, "msg ${message}")
-
-                    var json = Gson().toJson(message)
-                    val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
-                    messageDao?.insert(msg)
-
-                    // Update profile image url
-                    cacheUserIfNeeded(message)
+                conversation.messages?.let { messages ->
+                    for(message in messages) {
+                        val json = Gson().toJson(message)
+                        val msg = com.koder.ellen.persistence.Message(message.messageId!!, message.conversationId, message.timeCreated.toLong(), json.toString().toByteArray(Charsets.UTF_8))
+                        messageDao?.insert(msg)
+                        // Update profile image url
+                        cacheUserIfNeeded(message)
+                    }
                 }
             }
 

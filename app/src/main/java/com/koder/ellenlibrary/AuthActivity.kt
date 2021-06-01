@@ -1,6 +1,7 @@
 package com.koder.ellenlibrary
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.util.Log
 import android.widget.Toast
 import com.koder.ellen.*
 import com.koder.ellen.data.Result
+import com.koder.ellen.extensions.hideKeyboard
 import kotlinx.android.synthetic.main.activity_auth.*
 
 class AuthActivity : AppCompatActivity() {
@@ -29,15 +31,21 @@ class AuthActivity : AppCompatActivity() {
             Messenger.screenBackgroundColor = "#5d4298"
             Messenger.screenCornerRadius = intArrayOf(20, 20, 0, 0)
 
+            val progressDialog = ProgressDialog.show(this, "Please wait", "Wait while initializing talko sdk...");
+
             Messenger.set(userToken, applicationContext, object: CompletionCallback() {
                 override fun onCompletion(result: Result<Any>) {
-                    if(result is Result.Success) {
-                        val intent = Intent(this@AuthActivity, MainActivity::class.java)
-                        startActivity(intent)
-                        setResult(Activity.RESULT_OK)
-                        finish()
-                    } else {
-                        Toast.makeText(this@AuthActivity, "Talko Authentication failed. Try with different Auth Token", Toast.LENGTH_LONG).show()
+                    runOnUiThread {
+                        editTextTalkoAuthToken.hideKeyboard()
+                        progressDialog.dismiss()
+                        if(result is Result.Success) {
+                            val intent = Intent(this@AuthActivity, MainActivity::class.java)
+                            startActivity(intent)
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        } else {
+                            Toast.makeText(this@AuthActivity, "Talko Authentication failed. Try with different Auth Token", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             })

@@ -577,7 +577,7 @@ open class ConversationScreen : Fragment() {
             return conversations.filter { c ->
                 //Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference
                 //com.koder.ellen.screen.ConversationScreen.filterEmptyConversations
-                c.messages != null && c.messages.size > 0
+                c.messages.isNullOrEmpty().not()
             }.toMutableList()
         }
 
@@ -586,7 +586,7 @@ open class ConversationScreen : Fragment() {
 
     private fun updateIndicators() {
         conversations.forEachIndexed { index, conversation ->
-            val latestMessageCreated = conversation.messages.firstOrNull()?.timeCreated?.toLong()
+            val latestMessageCreated = conversation.messages?.firstOrNull()?.timeCreated?.toLong()
             val lastRead = prefs?.getConversationLastRead(conversation.conversationId) ?: 0
             
             latestMessageCreated?.let {

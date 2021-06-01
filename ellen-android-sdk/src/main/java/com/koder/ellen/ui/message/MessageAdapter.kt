@@ -37,7 +37,6 @@ import com.koder.ellen.screen.MessageScreen
 import com.squareup.picasso.Picasso
 import java.util.*
 
-
 internal class MessageAdapter(private val context: Context, private val dataset: MutableList<Message>, private val fragment: Fragment?, private val itemClickListener: MessageScreen.ItemClickListener? = null) :
     RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 

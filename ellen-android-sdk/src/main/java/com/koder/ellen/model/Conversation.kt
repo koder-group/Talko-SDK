@@ -11,5 +11,5 @@ data class Conversation(
     val metadata: MessageMetadata,
     val accessPolicy: Any,
     var timeCreated: Number,
-    var messages: MutableList<Message> = mutableListOf()
+    var messages: MutableList<Message>? = null
 )
