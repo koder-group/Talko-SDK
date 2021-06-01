@@ -158,7 +158,6 @@ open class MessageScreen : Fragment(),
     lateinit var messageEditText: EditText
 
     // Mentions
-    private lateinit var mentionRecyclerView: RecyclerView
     private lateinit var mentionViewAdapter: RecyclerView.Adapter<*>
     private lateinit var mentionViewManager: RecyclerView.LayoutManager
     private val mentionList: MutableList<User> = mutableListOf()
@@ -619,23 +618,13 @@ open class MessageScreen : Fragment(),
         mentionViewManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         val mentionViewAdapter = MessageMentionAdapter(activity as Context, mentionList, this)
 
-        mentionRecyclerView =
-            activity!!.findViewById<RecyclerView>(R.id.mention_recycler_view).apply {
-                // use this setting to improve performance if you know that changes
-                // in content do not change the layout size of the RecyclerView
-                setHasFixedSize(false)
+        mention_recycler_view.setHasFixedSize(false)
+        mention_recycler_view.layoutManager = mentionViewManager
+        mention_recycler_view.adapter = mentionViewAdapter
 
-                // use a linear layout manager
-                layoutManager = mentionViewManager
-
-                // specify an viewAdapter (see also next example)
-                adapter = mentionViewAdapter
-
-//            itemAnimator = DefaultItemAnimator()
-            }
-        mentionRecyclerView.addItemDecoration(
+        mention_recycler_view.addItemDecoration(
             DividerItemDecoration(
-                mentionRecyclerView.context,
+                mention_recycler_view.context,
                 DividerItemDecoration.VERTICAL
             )
         )
