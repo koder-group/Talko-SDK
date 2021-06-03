@@ -672,7 +672,7 @@ internal class MessageFragment : Fragment(),
             }
             R.id.action_info -> {
                 // Hide keyboard
-                hideKeyboard(activity)
+                hideKeyboard(requireActivity())
                 // Show MessageInfoFragment and add to backstack
                 (activity as MessengerActivity).showInfoFragment()
                 true
@@ -858,7 +858,7 @@ internal class MessageFragment : Fragment(),
     override fun onDetach() {
         super.onDetach()
 //        Log.d(TAG, "onDetach()")
-        hideKeyboard(activity)
+        hideKeyboard(requireActivity())
     }
 
     private fun startPhotoPicker() {
@@ -1126,7 +1126,7 @@ internal class MessageFragment : Fragment(),
     //    private fun zoomImageFromThumb(thumbView: View, imageResId: Int) {
 //    private fun zoomImageFromThumb(thumbView: View, url: String) {
     private fun zoomImageFromThumb(thumbView: View, bitmap: Bitmap, url: String) {
-        hideKeyboard(activity)
+        hideKeyboard(requireActivity())
 
         // Handle back press
         zoomOpen = true

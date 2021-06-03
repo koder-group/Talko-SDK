@@ -604,7 +604,7 @@ open class MessageScreen : Fragment(),
 
         // Keyboard listener
         KeyboardVisibilityEvent.setEventListener(
-            activity,
+            requireActivity(),
             object : KeyboardVisibilityEventListener {
                 override fun onVisibilityChanged(isOpen: Boolean) {
 //                Log.d(TAG, "Keyboard open ${isOpen}")
@@ -953,7 +953,7 @@ open class MessageScreen : Fragment(),
     override fun onDetach() {
         super.onDetach()
 //        Log.d(TAG, "onDetach()")
-        hideKeyboard(activity)
+        hideKeyboard(requireActivity())
     }
 
     private fun startPhotoPicker() {
@@ -1266,7 +1266,7 @@ open class MessageScreen : Fragment(),
     //    private fun zoomImageFromThumb(thumbView: View, imageResId: Int) {
 //    private fun zoomImageFromThumb(thumbView: View, url: String) {
     private fun zoomImageFromThumb(thumbView: View, bitmap: Bitmap, url: String) {
-        hideKeyboard(activity)
+        hideKeyboard(requireActivity())
 
         // Handle back press
         zoomOpen = true
